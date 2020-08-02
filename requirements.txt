@@ -5,3 +5,4 @@ Pillow>=6.2.1
 matplotlib>=3.2.0
 numpy>=1.18.0
 httpx>=0.12.1
+pygtrie>=2.0
