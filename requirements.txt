@@ -1,0 +1,7 @@
+lxml>=4.4.1
+pytz>=2019.3
+zhconv>=1.4.0
+Pillow>=6.2.1
+matplotlib>=3.2.0
+numpy>=1.18.0
+httpx>=0.12.1
