@@ -1,6 +1,6 @@
 import discord
 import kokkoro
-from kokkoro import trigger, utils
+from kokkoro import trigger, util
 
 async def handle_message(bot, msg: discord.Message):
     kokkoro.logger.debug(f'Searching for Message Handler...')
@@ -15,7 +15,7 @@ async def handle_message(bot, msg: discord.Message):
         return  # triggered nothing.
     sf.sv.logger.info(f'Message {msg.id} triggered {sf.__name__} by {trigger_name}.')
 
-    if sf.only_to_me and not utils.only_to_me(msg):
+    if sf.only_to_me and not util.only_to_me(msg):
         return  # not to me, ignore.
 
     #if not sf.sv._check_all(event):
@@ -24,5 +24,5 @@ async def handle_message(bot, msg: discord.Message):
     try:
         await sf.func(bot, msg, param)
     except Exception as e:
-        sf.sv.logger.error(f'{type(e)} occured when {sf.__name__} handling message {event.message_id}.')
+        sf.sv.logger.error(f'{type(e)} occured when {sf.__name__} handling message {msg.id}.')
         sf.sv.logger.exception(e)
