@@ -15,13 +15,13 @@ class PrefixHandlerParameter(BaseParameter):
     def __init__(self, msg:str, prefix, remain):
         super().__init__(msg)
         self.prefix=prefix
-        self.remain=remain
+        self.remain=remain.strip()
 
 class SuffixHandlerParameter(BaseParameter):
     def __init__(self, msg:str, suffix, remain):
         super().__init__(msg)
-        self.suffix=prefix
-        self.remain=suffix
+        self.suffix=suffix
+        self.remain=remain.strip()
 
 class KeywordHandlerParameter(BaseParameter):
     def __init__(self, msg:str):
