@@ -1,6 +1,7 @@
 import re
 import pygtrie
 import discord
+from typing import List
 
 import kokkoro
 from kokkoro import util
@@ -33,10 +34,10 @@ class RegexHandlerParameter:
 
 class BaseTrigger:
     
-    def add(self, x, sf: "ServiceFunc"):
+    def add(self, x, sf):
         raise NotImplementedError
 
-    def find_handler(self, msg: discord.Message) -> "ServiceFunc":
+    def find_handler(self, msg: discord.Message):
         raise NotImplementedError
 
 
@@ -47,7 +48,7 @@ class PrefixTrigger(BaseTrigger):
         self.trie = pygtrie.CharTrie()
 
 
-    def add(self, prefix: str, sf: "ServiceFunc"):
+    def add(self, prefix: str, sf):
         if prefix in self.trie:
             other = self.trie[prefix]
             kokkoro.logger.warning(f'Failed to add prefix trigger `{prefix}`: Conflicts between {sf.__name__} and {other.__name__}')
@@ -77,7 +78,7 @@ class SuffixTrigger(BaseTrigger):
         self.trie = pygtrie.CharTrie()
 
 
-    def add(self, suffix: str, sf: "ServiceFunc"):
+    def add(self, suffix: str, sf):
         suffix_r = suffix[::-1]
         if suffix_r in self.trie:
             other = self.trie[suffix_r]
@@ -105,7 +106,7 @@ class KeywordTrigger(BaseTrigger):
         super().__init__()
         self.allkw = {}
 
-    def add(self, keyword: str, sf: "ServiceFunc"):
+    def add(self, keyword: str, sf):
         keyword = util.normalize_str(keyword)
         if keyword in self.allkw:
             other = self.allkw[keyword]
@@ -115,7 +116,7 @@ class KeywordTrigger(BaseTrigger):
         kokkoro.logger.debug(f'Succeed to add keyword trigger `{keyword}`')
 
 
-    def find_handler(self, msg: discord.Message) -> "ServiceFunc":
+    def find_handler(self, msg: discord.Message):
         text = msg.content
         for kw in self.allkw:
             if kw in text:
@@ -129,11 +130,11 @@ class RexTrigger(BaseTrigger):
         self.allrex = {}
     
     
-    def add(self, rex: re.Pattern, sf: "ServiceFunc"):
+    def add(self, rex: re.Pattern, sf):
         self.allrex[rex] = sf
         kokkoro.logger.debug(f'Succeed to add rex trigger `{rex.pattern}`')
 
-    def find_handler(self, msg: discord.Message) -> "ServiceFunc":
+    def find_handler(self, msg: discord.Message):
         text = msg.content
         for rex in self.allrex:
             match = rex.search(text)
@@ -149,7 +150,7 @@ suffix = SuffixTrigger()
 keyword = KeywordTrigger()
 rex = RexTrigger()
 
-chain = [
+chain: List[BaseTrigger] = [
     prefix,
     suffix,
     keyword,

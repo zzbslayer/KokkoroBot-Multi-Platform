@@ -5,8 +5,8 @@ import discord
 from collections import defaultdict
 
 from kokkoro import priv, util, R, discord_adaptor
-from kokkoro.service import Service
 from kokkoro.typing import *
+from kokkoro.msg_handler import EventInterface
 from kokkoro.util import DailyNumberLimiter, concat_pic, pic2b64, silence
 
 from .. import chara
@@ -47,20 +47,20 @@ _gacha_300_aliases = ('井', '抽一井', '来一井', '来发井', '抽发井',
 gacha_300_aliases = add_prefix(_gacha_300_aliases, "/")
 
 @sv.on_fullmatch(('卡池资讯', '查看卡池', '看看卡池', '康康卡池', '卡池資訊', '看看up', '看看UP'))
-async def gacha_info(bot:KokkoroBot, ev: discord.Message, param):
-    gid = str(ev.guild.id)
+async def gacha_info(bot:KokkoroBot, ev: EventInterface):
+    gid = str(ev.get_group_id())
     gacha = Gacha(_group_pool[gid])
     up_chara = gacha.up
     if sv.bot.config.ENABLE_IMAGE:
         up_chara_imgs = map(lambda x: (chara.fromname(x, star=3).icon), up_chara)
     for img in up_chara_imgs:
-        await bot.send(ev, img.discord_img)
+        await bot.send(ev, img)
     await bot.send(ev, f"本期卡池主打的角色：\n{up_chara}\nUP角色合计={(gacha.up_prob/10):.1f}% 3★出率={(gacha.s3_prob)/10:.1f}%")
 
 
 POOL_NAME_TIP = '请选择以下卡池\n> 切换卡池jp\n> 切换卡池tw\n> 切换卡池b\n> 切换卡池mix'
 @sv.on_prefix(('切换卡池', '选择卡池', '切換卡池', '選擇卡池'))
-async def set_pool(bot:KokkoroBot, ev: discord.Message, param:PrefixHandlerParameter):
+async def set_pool(bot:KokkoroBot, ev: EventInterface):
     if not priv.check_priv(ev, priv.ADMIN):
         await bot.send(ev, '只有群管理才能切换卡池', at_sender=True)
         return
@@ -82,14 +82,14 @@ async def set_pool(bot:KokkoroBot, ev: discord.Message, param:PrefixHandlerParam
     else:
         await bot.send(ev, f'未知服务器地区 {POOL_NAME_TIP}', at_sender=True)
         return
-    gid = str(ev.guild.id)
+    gid = str(ev.get_group_id())
     _group_pool[gid] = name
     dump_pool_config()
     await bot.send(ev, f'卡池已切换为{name}池', at_sender=True)
 
 @sv.on_prefix(gacha_1_aliases, only_to_me=False)
-async def gacha_1(bot:KokkoroBot, ev: discord.Message, param):
-    gid = str(ev.guild.id)
+async def gacha_1(bot:KokkoroBot, ev: EventInterface):
+    gid = str(ev.get_group_id())
     gacha = Gacha(_group_pool[gid])
     chara, hiishi = gacha.gacha_one(gacha.up_prob, gacha.s3_prob, gacha.s2_prob)
     #silence_time = hiishi * 60
@@ -97,17 +97,17 @@ async def gacha_1(bot:KokkoroBot, ev: discord.Message, param):
     res = f'{chara.name} {"★"*chara.star}'
     if sv.bot.config.ENABLE_IMAGE:
         img = chara.icon
-        await bot.send(ev, img.discord_img)
+        await bot.send(ev, img)
     if chara.star == 3:
         await silence(ev, 60)
     await bot.send(ev, f'素敵な仲間が増えますよ！\n{res}', at_sender=True)
 
 
 @sv.on_prefix(gacha_10_aliases, only_to_me=False)
-async def gacha_10(bot:KokkoroBot, ev: discord.Message, param):
+async def gacha_10(bot:KokkoroBot, ev: EventInterface):
     SUPER_LUCKY_LINE = 170
     
-    gid = str(ev.guild.id)
+    gid = str(ev.get_group_id())
     gacha = Gacha(_group_pool[gid])
     result, hiishi = gacha.gacha_ten()
     silence_time = hiishi * 6 if hiishi < SUPER_LUCKY_LINE else hiishi * 60
@@ -134,9 +134,9 @@ async def gacha_10(bot:KokkoroBot, ev: discord.Message, param):
 
 
 @sv.on_prefix(gacha_300_aliases, only_to_me=False)
-async def gacha_300(bot, ev: discord.Message, param):
+async def gacha_300(bot, ev: EventInterface):
 
-    gid = str(ev.guild.id)
+    gid = str(ev.get_group_id())
     gacha = Gacha(_group_pool[gid])
     result = gacha.gacha_tenjou()
     up = len(result['up'])
@@ -196,11 +196,11 @@ async def gacha_300(bot, ev: discord.Message, param):
 
 
 @sv.on_prefix('氪金')
-async def kakin(bot, ev: discord.Message, param):
-    if ev.author.id not in bot.config.SUPERUSERS:
+async def kakin(bot, ev: EventInterface):
+    if ev.get_author_id not in bot.config.SUPERUSERS:
         return
     count = 0
-    members = ev.mentions
+    members = ev.get_mentions()
     for m in members:
         uid = m.id
         jewel_limit.reset(uid)

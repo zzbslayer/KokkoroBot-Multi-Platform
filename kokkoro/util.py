@@ -40,7 +40,7 @@ def only_to_me(msg: discord.Message) -> bool:
         return True
     return False
 
-def pic2b64(pic:Image) -> str:
+def pic2b64(pic:Image.Image) -> str:
     buf = BytesIO()
     pic.save(buf, format='PNG')
     base64_str = base64.b64encode(buf.getvalue()).decode()

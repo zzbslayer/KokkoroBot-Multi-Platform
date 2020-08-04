@@ -31,7 +31,6 @@ class ResObj:
         return os.path.exists(self.path)
 
 class ResImg(ResObj):
-    @property
     def discord_img(self, filename="image.png") -> DiscordImage:
         if kokkoro.config.RES_PROTOCOL == 'http':
             return discord_adaptor.remote_image(url, filename=filename)
@@ -56,7 +55,6 @@ class RemoteResObj:
         return self.__path
 
 class RemoteResImg(RemoteResObj):
-    @property
     def discord_img(self, filename="image.png") -> DiscordImage:
         return discord_adaptor.remote_image(self.url, filename=filename)
     

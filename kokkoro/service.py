@@ -8,6 +8,7 @@ import kokkoro
 from kokkoro import logger, KokkoroBot
 from kokkoro import priv, log, typing, trigger
 from kokkoro.typing import *
+from kokkoro.msg_handler import EventInterface
 
 # service management
 _loaded_services: Dict[str, "Service"] = {}  # {name: service}
@@ -26,7 +27,6 @@ def _load_service_config(service_name):
     except Exception as e:
         logger.exception(e)
         return {}
-
 
 def _save_service_config(service):
     config_file = os.path.join(_service_config_dir, f'{service.name}.json')
@@ -168,11 +168,12 @@ class Service:
             word = (word, )
         def deco(func) -> Callable:
             @wraps(func)
-            async def wrapper(bot: KokkoroBot, msg: discord.Message, param: trigger.PrefixHandlerParameter):
+            async def wrapper(bot: KokkoroBot, ev: EventInterface):
+                param = ev.get_param()
                 if param.remain != '':
-                    self.logger.info(f'Message {msg.id} is ignored by fullmatch condition.')
+                    self.logger.info(f'Message {ev.get_id()} is ignored by fullmatch condition.')
                     return
-                return await func(bot, msg, param)
+                return await func(bot, ev)
             sf = ServiceFunc(self, wrapper, only_to_me)
             for w in word:
                 trigger.prefix.add(w, sf)
