@@ -26,8 +26,9 @@ from kokkoro.discord_adaptor import DiscordEvent
 
 async def handle_message(bot, msg: discord.Message):
     kokkoro.logger.debug(f'Searching for Message Handler...')
+    ev = DiscordEvent(msg, None)
     for t in trigger.chain:
-        sf, param = t.find_handler(msg)
+        sf = t.find_handler(ev)
         if sf:
             trigger_name = t.__class__.__name__
             break
@@ -40,8 +41,6 @@ async def handle_message(bot, msg: discord.Message):
     if sf.only_to_me and not util.only_to_me(msg):
         return  # not to me, ignore.
 
-    ev = DiscordEvent(msg, param)
-    
     if not sf.sv._check_all(ev):
         return  # permission denied.
 

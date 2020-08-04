@@ -8,7 +8,7 @@ from kokkoro import util
 
 class BaseParameter:
     def __init__(self, msg:str):
-        self.plain_text = msg.strip()
+        self.plain_text = util.remove_mention_me(msg)
         self.norm_text = util.normalize_str(self.plain_text)
 
 class PrefixHandlerParameter(BaseParameter):
@@ -57,19 +57,19 @@ class PrefixTrigger(BaseTrigger):
         kokkoro.logger.debug(f'Succeed to add prefix trigger `{prefix}`')
 
 
-    def find_handler(self, msg: discord.Message):
-        first_text = msg.content
+    def find_handler(self, ev):
+        first_text = util.remove_mention_me(ev.get_content())
         kokkoro.logger.debug(f'Searching for Prefix Handler for {first_text}...')
         item = self.trie.longest_prefix(first_text)
         if not item:
-            return None, None
+            return None
         prefix = item.key
         kokkoro.logger.debug(f'Prefix `{prefix}` triggered')
 
         remain = first_text[len(prefix):].lstrip()
-        param = PrefixHandlerParameter(msg.content, item.key, remain)
+        ev.param = PrefixHandlerParameter(ev.get_content(), item.key, remain)
 
-        return item.value, param
+        return item.value
 
 class SuffixTrigger(BaseTrigger):
     
@@ -88,17 +88,17 @@ class SuffixTrigger(BaseTrigger):
         kokkoro.logger.debug(f'Succeed to add suffix trigger `{suffix}`')
 
 
-    def find_handler(self, msg: discord.Message):
-        last_text = msg.content
+    def find_handler(self, ev):
+        last_text = util.remove_mention_me(ev.get_content())
         item = self.trie.longest_prefix(last_text[::-1])
         if not item:
-            return None, None
+            return None
         
         suffix = item.key[::-1]
         remain = last_text[:-len(item.key)].rstrip()
-        param = SuffixHandlerParameter(msg.content, suffix, remain)
+        ev.param = SuffixHandlerParameter(msg.content, suffix, remain)
 
-        return item.value, param
+        return item.value
 
 class KeywordTrigger(BaseTrigger):
     
@@ -116,13 +116,13 @@ class KeywordTrigger(BaseTrigger):
         kokkoro.logger.debug(f'Succeed to add keyword trigger `{keyword}`')
 
 
-    def find_handler(self, msg: discord.Message):
-        text = msg.content
+    def find_handler(self, ev):
+        text = util.remove_mention_me(ev.get_content())
         for kw in self.allkw:
             if kw in text:
-                param = KeywordHandlerParameter(msg.content)
-                return self.allkw[kw], param
-        return None, None
+                ev.param = KeywordHandlerParameter(msg.content)
+                return self.allkw[kw]
+        return None
 
 class RexTrigger(BaseTrigger):
     def __init__(self):
@@ -134,14 +134,14 @@ class RexTrigger(BaseTrigger):
         self.allrex[rex] = sf
         kokkoro.logger.debug(f'Succeed to add rex trigger `{rex.pattern}`')
 
-    def find_handler(self, msg: discord.Message):
-        text = msg.content
+    def find_handler(self, ev):
+        text = util.remove_mention_me(ev.get_content())
         for rex in self.allrex:
             match = rex.search(text)
             if match:
-                param = RegexHandlerParameter(msg.content, match)
-                return self.allrex[rex], param
-        return None, None
+                ev.param = RegexHandlerParameter(msg.content, match)
+                return self.allrex[rex]
+        return None
 
 
 
