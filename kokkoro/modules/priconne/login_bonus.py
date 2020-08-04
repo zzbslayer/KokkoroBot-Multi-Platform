@@ -1,10 +1,10 @@
 import random
 from kokkoro import R
-from kokkoro.service import ServiceFunc
+from kokkoro.service import Service
 from kokkoro.msg_handler import EventInterface
 from kokkoro.util import DailyNumberLimiter
 
-sv = Service('pcr-login-bonus', bundle='pcr娱乐', help_='[星乃签到] 给主さま盖章章')
+sv = Service('pcr-login-bonus')
 
 lmt = DailyNumberLimiter(1)
 login_presents = [

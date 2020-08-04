@@ -40,10 +40,10 @@ async def handle_message(bot, msg: discord.Message):
     if sf.only_to_me and not util.only_to_me(msg):
         return  # not to me, ignore.
 
-    if not sf.sv._check_all(msg):
-        return  # permission denied.
-
     ev = DiscordEvent(msg, param)
+    
+    if not sf.sv._check_all(ev):
+        return  # permission denied.
 
     try:
         await sf.func(bot, ev)

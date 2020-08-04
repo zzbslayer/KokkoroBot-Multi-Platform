@@ -2,7 +2,7 @@ import discord
 import itertools
 
 from kokkoro import priv
-from kokkoro.typing import *
+from kokkoro.service import Service
 from kokkoro.msg_handler import EventInterface
 
 sv = Service('_help_', manage_priv=priv.SUPERUSER, visible=False)
@@ -67,6 +67,7 @@ NORMAL_HELP='''
 ===========
 - 通用功能 -
 ===========
+[@bot 签到] 给主さま盖章章
 [切噜一下] 后以空格隔开接想要转换为切噜语的话
 [切噜～♪切啰巴切拉切蹦切蹦] 切噜语翻译
 [启用/禁用 antiqks] 识破骑空士的阴谋

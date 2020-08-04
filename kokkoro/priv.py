@@ -1,7 +1,7 @@
-import discord
 from datetime import datetime
 
 import kokkoro
+from kokkoro.msg_handler import EventInterface
 
 BLACK = -999
 DEFAULT = 0
@@ -45,11 +45,11 @@ def check_block_user(user_id):
 #========================================================#
 
 
-def get_user_priv(msg: discord.Message):
-    if is_super_user(msg.author.id):
+def get_user_priv(ev: EventInterface):
+    if is_super_user(ev.get_author_id()):
         return SUPERUSER
     return NORMAL
 
 
-def check_priv(msg: discord.Message, require: int) -> bool:
-    return get_user_priv(msg) >= require
+def check_priv(ev: EventInterface, require: int) -> bool:
+    return get_user_priv(ev) >= require

@@ -1,13 +1,12 @@
 import re
 import json
 import os
-import discord
 from functools import wraps
 
 import kokkoro
+from kokkoro.typing import *
 from kokkoro import logger, KokkoroBot
 from kokkoro import priv, log, typing, trigger
-from kokkoro.typing import *
 from kokkoro.msg_handler import EventInterface
 
 # service management
@@ -118,7 +117,7 @@ class Service:
     
     @staticmethod
     def get_loaded_services() -> Dict[str, "Service"]:
-        return 
+        return _loaded_services
     
     def set_enable(self, group_id):
         self.enable_group.add(group_id)
@@ -137,9 +136,9 @@ class Service:
         return bool( (group_id in self.enable_group) or (self.enable_on_default and group_id not in self.disable_group))
 
 
-    def _check_all(self, msg: discord.Message):
-        gid = msg.guild.id
-        return self.check_enabled(gid) and not priv.check_block_group(gid) and priv.check_priv(msg, self.use_priv)
+    def _check_all(self, ev: EventInterface):
+        gid = ev.get_group_id()
+        return self.check_enabled(gid) and not priv.check_block_group(gid) and priv.check_priv(ev, self.use_priv)
     
     def get_enable_groups(self) -> dict:
         """获取所有启用本服务的群

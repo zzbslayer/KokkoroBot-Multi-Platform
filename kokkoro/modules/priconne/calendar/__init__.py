@@ -1,4 +1,4 @@
-from kokkoro.typing import *
+from kokkoro.service import Service
 from kokkoro.msg_handler import EventInterface
 
 sv = Service('pcr-calendar')

@@ -4,8 +4,8 @@ import json
 import discord
 from collections import defaultdict
 
-from kokkoro import priv, util, R, discord_adaptor
-from kokkoro.typing import *
+from kokkoro import priv, util, R, discord_adaptor, KokkoroBot
+from kokkoro.service import Service
 from kokkoro.msg_handler import EventInterface
 from kokkoro.util import DailyNumberLimiter, concat_pic, pic2b64, silence
 
