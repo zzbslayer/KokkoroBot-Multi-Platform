@@ -31,9 +31,9 @@ Modules should depend on EventInterface instead of Discord specific concept.
 Then it would be easy to migrate to other platform.
 '''
 class DiscordEvent(EventInterface):
-    def __init__(self, msg: discord.Message, param: BaseParameter):
+    def __init__(self, msg: discord.Message):
         self._raw_event = msg
-        self.param = param
+        self.param:BaseParameter = None
 
     def get_id(self):
         return self._raw_event.id
@@ -48,7 +48,7 @@ class DiscordEvent(EventInterface):
         return self._raw_event.content
 
     def get_mentions(self) -> str:
-        return self._raw_evnet.mentions
+        return self._raw_event.mentions
 
     def get_param(self): 
         return self.param

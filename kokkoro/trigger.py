@@ -1,6 +1,5 @@
 import re
 import pygtrie
-import discord
 from typing import List
 
 import kokkoro
@@ -35,9 +34,9 @@ class RegexHandlerParameter:
 class BaseTrigger:
     
     def add(self, x, sf):
-        raise NotImplementedError
+        raise NotImplementedErrorev
 
-    def find_handler(self, msg: discord.Message):
+    def find_handler(self, ev):
         raise NotImplementedError
 
 

@@ -14,7 +14,6 @@ from matplotlib import pyplot as plt
 from PIL import Image
 from io import BytesIO
 
-import discord
 import kokkoro
 from kokkoro import config
 
@@ -32,8 +31,8 @@ def load_config(inbuilt_file_var):
         kokkoro.logger.exception(e)
         return {}
 
-def only_to_me(msg: discord.Message) -> bool:
-    members = msg.mentions
+def only_to_me(ev) -> bool:
+    members = ev.get_mentions()
     if len(members) != 1:
         return False
     if members[0].id == config.BOT_ID:
@@ -117,7 +116,7 @@ class DailyNumberLimiter:
     def reset(self, key):
         self.count[key] = 0
 
-async def silence(ev: discord.Message, ban_time, skip_su=True):
+async def silence(ev, ban_time, skip_su=True):
     pass
 
 def load_module(module_path: str):
