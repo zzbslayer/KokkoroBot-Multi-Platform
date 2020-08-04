@@ -52,4 +52,4 @@ def get_user_priv(msg: discord.Message):
 
 
 def check_priv(msg: discord.Message, require: int) -> bool:
-    return get_user_priv(msg.author.id) >= require
+    return get_user_priv(msg) >= require

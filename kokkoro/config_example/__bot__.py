@@ -1,10 +1,13 @@
 DISCORD_TOKEN="your-discord-app-token"
+BOT_ID = your-bot-id
 LOG_LEVEL="DEBUG"
+ENABLE_IMAGE=True
 
 NICK_NAME = ['可可萝', '妈']
-BOT_NAME = 'KokkoroBot#3863'
 
-RES_DIR = r'./res/'
+RES_PROTOCOL = 'file'
+RES_DIR = '~/.kokkoro/res/'
+RES_URL = '0.0.0.0'
 
 SUPER_USER = [super-user-id]
 

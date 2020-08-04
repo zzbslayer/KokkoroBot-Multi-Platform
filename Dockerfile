@@ -13,7 +13,6 @@ RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
 # python dependencies
 WORKDIR /bot
 COPY requirements.txt /bot/requirements.txt
-RUN pip install -U discord.py
 RUN pip install -r requirements.txt
 # RUN pip install -i https://mirrors.aliyun.com/pypi/simple/ -r requirements.txt
 

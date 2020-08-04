@@ -2,12 +2,12 @@ import re
 import json
 import os
 import discord
-from typing import Callable, Dict, Union
 from functools import wraps
 
 import kokkoro
 from kokkoro import logger, KokkoroBot
 from kokkoro import priv, log, typing, trigger
+from kokkoro.typing import *
 
 # service management
 _loaded_services: Dict[str, "Service"] = {}  # {name: service}

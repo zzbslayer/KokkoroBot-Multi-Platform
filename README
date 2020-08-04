@@ -1,6 +1,8 @@
 # KokkoroBot
-KokkoroBot is a forked version of HoshinoBot and migrates from QQ to discrod. 
+KokkoroBot is a forked version of **HoshinoBot** and migrates from QQ to discrod. 
 
 # TODO
-[ ] Basic Migration
-[ ] Permission
+[x] Basic Migration
+[x] Image
+[ ] Audio
+[ ] Scheduler

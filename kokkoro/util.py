@@ -18,11 +18,25 @@ import discord
 import kokkoro
 from kokkoro import config
 
+def load_config(inbuilt_file_var):
+    """
+    Just use `config = load_config(__file__)`,
+    you can get the config.json as a dict.
+    """
+    filename = os.path.join(os.path.dirname(inbuilt_file_var), 'config.json')
+    try:
+        with open(filename, encoding='utf8') as f:
+            config = json.load(f)
+            return config
+    except Exception as e:
+        kokkoro.logger.exception(e)
+        return {}
+
 def only_to_me(msg: discord.Message) -> bool:
     members = msg.mentions
     if len(members) != 1:
         return False
-    if str(members[0]) == config.BOT_NAME:
+    if members[0].id == config.BOT_ID:
         return True
     return False
 
@@ -40,7 +54,7 @@ def fig2b64(plt:plt) -> str:
     return 'base64://' + base64_str
 
 
-def concat_pic(pics, border=5):
+def concat_pic(pics, border=5) -> Image:
     num = len(pics)
     w, h = pics[0].size
     des = Image.new('RGBA', (w, num * h + (num-1) * border), (255, 255, 255, 255))
@@ -97,6 +111,9 @@ class DailyNumberLimiter:
 
     def reset(self, key):
         self.count[key] = 0
+
+async def silence(ev: discord.Message, ban_time, skip_su=True):
+    pass
 
 def load_module(module_path: str):
     try:

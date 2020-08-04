@@ -131,8 +131,7 @@ class RexTrigger(BaseTrigger):
     
     def add(self, rex: re.Pattern, sf: "ServiceFunc"):
         self.allrex[rex] = sf
-        kokkorokokkoro.logger.debug(f'Succeed to add rex trigger `{rex.pattern}`')
-
+        kokkoro.logger.debug(f'Succeed to add rex trigger `{rex.pattern}`')
 
     def find_handler(self, msg: discord.Message) -> "ServiceFunc":
         text = msg.content
