@@ -53,4 +53,5 @@ async def give_okodokai(bot, ev: EventInterface):
     lmt.increase(uid)
     present = random.choice(login_presents)
     todo = random.choice(todo_list)
-    await bot.send(ev, f'\nおかえりなさいませ、主さま{R.img("priconne/kokkoro_stamp.png").cqcode}\n{present}を獲得しました\n私からのプレゼントです\n主人今天要{todo}吗？', at_sender=True)
+    await bot.send(ev, R.img("priconne/kokkoro_stamp.png"))
+    await bot.send(ev, f'\nおかえりなさいませ、主さま\n{present}を獲得しました\n私からのプレゼントです\n主人今天要{todo}吗？', at_sender=True)
