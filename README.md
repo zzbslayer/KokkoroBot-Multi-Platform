@@ -16,18 +16,26 @@ HoshinoBot 无论是基础设施还是应用层，大量使用了来自 Nonebot 
 - `kokkoro.config.__bot__.py` 中设置 `BOT_TYPE` 为 `discord`
 - `kokkoro.config.bot.discord.py` 中设置相关参数
 > FAQ:
+>
 > Q1: 如何查看 Discord 群组 ID 与用户 ID ?
+>
 > A1: https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-
 
 ### Telegram
 - `kokkoro.config.__bot__.py` 中设置 `BOT_TYPE` 为 `telegram`
 - `kokkoro.config.bot.telegram.py` 中设置相关参数
 > FAQ:
+>
 > Q1: 如何查看群组 ID ?
+>
 > A1: https://stackoverflow.com/questions/32423837/telegram-bot-how-to-get-a-group-chat-id
+>
 > Q2: 如何查看我的用户 ID ?
+>
 > A2: https://bigone.zendesk.com/hc/en-us/articles/360008014894-How-to-get-the-Telegram-user-ID-
+>
 > Q3: 如何查看其他用户 ID 或者 BOT ID ?
+>
 > A3: 真不知道。虽然可以通过在 bot 中打印 types.Message 相关参数得到用户 ID。但暂时并不知道什么方法能够快速进行查询。
 
 ## 开发者碎碎念
