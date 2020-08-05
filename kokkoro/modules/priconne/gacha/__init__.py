@@ -1,7 +1,6 @@
 import os
 import random
 import json
-import discord
 from collections import defaultdict
 
 from kokkoro import priv, util, R, KokkoroBot

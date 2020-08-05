@@ -2,10 +2,13 @@ import os
 from PIL import Image
 
 import kokkoro
-from kokkoro.discord import discord_util
+from kokkoro import config
 from kokkoro.typing import Union, List
 from kokkoro.R import ResImg, RemoteResImg
 
+if config.BOT_TYPE == "discord":
+    from kokkoro.discord import discord_util
+    
 SupportedMessageType = Union[ResImg, RemoteResImg, Image.Image, str]
 
 class BaseParameter:

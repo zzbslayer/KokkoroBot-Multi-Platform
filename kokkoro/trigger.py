@@ -4,8 +4,10 @@ from typing import List
 
 import kokkoro
 from kokkoro import util, config
-from kokkoro.discord import discord_util
 from kokkoro.common_interface import BaseParameter
+
+if config.BOT_TYPE == "discord":
+    from kokkoro.discord import discord_util
 
 class PrefixHandlerParameter(BaseParameter):
     def __init__(self, msg:str, prefix, remain):

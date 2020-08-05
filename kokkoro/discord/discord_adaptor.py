@@ -4,7 +4,7 @@ from PIL import Image
 from typing import Union
 
 import kokkoro
-from kokkoro.common_interface import EventInterface, UserInterface, BaseParameter
+from kokkoro.common_interface import EventInterface, UserInterface
 from kokkoro.R import ResImg, RemoteResImg
 from kokkoro.typing import overrides, List
 
@@ -73,7 +73,7 @@ class DiscordUser(UserInterface):
 class DiscordEvent(EventInterface):
     def __init__(self, msg: discord.Message):
         self._raw_event = msg
-        self.param:BaseParameter = None
+        self.param = None
 
     @overrides(EventInterface)
     def get_id(self):

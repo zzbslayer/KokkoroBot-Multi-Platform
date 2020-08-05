@@ -1,4 +1,3 @@
-import discord
 import itertools
 
 from kokkoro import priv
@@ -27,6 +26,7 @@ PRC_HELP = '''
 [/井] 4w5钻！买定离手！
 [查看卡池] 模拟卡池&出率
 [切换卡池] 更换模拟卡池
+[赛马]兰德索尔赛🐎大赛
 [@bot 妈] 给主さま盖章章
 [怎么拆 妹弓] 后以空格隔开接角色名，查询竞技场解法
 [pcr速查] 常用网址/速查表

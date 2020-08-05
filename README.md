@@ -3,6 +3,10 @@ KokkoroBot is a forked version of **HoshinoBot** and migrates from QQ to discrod
 
 本项目是 HoshinoBot 的分支版本，充斥着大量个人魔改产物。若希望体验原汁原味的 HoshinoBot 请自行魔改回去。
 
+## 目前支持的平台：
+- [x] discord
+- [ ] telegram
+
 ## Motivation
 HoshinoBot 无论是基础设施还是应用层，大量使用了来自 Nonebot 中的概念如 `CQEvent`, `MessageSegment`，这直接导致上层服务与 Nonebot 以及 Nonebot 底层的 CQHttp 极大程度上耦合在一起，难以将 HoshinoBot 移植到其他平台或框架，比如从 QQ 迁移至 Discord。
 
@@ -61,7 +65,6 @@ KokkoroBot 在基础设施与应用层中加一层统一接口 `common_interface
         - [ ] Reminder
     - [ ] Setu
     - [ ] Weibo Spider
-- [ ] Decouple `EventInterface.get_mentions` from platform
 - [ ] Multi-platform
     - [x] Discord
     - [ ] Other

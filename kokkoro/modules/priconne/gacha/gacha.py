@@ -1,6 +1,6 @@
 import random
 
-from kokkoro import util
+from kokkoro import config
 from .. import chara
 
 
@@ -12,8 +12,8 @@ class Gacha(object):
 
 
     def load_pool(self, pool_name:str):
-        config = util.load_config(__file__)
-        pool = config[pool_name]
+        pool_config = config.priconne.gacha_pool
+        pool = pool_config[pool_name]
         self.up_prob = pool["up_prob"]
         self.s3_prob = pool["s3_prob"]
         self.s2_prob = pool["s2_prob"]
