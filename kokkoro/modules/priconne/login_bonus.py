@@ -1,7 +1,7 @@
 import random
 from kokkoro import R
 from kokkoro.service import Service
-from kokkoro.msg_handler import EventInterface
+from kokkoro.common_interface import EventInterface
 from kokkoro.util import DailyNumberLimiter
 
 sv = Service('pcr-login-bonus')
@@ -48,10 +48,10 @@ todo_list = [
 async def give_okodokai(bot, ev: EventInterface):
     uid = ev.get_author_id()
     if not lmt.check(uid):
-        await bot.send(ev, '明日はもう一つプレゼントをご用意してお待ちしますね', at_sender=True)
+        await bot.kkr_send(ev, '明日はもう一つプレゼントをご用意してお待ちしますね', at_sender=True)
         return
     lmt.increase(uid)
     present = random.choice(login_presents)
     todo = random.choice(todo_list)
-    await bot.send(ev, R.img("priconne/kokkoro_stamp.png"))
-    await bot.send(ev, f'\nおかえりなさいませ、主さま\n{present}を獲得しました\n私からのプレゼントです\n主人今天要{todo}吗？', at_sender=True)
+    await bot.kkr_send(ev, R.img("priconne/kokkoro_stamp.png"))
+    await bot.kkr_send(ev, f'\nおかえりなさいませ、主さま\n{present}を獲得しました\n私からのプレゼントです\n主人今天要{todo}吗？', at_sender=True)

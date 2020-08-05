@@ -35,7 +35,7 @@ def only_to_me(ev) -> bool:
     members = ev.get_mentions()
     if len(members) != 1:
         return False
-    if members[0].id == config.BOT_ID:
+    if members[0].get_id() == config.BOT_ID:
         return True
     return False
 
@@ -61,11 +61,6 @@ def concat_pic(pics, border=5) -> Image:
         des.paste(pic, (0, i * (h + border)), pic)
     return des
 
-MENTION_BOT = f"<@!{config.BOT_ID}>"
-def remove_mention_me(raw_message) -> str:
-    if (raw_message.startswith(MENTION_BOT)):
-        return raw_message.replace(MENTION_BOT, "").strip()
-    return raw_message
 
 def normalize_str(string) -> str:
     """

@@ -4,7 +4,7 @@ from argparse import ArgumentParser
 
 from kokkoro import priv
 from kokkoro.service import Service
-from kokkoro.msg_handler import EventInterface
+from kokkoro.common_interface import *
 
 PRIV_TIP = f'群员={priv.NORMAL} GameMaster={priv.SUPERUSER}'
 
@@ -23,7 +23,7 @@ async def lssv(bot, ev: EventInterface):
     if ev.get_author_id() in bot.config.SUPER_USER:
         gid = args.group or ev.get_group_id()
         if not gid:
-            await bot.send(ev, 'Usage: -g|--group <group_id> [-a|--all]')
+            await bot.kkr_send(ev, 'Usage: -g|--group <group_id> [-a|--all]')
             return
     else:
         gid = ev.get_group_id()
@@ -37,7 +37,7 @@ async def lssv(bot, ev: EventInterface):
         if verbose_all or (sv.visible ^ only_hidden):
             x = '○' if on else '×'
             msg.append(f"|{x}| {sv.name}")
-    await bot.send(ev, '\n'.join(msg))
+    await bot.kkr_send(ev, '\n'.join(msg))
 
 
 @sv.on_prefix(('enable', '启用', '开启', '打开'), only_to_me=False)
@@ -53,7 +53,7 @@ async def switch_service(bot, ev, turn_on:bool):
 
     names = ev.get_param().remain.split()
     if not names:
-        await bot.send(ev, f"空格后接要{action_tip}的服务名", at_sender=True)
+        await bot.kkr_send(ev, f"空格后接要{action_tip}的服务名", at_sender=True)
         return
     group_id = ev.get_group_id()
     svs = Service.get_loaded_services()
@@ -67,7 +67,7 @@ async def switch_service(bot, ev, turn_on:bool):
                 succ.append(name)
             else:
                 try:
-                    await bot.send(ev, f'权限不足！{action_tip}{name}需要：{sv.manage_priv}，您的：{u_priv}\n{PRIV_TIP}', at_sender=True)
+                    await bot.kkr_send(ev, f'权限不足！{action_tip}{name}需要：{sv.manage_priv}，您的：{u_priv}\n{PRIV_TIP}', at_sender=True)
                 except:
                     pass
         else:
@@ -78,4 +78,4 @@ async def switch_service(bot, ev, turn_on:bool):
     if notfound:
         msg.append('未找到服务：' + ', '.join(notfound))
     if msg:
-        await bot.send(ev, '\n'.join(msg), at_sender=True)
+        await bot.kkr_send(ev, '\n'.join(msg), at_sender=True)

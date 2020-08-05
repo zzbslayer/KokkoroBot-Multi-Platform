@@ -3,12 +3,9 @@ import pygtrie
 from typing import List
 
 import kokkoro
-from kokkoro import util
-
-class BaseParameter:
-    def __init__(self, msg:str):
-        self.plain_text = util.remove_mention_me(msg)
-        self.norm_text = util.normalize_str(self.plain_text)
+from kokkoro import util, config
+from kokkoro.discord import discord_util
+from kokkoro.common_interface import BaseParameter
 
 class PrefixHandlerParameter(BaseParameter):
     def __init__(self, msg:str, prefix, remain):
@@ -57,7 +54,11 @@ class PrefixTrigger(BaseTrigger):
 
 
     def find_handler(self, ev):
-        first_text = util.remove_mention_me(ev.get_content())
+        if config.BOT_TYPE=="discord":
+            first_text = discord_util.remove_mention_me(ev.get_content())
+        else:
+            first_text = ev.get_content()
+
         kokkoro.logger.debug(f'Searching for Prefix Handler for {first_text}...')
         item = self.trie.longest_prefix(first_text)
         if not item:
@@ -88,7 +89,10 @@ class SuffixTrigger(BaseTrigger):
 
 
     def find_handler(self, ev):
-        last_text = util.remove_mention_me(ev.get_content())
+        if config.BOT_TYPE=="discord":
+            last_text = discord_util.remove_mention_me(ev.get_content())
+        else:
+            last_text = ev.get_content()
         item = self.trie.longest_prefix(last_text[::-1])
         if not item:
             return None
@@ -116,7 +120,10 @@ class KeywordTrigger(BaseTrigger):
 
 
     def find_handler(self, ev):
-        text = util.remove_mention_me(ev.get_content())
+        if config.BOT_TYPE=="discord":
+            text = discord_util.remove_mention_me(ev.get_content())
+        else:
+            text = ev.get_content()
         for kw in self.allkw:
             if kw in text:
                 ev.param = KeywordHandlerParameter(msg.content)
@@ -134,7 +141,10 @@ class RexTrigger(BaseTrigger):
         kokkoro.logger.debug(f'Succeed to add rex trigger `{rex.pattern}`')
 
     def find_handler(self, ev):
-        text = util.remove_mention_me(ev.get_content())
+        if config.BOT_TYPE=="discord":
+            text = discord_util.remove_mention_me(ev.get_content())
+        else:
+            text = ev.get_content()
         for rex in self.allrex:
             match = rex.search(text)
             if match:

@@ -4,9 +4,9 @@ import json
 import discord
 from collections import defaultdict
 
-from kokkoro import priv, util, R, discord_adaptor, KokkoroBot
+from kokkoro import priv, util, R, KokkoroBot
 from kokkoro.service import Service
-from kokkoro.msg_handler import EventInterface
+from kokkoro.common_interface import *
 from kokkoro.util import DailyNumberLimiter, concat_pic, pic2b64, silence
 
 from .. import chara
@@ -54,22 +54,22 @@ async def gacha_info(bot:KokkoroBot, ev: EventInterface):
     if sv.bot.config.ENABLE_IMAGE:
         up_chara_imgs = map(lambda x: (chara.fromname(x, star=3).icon), up_chara)
     for img in up_chara_imgs:
-        await bot.send(ev, img)
-    await bot.send(ev, f"本期卡池主打的角色：\n{up_chara}\nUP角色合计={(gacha.up_prob/10):.1f}% 3★出率={(gacha.s3_prob)/10:.1f}%")
+        await bot.kkr_send(ev, img)
+    await bot.kkr_send(ev, f"本期卡池主打的角色：\n{up_chara}\nUP角色合计={(gacha.up_prob/10):.1f}% 3★出率={(gacha.s3_prob)/10:.1f}%")
 
 
 POOL_NAME_TIP = '请选择以下卡池\n> 切换卡池jp\n> 切换卡池tw\n> 切换卡池b\n> 切换卡池mix'
 @sv.on_prefix(('切换卡池', '选择卡池', '切換卡池', '選擇卡池'))
 async def set_pool(bot:KokkoroBot, ev: EventInterface):
     if not priv.check_priv(ev, priv.ADMIN):
-        await bot.send(ev, '只有群管理才能切换卡池', at_sender=True)
+        await bot.kkr_send(ev, '只有群管理才能切换卡池', at_sender=True)
         return
     name = util.normalize_str(param.remain)
     if not name:
-        await bot.send(ev, POOL_NAME_TIP)
+        await bot.kkr_send(ev, POOL_NAME_TIP)
         return
     elif name in ('国', '国服', 'cn'):
-        await bot.send(ev, '请选择以下卡池\n> 选择卡池 b服\n> 选择卡池 台服', at_sender=True)
+        await bot.kkr_send(ev, '请选择以下卡池\n> 选择卡池 b服\n> 选择卡池 台服', at_sender=True)
         return
     elif name in ('b', 'b服', 'bl', 'bilibili'):
         name = 'BL'
@@ -80,12 +80,12 @@ async def set_pool(bot:KokkoroBot, ev: EventInterface):
     elif name in ('混', '混合', 'mix'):
         name = 'MIX'
     else:
-        await bot.send(ev, f'未知服务器地区 {POOL_NAME_TIP}', at_sender=True)
+        await bot.kkr_send(ev, f'未知服务器地区 {POOL_NAME_TIP}', at_sender=True)
         return
     gid = str(ev.get_group_id())
     _group_pool[gid] = name
     dump_pool_config()
-    await bot.send(ev, f'卡池已切换为{name}池', at_sender=True)
+    await bot.kkr_send(ev, f'卡池已切换为{name}池', at_sender=True)
 
 @sv.on_prefix(gacha_1_aliases, only_to_me=False)
 async def gacha_1(bot:KokkoroBot, ev: EventInterface):
@@ -97,10 +97,10 @@ async def gacha_1(bot:KokkoroBot, ev: EventInterface):
     res = f'{chara.name} {"★"*chara.star}'
     if sv.bot.config.ENABLE_IMAGE:
         img = chara.icon
-        await bot.send(ev, img)
+        await bot.kkr_send(ev, img)
     if chara.star == 3:
         await silence(ev, 60)
-    await bot.send(ev, f'素敵な仲間が増えますよ！\n{res}', at_sender=True)
+    await bot.kkr_send(ev, f'素敵な仲間が増えますよ！\n{res}', at_sender=True)
 
 
 @sv.on_prefix(gacha_10_aliases, only_to_me=False)
@@ -116,8 +116,7 @@ async def gacha_10(bot:KokkoroBot, ev: EventInterface):
         res1 = chara.gen_team_pic(result[:5], star_slot_verbose=False)
         res2 = chara.gen_team_pic(result[5:], star_slot_verbose=False)
         img = concat_pic([res1, res2])
-        img = discord_adaptor.pil_image(img, filename="gacha10.png")
-        await bot.send(ev, img)
+        await bot.kkr_send(ev, img, filename="gacha10.png")
         result = [f'{c.name}{"★"*c.star}' for c in result]
         res1 = ' '.join(result[0:5])
         res2 = ' '.join(result[5:])
@@ -129,8 +128,8 @@ async def gacha_10(bot:KokkoroBot, ev: EventInterface):
         res = f'{res1}\n{res2}'
 
     if hiishi >= SUPER_LUCKY_LINE:
-        await bot.send(ev, '恭喜海豹！おめでとうございます！')
-    await bot.send(ev, f'素敵な仲間が増えますよ！\n{res}', at_sender=True)
+        await bot.kkr_send(ev, '恭喜海豹！おめでとうございます！')
+    await bot.kkr_send(ev, f'素敵な仲間が増えますよ！\n{res}', at_sender=True)
 
 
 @sv.on_prefix(gacha_300_aliases, only_to_me=False)
@@ -156,8 +155,7 @@ async def gacha_300(bot, ev: EventInterface):
             j = min(lenth, i + step)
             pics.append(chara.gen_team_pic(res[i:j], star_slot_verbose=False))
         img = concat_pic(pics)
-        img = discord_adaptor.pil_image(img, filename="gacha300.png")
-        await bot.send(ev, img)
+        await bot.kkr_send(ev, img, "gacha300.png")
 
     msg = [
         f"\n素敵な仲間が増えますよ！",
@@ -189,7 +187,7 @@ async def gacha_300(bot, ev: EventInterface):
     elif up >= 4:
         msg.append("记忆碎片一大堆！您是托吧？")
     
-    await bot.send(ev, '\n'.join(msg), at_sender=True)
+    await bot.kkr_send(ev, '\n'.join(msg), at_sender=True)
     silence_time = ((100*up + 50*(up+s3)) / 3) * 1 #+ 10*s2 + s1) * 1
     if silence_time >= 5 * 60:
         await silence(ev, 5 * 60)
@@ -202,9 +200,9 @@ async def kakin(bot, ev: EventInterface):
     count = 0
     members = ev.get_mentions()
     for m in members:
-        uid = m.id
+        uid = m.get_id()
         jewel_limit.reset(uid)
         tenjo_limit.reset(uid)
         count += 1
     if count:
-        await bot.send(ev, f"已为{count}位用户充值完毕！谢谢惠顾～")
+        await bot.kkr_send(ev, f"已为{count}位用户充值完毕！谢谢惠顾～")

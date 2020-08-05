@@ -1,36 +1,8 @@
-import discord
 import kokkoro
-from kokkoro import trigger, util
-from kokkoro.trigger import BaseParameter
+from kokkoro import trigger, util, config
 
-class EventInterface:
-    def get_id(self):
-        raise NotImplementedError
-    def get_author_id(self):
-        raise NotImplementedError
-    def get_group_id(self):
-        raise NotImplementedError
-    def get_content(self) -> str:
-        raise NotImplementedError
-    def get_mentions(self):
-        # coupleness
-        raise NotImplementedError
-
-    def get_param(self) -> BaseParameter: 
-        # Custom parameter of trigger
-        raise NotImplementedError
-    def get_raw_event(self):
-        # coupleness
-        raise NotImplementedError
-
-from kokkoro.discord_adaptor import DiscordEvent
-
-def event_adaptor(raw_event) -> EventInterface:
-    return DiscordEvent(raw_event)
-
-async def handle_message(bot, raw_event: discord.Message):
+async def handle_message(bot, ev):
     kokkoro.logger.debug(f'Searching for Message Handler...')
-    ev = event_adaptor(raw_event)
     for t in trigger.chain:
         sf = t.find_handler(ev)
         if sf:

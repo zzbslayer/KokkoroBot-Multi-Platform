@@ -4,7 +4,7 @@ from collections import defaultdict
 
 from kokkoro.util import concat_pic, FreqLimiter
 from kokkoro.service import Service
-from kokkoro.msg_handler import EventInterface
+from kokkoro.common_interface import *
 from kokkoro import R, priv
 import kokkoro
 
@@ -45,7 +45,7 @@ async def _arena_query(bot, ev: EventInterface, region: int):
     uid = ev.get_author_id()
 
     if not lmt.check(uid):
-        await bot.send(ev, '您查询得过于频繁，请稍等片刻', at_sender=True)
+        await bot.kkr_send(ev, '您查询得过于频繁，请稍等片刻', at_sender=True)
         return
     lmt.start_cd(uid)
 
@@ -59,25 +59,25 @@ async def _arena_query(bot, ev: EventInterface, region: int):
         if score < 70 and not defen:
             return  # 忽略无关对话
         msg = f'无法识别"{unknown}"' if score < 70 else f'无法识别"{unknown}" 您说的有{score}%可能是{name}'
-        await bot.send(ev, msg)
+        await bot.kkr_send(ev, msg)
         return
     if not defen:
-        await bot.send(ev, '查询请发送"怎么拆+防守队伍"，无需+号', at_sender=True)
+        await bot.kkr_send(ev, '查询请发送"怎么拆+防守队伍"，无需+号', at_sender=True)
         return
     if len(defen) > 5:
-        await bot.send(ev, '编队不能多于5名角色', at_sender=True)
+        await bot.kkr_send(ev, '编队不能多于5名角色', at_sender=True)
         return
     if len(defen) < 5:
-        await bot.send(ev, '由于数据库限制，少于5名角色的检索条件请移步pcrdfans.com进行查询', at_sender=True)
+        await bot.kkr_send(ev, '由于数据库限制，少于5名角色的检索条件请移步pcrdfans.com进行查询', at_sender=True)
         return
     if len(defen) != len(set(defen)):
-        await bot.send(ev, '编队中含重复角色', at_sender=True)
+        await bot.kkr_send(ev, '编队中含重复角色', at_sender=True)
         return
     if any(chara.is_npc(i) for i in defen):
-        await bot.send(ev, '编队中含未实装角色', at_sender=True)
+        await bot.kkr_send(ev, '编队中含未实装角色', at_sender=True)
         return
     if 1004 in defen:
-        await bot.send(ev, '\n⚠️您正在查询普通版炸弹人\n※万圣版可用万圣炸弹人/瓜炸等别称', at_sender=True)
+        await bot.kkr_send(ev, '\n⚠️您正在查询普通版炸弹人\n※万圣版可用万圣炸弹人/瓜炸等别称', at_sender=True)
 
     # 执行查询
     sv.logger.info('Doing query...')
@@ -86,10 +86,10 @@ async def _arena_query(bot, ev: EventInterface, region: int):
 
     # 处理查询结果
     if res is None:
-        await bot.send(ev, '查询出错，请联系维护组调教\n请先移步pcrdfans.com进行查询', at_sender=True)
+        await bot.kkr_send(ev, '查询出错，请联系维护组调教\n请先移步pcrdfans.com进行查询', at_sender=True)
         return
     if not len(res):
-        await bot.send(ev, '抱歉没有查询到解法\n※没有作业说明随便拆 发挥你的想象力～★\n作业上传请前往pcrdfans.com', at_sender=True)
+        await bot.kkr_send(ev, '抱歉没有查询到解法\n※没有作业说明随便拆 发挥你的想象力～★\n作业上传请前往pcrdfans.com', at_sender=True)
         return
     res = res[:min(6, len(res))]    # 限制显示数量，截断结果
 
@@ -99,7 +99,7 @@ async def _arena_query(bot, ev: EventInterface, region: int):
         atk_team = [ chara.gen_team_pic(entry['atk']) for entry in res ]
         atk_team = concat_pic(atk_team)
         sv.logger.info('Arena picture ready!')
-        await bot.send(ev, atk_team)
+        await bot.kkr_send(ev, atk_team)
     else:
         atk_team = '\n'.join(map(lambda entry: ' '.join(map(lambda x: f"{x.name}{x.star if x.star else ''}{'专' if x.equip else ''}" , entry['atk'])) , res))
 
@@ -125,7 +125,7 @@ async def _arena_query(bot, ev: EventInterface, region: int):
     msg.append('Support by pcrdfans_com')
 
     sv.logger.debug('Arena sending result...')
-    await bot.send(ev, '\n'.join(msg))
+    await bot.kkr_send(ev, '\n'.join(msg))
     sv.logger.debug('Arena result sent!')
 
 @sv.on_prefix('点赞')
@@ -141,13 +141,13 @@ async def _arena_feedback(bot, ev: EventInterface, action:int):
     action_tip = '赞' if action > 0 else '踩'
     qkey = ev.get_param().remain
     if not qkey:
-        await bot.send(ev, f'请发送"点{action_tip}+作业id"，如"点{action_tip}ABCDE"，不分大小写', at_sender=True)
+        await bot.kkr_send(ev, f'请发送"点{action_tip}+作业id"，如"点{action_tip}ABCDE"，不分大小写', at_sender=True)
         return
     if not rex_qkey.match(qkey):
-        await bot.send(ev, f'您要点{action_tip}的作业id不合法', at_sender=True)
+        await bot.kkr_send(ev, f'您要点{action_tip}的作业id不合法', at_sender=True)
         return
     try:
         await arena.do_like(qkey, ev.get_author_id(), action)
     except KeyError:
-        await bot.send(ev, '无法找到作业id！您只能评价您最近查询过的作业', at_sender=True)
-    await bot.send(ev, '感谢您的反馈！', at_sender=True)
+        await bot.kkr_send(ev, '无法找到作业id！您只能评价您最近查询过的作业', at_sender=True)
+    await bot.kkr_send(ev, '感谢您的反馈！', at_sender=True)

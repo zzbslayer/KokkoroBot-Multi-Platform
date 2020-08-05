@@ -9,6 +9,14 @@ from .__bot__ import *
 
 # load module configs
 logger = log.new_logger('config')
+
+try:
+    importlib.import_module('kokkoro.config.' + BOT_TYPE)
+    logger.info(f'Succeeded to load config of "{BOT_TYPE}"')
+except ModuleNotFoundError as e:
+    logger.error(f'Not found config of "{BOT_TYPE}"')
+    raise e
+
 for module in MODULES_ON:
     try:
         importlib.import_module('kokkoro.config.' + module)

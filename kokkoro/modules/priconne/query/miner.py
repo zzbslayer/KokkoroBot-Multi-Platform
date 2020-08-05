@@ -1,7 +1,7 @@
 import numpy as np
 from . import sv
 
-from kokkoro.msg_handler import EventInterface
+from kokkoro.common_interface import EventInterface
 
 this_season = np.zeros(15001, dtype=int)
 all_season = np.zeros(15001, dtype=int)
@@ -37,4 +37,4 @@ async def arena_miner(bot, ev: EventInterface):
     s_all = all_season[1:rank].sum()
     s_this = this_season[1:rank].sum()
     msg = f"最高排名奖励还剩{s_this}钻\n历届最高排名还剩{s_all}钻"
-    await bot.send(ev, msg, at_sender=True)
+    await bot.kkr_send(ev, msg, at_sender=True)

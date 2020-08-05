@@ -3,7 +3,7 @@ import itertools
 
 from kokkoro import priv
 from kokkoro.service import Service
-from kokkoro.msg_handler import EventInterface
+from kokkoro.common_interface import *
 
 sv = Service('_help_', manage_priv=priv.SUPERUSER, visible=False)
 
@@ -106,27 +106,27 @@ _pcr=['公主连结', '公主链接', '公主连接', 'pcr']
 _help=['帮助', 'help']
 @sv.on_fullmatch(tuple([''.join(l) for l in itertools.product(_pcr, _help)]))
 async def pcr_help(bot, ev: EventInterface):
-    await bot.send(ev, PRC_HELP)
+    await bot.kkr_send(ev, PRC_HELP)
 
 _ark=['明日方舟', '舟游', 'arknights']
 @sv.on_fullmatch(tuple([''.join(l) for l in itertools.product(_ark, _help)]))
 async def ark_help(bot, ev: EventInterface):
-    await bot.send(ev, ARKNIGHTS_HELP)
+    await bot.kkr_send(ev, ARKNIGHTS_HELP)
 
 _weibo=['wb', '微博', 'weibo']
 @sv.on_fullmatch(tuple([''.join(l) for l in itertools.product(_weibo, _help)]))
 async def weibo_help(bot, ev: EventInterface):
-    await bot.send(ev, WEIBO_HELP)
+    await bot.kkr_send(ev, WEIBO_HELP)
 
 @sv.on_fullmatch(('通用功能', '通用帮助'))
 async def normal_help(bot, ev: EventInterface):
-    await bot.send(ev, NORMAL_HELP)
+    await bot.kkr_send(ev, NORMAL_HELP)
 
 _admin=['admin', '管理员', '管理', '管理限定', '管理员限定']
 @sv.on_fullmatch(tuple([''.join(l) for l in itertools.product(_admin, _help)]))
 async def weibo_help(bot, ev: EventInterface):
-    await bot.send(ev, ADMIN_HELP)
+    await bot.kkr_send(ev, ADMIN_HELP)
 
 @sv.on_fullmatch(('help', '帮助', '幫助'))
 async def send_help(bot, ev: EventInterface):
-    await bot.send(ev, SHORT_HELP)
+    await bot.kkr_send(ev, SHORT_HELP)

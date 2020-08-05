@@ -1,6 +1,6 @@
 import itertools, re
 from kokkoro import util, R
-from kokkoro.msg_handler import EventInterface
+from kokkoro.common_interface import EventInterface
 from . import sv
 
 p1 = R.img('priconne/quick/r16-5-tw-0.png')
@@ -17,7 +17,7 @@ async def rank_sheet(bot, ev:EventInterface):
     is_tw = match.group(2) == '台'
     is_cn = match.group(2) and match.group(2) in '国陆b'
     if not is_jp and not is_tw and not is_cn:
-        await bot.send(ev, '\n请问您要查询哪个服务器的rank表？\n*日rank表\n*台rank表\n*B服rank表\n', at_sender=True)
+        await bot.kkr_send(ev, '\n请问您要查询哪个服务器的rank表？\n*日rank表\n*台rank表\n*B服rank表\n', at_sender=True)
         return
     msg = [
         '\n※表格仅供参考，升r有风险，强化需谨慎\n※一切以会长要求为准——',
@@ -31,17 +31,17 @@ async def rank_sheet(bot, ev:EventInterface):
             msg.append(str(p5))
         if not pos or '后' in pos:
             msg.append(str(p6))
-        await bot.send(ev, '\n'.join(msg), at_sender=True)
+        await bot.kkr_send(ev, '\n'.join(msg), at_sender=True)
     elif is_tw:
         msg.append(f'※不定期搬运自漪夢奈特\n※油管频道有介绍视频及原文档\nR16-5 rank表：\n{p1} {p2}')
-        await bot.send(ev, '\n'.join(msg), at_sender=True)
+        await bot.kkr_send(ev, '\n'.join(msg), at_sender=True)
     elif is_cn:
         msg.append(str(cn_rank))
-        await bot.send(ev, '\n'.join(msg), at_sender=True)
+        await bot.kkr_send(ev, '\n'.join(msg), at_sender=True)
 
 @sv.on_fullmatch(('jjc', 'JJC', 'JJC作业', 'JJC作业网', 'JJC数据库', 'jjc作业', 'jjc作业网', 'jjc数据库', 'JJC作業', 'JJC作業網', 'JJC數據庫', 'jjc作業', 'jjc作業網', 'jjc數據庫'))
 async def say_arina_database(bot, ev):
-    await bot.send(ev, '公主连接Re:Dive 竞技场编成数据库\n日文：https://nomae.net/arenadb \n中文：https://pcrdfans.com/battle')
+    await bot.kkr_send(ev, '公主连接Re:Dive 竞技场编成数据库\n日文：https://nomae.net/arenadb \n中文：https://pcrdfans.com/battle')
 
 
 OTHER_KEYWORDS = '【日rank】【台rank】【b服rank】【jjc作业网】【黄骑充电表】【一个顶俩】'
@@ -79,10 +79,10 @@ BCR_SITES = f'''
 
 @sv.on_fullmatch(('pcr速查', 'pcr图书馆', 'pcr圖書館', '图书馆', '圖書館'))
 async def pcr_sites(bot, ev: EventInterface):
-    await bot.send(ev, PCR_SITES, at_sender=True)
+    await bot.kkr_send(ev, PCR_SITES, at_sender=True)
 @sv.on_fullmatch(('bcr速查', 'bcr攻略'))
 async def bcr_sites(bot, ev: EventInterface):
-    await bot.send(ev, BCR_SITES, at_sender=True)
+    await bot.kkr_send(ev, BCR_SITES, at_sender=True)
 
 
 YUKARI_SHEET_ALIAS = map(lambda x: ''.join(x), itertools.product(('黄骑', '酒鬼', '黃騎'), ('充电', '充电表', '充能', '充能表')))
@@ -94,8 +94,8 @@ YUKARI_SHEET = f'''
 ※图片搬运自漪夢奈特'''
 @sv.on_fullmatch(YUKARI_SHEET_ALIAS)
 async def yukari_sheet(bot, ev):
-    await bot.send(ev, R.img('priconne/quick/黄骑充电.jpg'))
-    await bot.send(ev, YUKARI_SHEET, at_sender=True)
+    await bot.kkr_send(ev, R.img('priconne/quick/黄骑充电.jpg'))
+    await bot.kkr_send(ev, YUKARI_SHEET, at_sender=True)
 
 NORMAL_MAP_PREFIX='刷图'
 @sv.on_prefix(('刷图','刷图指南', '刷装备', '装备掉落', '刷图攻略'))
@@ -103,13 +103,13 @@ async def normal_map(bot, ev: EventInterface):
     try:
         number = int(ev.get_param().remain)
     except Exception as e:
-        await bot.send(ev, '参数必须为数字。示例：`刷图 10`')
+        await bot.kkr_send(ev, '参数必须为数字。示例：`刷图 10`')
         return
 
     img = f'{NORMAL_MAP_PREFIX}-{number}.jpg'
     img = R.img(f'priconne/quick/{img}')
     if not img.exist:
-        await bot.send(ev, f'{number} 图刷图攻略未找到呜呜呜 ┭┮﹏┭┮')
+        await bot.kkr_send(ev, f'{number} 图刷图攻略未找到呜呜呜 ┭┮﹏┭┮')
     else:
-        await bot.send(ev, f'{number} 图刷图攻略：')
-        await bot.send(ev, img)
+        await bot.kkr_send(ev, f'{number} 图刷图攻略：')
+        await bot.kkr_send(ev, img)

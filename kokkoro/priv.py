@@ -1,7 +1,7 @@
 from datetime import datetime
 
 import kokkoro
-from kokkoro.msg_handler import EventInterface
+from kokkoro.common_interface import *
 
 BLACK = -999
 DEFAULT = 0

@@ -1,4 +1,4 @@
-DISCORD_TOKEN="your-discord-app-token"
+BOT_TYPE="discord"
 BOT_ID = your-bot-id
 LOG_LEVEL="DEBUG"
 ENABLE_IMAGE=True

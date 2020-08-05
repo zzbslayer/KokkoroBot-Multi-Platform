@@ -7,7 +7,7 @@ import kokkoro
 from kokkoro.typing import *
 from kokkoro import logger, KokkoroBot
 from kokkoro import priv, log, typing, trigger
-from kokkoro.msg_handler import EventInterface
+from kokkoro.common_interface import *
 
 # service management
 _loaded_services: Dict[str, "Service"] = {}  # {name: service}
