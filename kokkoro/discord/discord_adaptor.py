@@ -55,7 +55,7 @@ class DiscordUser(UserInterface):
         self.raw_user = user
 
     @staticmethod
-    def from_raw_users(users: List[discord.User]) -> List[DiscordUser]:
+    def from_raw_users(users: List[discord.User]):
         return [ DiscordUser(user) for user in users]
 
     @overrides(UserInterface)
