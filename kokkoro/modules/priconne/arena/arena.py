@@ -104,7 +104,7 @@ def get_true_id(quick_key:str, user_id:int) -> str:
 
 
 def __get_auth_key():
-    return config.priconne.arena.AUTH_KEY
+    return config.modules.priconne.arena.AUTH_KEY
 
 
 async def do_query(id_list, user_id, region=1):

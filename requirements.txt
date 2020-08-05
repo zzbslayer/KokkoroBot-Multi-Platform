@@ -10,3 +10,4 @@ httpx>=0.12.1
 pygtrie>=2.0
 beautifulsoup4>=4.9.0
 fuzzywuzzy>=0.17.0
+aiogram>=2.9.2

@@ -8,7 +8,7 @@ from kokkoro.R import ResImg, RemoteResImg
 
 if config.BOT_TYPE == "discord":
     from kokkoro.discord import discord_util
-    
+
 SupportedMessageType = Union[ResImg, RemoteResImg, Image.Image, str]
 
 class BaseParameter:
@@ -40,7 +40,6 @@ class EventInterface:
     def get_content(self) -> str:
         raise NotImplementedError
     def get_mentions(self) -> List[UserInterface]:
-        # coupleness
         raise NotImplementedError
 
     def get_param(self) -> BaseParameter: 
@@ -70,7 +69,7 @@ class KokkoroBot():
         ev = self.kkr_event_adaptor(raw_event)
         if ev.get_author_id() == self.config.BOT_ID:
             return
-        if ev.get_group_id() not in config.ENABLED_GUILD:
+        if ev.get_group_id() not in config.ENABLED_GROUP:
             return
 
         kokkoro.logger.debug(f'Receive message:{ev.get_content()}')

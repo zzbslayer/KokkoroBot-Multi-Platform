@@ -45,7 +45,7 @@ class Player(object):
         self.load_chara(pool_name)
 
     def load_chara(self, pool_name:str):
-        config = kokkoro.config.priconne.horse_pool
+        config = kokkoro.config.modules.priconne.horse_pool
         pool = config[pool_name]
         self.player = pool["player"]
         self.number = pool["number"]

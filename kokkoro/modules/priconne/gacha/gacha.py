@@ -12,7 +12,7 @@ class Gacha(object):
 
 
     def load_pool(self, pool_name:str):
-        pool_config = config.priconne.gacha_pool
+        pool_config = config.modules.priconne.gacha_pool
         pool = pool_config[pool_name]
         self.up_prob = pool["up_prob"]
         self.s3_prob = pool["s3_prob"]

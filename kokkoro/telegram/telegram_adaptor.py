@@ -1,0 +1,38 @@
+from aiogram import types
+from kokkoro.common_interface import EventInterface, UserInterface, BaseParameter
+from kokkoro.typing import overrides, List
+
+class TelegramEvent(EventInterface):
+    def __init__(self, raw_event: types.Message):
+        self.raw_event = raw_event
+        self.param = None
+
+    @overrides(EventInterface)
+    def get_id(self):
+        return self.raw_event.message_id
+
+    @overrides(EventInterface)
+    def get_author_id(self):
+        return self.raw_event.from_user.id
+
+    @overrides(EventInterface)
+    def get_group_id(self):
+        return self.raw_event.chat.id
+
+    @overrides(EventInterface)
+    def get_content(self) -> str:
+        return self.raw_event.text
+
+    @overrides(EventInterface)
+    def get_mentions(self) -> List[UserInterface]:
+        # TODO: MessageEntity
+        return []
+    
+    @overrides(EventInterface)
+    def get_param(self) -> BaseParameter: 
+        return self.param
+
+    @overrides(EventInterface)
+    def get_raw_event(self) -> types.Message:
+        # coupleness
+        return self.raw_event

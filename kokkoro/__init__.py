@@ -8,7 +8,8 @@ def _init() -> KokkoroBot:
         from kokkoro import discord
         return discord.get_bot()
     elif config.BOT_TYPE == "telegram":
-        raise NotImplementedError
+        from kokkoro import telegram
+        return telegram.get_bot()
     else:
         raise NotImplementedError
 
