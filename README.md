@@ -12,6 +12,7 @@ HoshinoBot 无论是基础设施还是应用层，大量使用了来自 Nonebot 
 ### 目前支持的平台：
 - [x] Discord
 - [x] Telegram
+- [x] 企业微信
 ### Discord
 - `kokkoro.config.__bot__.py` 中设置 `BOT_TYPE` 为 `discord`
 - `kokkoro.config.bot.discord.py` 中设置相关参数
@@ -38,6 +39,9 @@ HoshinoBot 无论是基础设施还是应用层，大量使用了来自 Nonebot 
 >
 > A3: 真不知道。虽然可以通过在 bot 中打印 types.Message 相关参数得到用户 ID。但暂时并不知道什么方法能够快速进行查询。
 
+### 企业微信
+TODO
+
 ## 开发者碎碎念
 ### 接口设计
 KokkoroBot 在基础设施与应用层中加一层统一接口 `common_interface` 以达到解耦合的目的。
@@ -46,9 +50,9 @@ KokkoroBot 在基础设施与应用层中加一层统一接口 `common_interface
 
 任何平台的事件(`Event`)都需要转化为 `kokkoro.common_interface.EventInterface` 供上层服务使用。同理，任何平台的用户(`User`)都需要转化为 `kokkoro.common_interface.UserInterface`。
 
-发送图片时不再依赖任何平台相关逻辑，直接将 `common_interface.SupportedMessageType` 格式的消息传给 `kokkoro.common_interface.KokkoroBot.send` 函数，在具体实现类中实现具体平台相关的处理逻辑。
+发送图片时不再依赖任何平台相关逻辑，直接将 `common_interface.SupportedMessageType` 格式的消息传给 `kokkoro.common_interface.KokkoroBot.kkr_send` 函数，在具体实现类中实现具体平台相关的处理逻辑。
 
-上层服务与平台彻底解耦合。平台依赖于 `kokkoro.common_interface`，上层服务依赖于 `kokkoro.commmon_interface`。完全能够兼容多种平台
+上层服务与平台彻底解耦合。平台依赖于 `kokkoro.common_interface`，上层服务依赖于 `kokkoro.commmon_interface`。因此能够兼容多种平台。
 
 - 在这样的设计下，将 KokkoroBot 移植到其他平台便不再困难。只需要以下三步：
     - 完成平台相关的机器人
@@ -67,7 +71,7 @@ KokkoroBot 在基础设施与应用层中加一层统一接口 `common_interface
 ### 新 IM 平台适配
 以 telegram 为例，从零对 telegram 平台进行开发主要包含以下几步。
 - `kokkoro.config.__bot__` 中配置 `BOT_TYPE = 'telegram'`
-- `kokkoro.config` 中添加 `telegram.py` 配置文件
+- `kokkoro.config.bot` 中添加 `telegram.py` 配置文件
 - 在 `kokkoro.telegram` 中实现相关适配
 - 在 `kokkoro.__init__` 中添加 telegram bot
 
@@ -92,12 +96,12 @@ KokkoroBot 在基础设施与应用层中加一层统一接口 `common_interface
     - [ ] Weibo Spider
 - [x] Multi-platform
     - [x] Discord
-        - [x] Text
         - [ ] Audio
         - [x] Image
+        - [x] Text
         - [ ] Permission control with admin
     - [x] Telegram
-        - [x] Text
         - [ ] Audio
         - [ ] Image
+        - [x] Text
         - [ ] Permission control with admin

@@ -14,7 +14,7 @@ HELP_HEADER='''
 ※功能采取模块化管理，管理员可控制开关
 '''.strip()
 HELP_BOTTOM='''
-※※该bot是基于HoshinoBot开发的分支版本KokkoroBot的discord版本
+※※该bot是基于HoshinoBot开发的分支版本KokkoroBot的跨平台版本
 '''.strip()
 
 PRC_HELP = '''

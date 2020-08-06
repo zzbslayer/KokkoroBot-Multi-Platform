@@ -14,6 +14,7 @@ RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
 WORKDIR /bot
 COPY requirements.txt /bot/requirements.txt
 RUN pip install -r requirements.txt
+RUN pip install https://github.com/jxtech/wechatpy/archive/master.zip
 # RUN pip install -i https://mirrors.aliyun.com/pypi/simple/ -r requirements.txt
 
 # font for matplotlib

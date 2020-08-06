@@ -10,6 +10,9 @@ def _init() -> KokkoroBot:
     elif config.BOT_TYPE == "telegram":
         from kokkoro import telegram
         return telegram.get_bot()
+    elif config.BOT_TYPE == "wechat_enterprise":
+        from kokkoro import wechat_enterprise
+        return wechat_enterprise.get_bot()
     else:
         raise NotImplementedError
 

@@ -73,7 +73,6 @@ class DiscordUser(UserInterface):
 class DiscordEvent(EventInterface):
     def __init__(self, msg: discord.Message):
         self._raw_event = msg
-        self.param = None
 
     @overrides(EventInterface)
     def get_id(self):
@@ -94,10 +93,6 @@ class DiscordEvent(EventInterface):
     @overrides(EventInterface)
     def get_mentions(self) -> List[DiscordUser]:
         return DiscordUser.from_raw_users(self._raw_event.mentions)
-
-    @overrides(EventInterface)
-    def get_param(self): 
-        return self.param
 
     @overrides(EventInterface)
     def get_raw_event(self) -> discord.Message:

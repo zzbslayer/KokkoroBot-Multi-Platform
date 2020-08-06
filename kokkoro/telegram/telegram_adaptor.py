@@ -5,7 +5,6 @@ from kokkoro.typing import overrides, List
 class TelegramEvent(EventInterface):
     def __init__(self, raw_event: types.Message):
         self.raw_event = raw_event
-        self.param = None
 
     @overrides(EventInterface)
     def get_id(self):
@@ -27,10 +26,6 @@ class TelegramEvent(EventInterface):
     def get_mentions(self) -> List[UserInterface]:
         # TODO: MessageEntity
         return []
-    
-    @overrides(EventInterface)
-    def get_param(self) -> BaseParameter: 
-        return self.param
 
     @overrides(EventInterface)
     def get_raw_event(self) -> types.Message:

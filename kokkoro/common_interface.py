@@ -43,8 +43,10 @@ class EventInterface:
         raise NotImplementedError
 
     def get_param(self) -> BaseParameter: 
-        # Custom parameter of trigger
-        raise NotImplementedError
+        return self.param
+    def set_param(self, param: BaseParameter):
+        self.param = param
+
     def get_raw_event(self):
         # coupleness
         raise NotImplementedError

@@ -69,7 +69,7 @@ class PrefixTrigger(BaseTrigger):
         kokkoro.logger.debug(f'Prefix `{prefix}` triggered')
 
         remain = first_text[len(prefix):].lstrip()
-        ev.param = PrefixHandlerParameter(ev.get_content(), item.key, remain)
+        ev.set_param(PrefixHandlerParameter(ev.get_content(), item.key, remain))
 
         return item.value
 
@@ -101,7 +101,7 @@ class SuffixTrigger(BaseTrigger):
         
         suffix = item.key[::-1]
         remain = last_text[:-len(item.key)].rstrip()
-        ev.param = SuffixHandlerParameter(msg.content, suffix, remain)
+        ev.set_param(SuffixHandlerParameter(msg.content, suffix, remain))
 
         return item.value
 
@@ -128,7 +128,7 @@ class KeywordTrigger(BaseTrigger):
             text = ev.get_content()
         for kw in self.allkw:
             if kw in text:
-                ev.param = KeywordHandlerParameter(msg.content)
+                ev.set_param(KeywordHandlerParameter(msg.content))
                 return self.allkw[kw]
         return None
 
@@ -150,7 +150,7 @@ class RexTrigger(BaseTrigger):
         for rex in self.allrex:
             match = rex.search(text)
             if match:
-                ev.param = RegexHandlerParameter(msg.content, match)
+                ev.set_param(RegexHandlerParameter(msg.content, match))
                 return self.allrex[rex]
         return None
 
