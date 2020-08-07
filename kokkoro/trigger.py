@@ -25,7 +25,7 @@ class KeywordHandlerParameter(BaseParameter):
     def __init__(self, msg:str):
         super().__init__(msg)
 
-class RegexHandlerParameter:
+class RegexHandlerParameter(BaseParameter):
     def __init__(self, msg:str, match):
         super().__init__(msg)
         self.match=match
