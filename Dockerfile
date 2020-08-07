@@ -1,4 +1,4 @@
-FROM python:3.8
+FROM python:3.8-slim-buster
 
 RUN mkdir -p /bot
 WORKDIR /bot
@@ -18,4 +18,4 @@ RUN pip install https://github.com/jxtech/wechatpy/archive/master.zip
 # RUN pip install -i https://mirrors.aliyun.com/pypi/simple/ -r requirements.txt
 
 # font for matplotlib
-COPY ["fonts/Microsoft YaHei.ttf", "/usr/share/fonts/Microsoft YaHei.ttf"]
+# COPY ["fonts/Microsoft YaHei.ttf", "/usr/share/fonts/Microsoft YaHei.ttf"]

@@ -4,8 +4,6 @@ services:
     image: kokkoro-env:latest
     ports:
       - "5001:5001"
-    expose:
-      - 8080
     volumes:
       - ./:/bot/
       - ~/.kokkoro:/root/.kokkoro
