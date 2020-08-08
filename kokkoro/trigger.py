@@ -6,14 +6,15 @@ import kokkoro
 from kokkoro import util, config
 from kokkoro.common_interface import BaseParameter
 
-if config.BOT_TYPE == "discord":
-    from kokkoro.discord import discord_util
-
 class PrefixHandlerParameter(BaseParameter):
     def __init__(self, msg:str, prefix, remain):
         super().__init__(msg)
         self.prefix=prefix
         self.remain=remain.strip()
+    
+    @property
+    def args(self):
+        return self.remain.split(' ')
 
 class SuffixHandlerParameter(BaseParameter):
     def __init__(self, msg:str, suffix, remain):
@@ -57,7 +58,8 @@ class PrefixTrigger(BaseTrigger):
 
     def find_handler(self, ev):
         if config.BOT_TYPE=="discord":
-            first_text = discord_util.remove_mention_me(ev.get_content())
+            from kokkoro.discord.discord_util import remove_mention_me
+            first_text = remove_mention_me(ev.get_content())
         else:
             first_text = ev.get_content()
 
@@ -92,7 +94,8 @@ class SuffixTrigger(BaseTrigger):
 
     def find_handler(self, ev):
         if config.BOT_TYPE=="discord":
-            last_text = discord_util.remove_mention_me(ev.get_content())
+            from kokkoro.discord.discord_util import remove_mention_me
+            last_text = remove_mention_me(ev.get_content())
         else:
             last_text = ev.get_content()
         item = self.trie.longest_prefix(last_text[::-1])
@@ -123,7 +126,8 @@ class KeywordTrigger(BaseTrigger):
 
     def find_handler(self, ev):
         if config.BOT_TYPE=="discord":
-            text = discord_util.remove_mention_me(ev.get_content())
+            from kokkoro.discord.discord_util import remove_mention_me
+            text = remove_mention_me(ev.get_content())
         else:
             text = ev.get_content()
         for kw in self.allkw:
@@ -144,7 +148,8 @@ class RexTrigger(BaseTrigger):
 
     def find_handler(self, ev):
         if config.BOT_TYPE=="discord":
-            text = discord_util.remove_mention_me(ev.get_content())
+            from kokkoro.discord.discord_util import remove_mention_me
+            text = remove_mention_me(ev.get_content())
         else:
             text = ev.get_content()
         for rex in self.allrex:

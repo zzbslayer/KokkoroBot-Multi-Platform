@@ -4,9 +4,10 @@ from PIL import Image
 from typing import Union
 
 import kokkoro
-from kokkoro.common_interface import EventInterface, UserInterface
+from kokkoro.common_interface import EventInterface, UserInterface, UtilInterface
 from kokkoro.R import ResImg, RemoteResImg
 from kokkoro.typing import overrides, List
+from kokkoro.discord.discord_util import at
 
 '''
 Adaptor to convert ResImg to DiscordImage.
@@ -69,6 +70,10 @@ class DiscordUser(UserInterface):
     @overrides(UserInterface)
     def get_raw_user(self):
         return self.raw_user
+    
+    @overrides(UserInterface)
+    def get_nick_name(self):
+        return self.raw_user.nick
 
 class DiscordEvent(EventInterface):
     def __init__(self, msg: discord.Message):
@@ -81,6 +86,18 @@ class DiscordEvent(EventInterface):
     @overrides(EventInterface)
     def get_author_id(self):
         return self._raw_event.author.id
+    
+    @overrides(EventInterface)
+    def get_author_name(self):
+        return self._raw_event.author.name
+    
+    @overrides(EventInterface)
+    def get_author(self):
+        return DiscordUser(self._raw_event.author)
+
+    @overrides(EventInterface)
+    def get_members_in_group(self) -> List[DiscordUser]:
+        return DiscordUser.from_raw_users(self._raw_event.guild.members)
 
     @overrides(EventInterface)
     def get_group_id(self):
@@ -100,3 +117,10 @@ class DiscordEvent(EventInterface):
     
     def get_channel(self):
         return self._raw_event.channel
+    
+class DiscordUtil(UtilInterface):
+    
+    def at(self, uid):
+        return at(uid)
+
+common_util = DiscordUtil()

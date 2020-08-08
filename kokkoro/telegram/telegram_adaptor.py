@@ -13,6 +13,10 @@ class TelegramEvent(EventInterface):
     @overrides(EventInterface)
     def get_author_id(self):
         return self.raw_event.from_user.id
+    
+    @overrides(EventInterface)
+    def get_author_name(self):
+        return self.raw_event.from_user.username
 
     @overrides(EventInterface)
     def get_group_id(self):
