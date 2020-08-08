@@ -11,7 +11,9 @@ explst = {1:0, 2:24, 3:72, 4:120, 5:168, 6:216, 7:288, 8:360, 9:432, 10:504, 11:
 async def manaburner(bot, ev: EventInterface):
     prm = re.findall("\d+", ev.get_param().remain)
     if len(prm) == 0 or len(prm) >= 4:
-        return "使用方法：\n角色计算 [[角色数量] 当前等级 ]目标等级"
+        usage = "使用方法：\n角色计算 [[角色数量] 当前等级 ]目标等级"
+        await bot.kkr_send(ev, usage, at_sender=True)
+        return
     elif len(prm) == 1:
         n = 1
         l = 1
