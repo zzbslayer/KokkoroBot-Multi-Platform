@@ -100,6 +100,7 @@ TODO
     - https://docs.docker.com/compose/install/
 - 建立 Docker 镜像
     - 在 KokkoroBot 根目录下，运行如下命令，生成的镜像中将会包含 KokkoroBot 中需要的所有依赖
+    - 建立 Docker 镜像所需要的字体文件请自行从网上或加群 367501912 获取
 ```sh 
 docker build . -t kokkoro-env
 ```
@@ -114,7 +115,7 @@ docker-compose up -d # 生产环境
 TODO
 
 ### 2.3 资源文件
-目前 KokkoroBot 中的图片等资源文件来自于 HoshinoBot 群内提供的资源包，可以直接去 HoshinoBot 群内下载。未来可能会使用到部分额外资源，因此在 KokkoroBot 中单独提供一份 KokkoroBot 专用资源包。
+目前 KokkoroBot 中的图片等资源文件来自于 HoshinoBot 群内提供的资源包，可以直接去 HoshinoBot 群内下载。未来可能会使用到部分额外资源，因此在 KokkoroBot 中会另外提供一份 KokkoroBot 专用资源包。
 
 HoshinoBot 群：367501912。KokkoroBot 群：887897168。
 
