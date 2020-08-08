@@ -342,7 +342,7 @@ async def del_challenge(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     if ch['uid'] != ev.get_author_id():
         _check_admin(ev, '才能删除其他人的记录')
     bm.del_challenge(args.E, 1, now)
-    await bot.kkr_send(ev, f"{clan['name']}已删除{bot.get_com(ch['uid'])}的出刀记录E{args.E}", at_sender=True)
+    await bot.kkr_send(ev, f"{clan['name']}已删除{bot.at(ch['uid'])}的出刀记录E{args.E}", at_sender=True)
 
 
 # TODO 将预约信息转至数据库

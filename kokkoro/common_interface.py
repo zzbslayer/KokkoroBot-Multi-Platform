@@ -96,8 +96,8 @@ class KokkoroBot():
     def get_common_util(self) -> UtilInterface:
         raise NotImplementedError
 
-    def at(self, user:UserInterface):
-        return self.get_common_util().at(user)
+    def at(self, uid):
+        return self.get_common_util().at(uid)
 
     def kkr_run(self):
         raise NotImplementedError
