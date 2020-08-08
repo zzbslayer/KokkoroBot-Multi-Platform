@@ -18,7 +18,7 @@ logger = sv.logger
 Database for arena likes & dislikes
 DB is a dict like: { 'md5_id': {'like': set(qq), 'dislike': set(qq)} }
 '''
-DB_PATH = os.path.expanduser('~/.hoshino/arena_db.json')
+DB_PATH = os.path.expanduser('~/.kokkoro/arena_db.json')
 DB = {}
 try:
     with open(DB_PATH, encoding='utf8') as f:

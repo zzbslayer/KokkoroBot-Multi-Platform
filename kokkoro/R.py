@@ -23,7 +23,7 @@ class ResObj:
     @property
     def path(self):
         """资源文件的路径，供bot内部使用"""
-        return os.path.expanduser(os.path.join(kokkoro.config.RES_DIR, self.__path))
+        return os.path.abspath(os.path.expanduser(os.path.join(kokkoro.config.RES_DIR, self.__path)))
 
     @property
     def exist(self):

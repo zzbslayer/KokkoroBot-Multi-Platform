@@ -12,7 +12,7 @@ from kokkoro.common_interface import *
 # service management
 _loaded_services: Dict[str, "Service"] = {}  # {name: service}
 _re_illegal_char = re.compile(r'[\\/:*?"<>|\.]')
-_service_config_dir = os.path.expanduser('~/.hoshino/service_config/')
+_service_config_dir = os.path.expanduser('~/.kokkoro/service_config/')
 os.makedirs(_service_config_dir, exist_ok=True)
 
 def _load_service_config(service_name):

@@ -1,22 +1,17 @@
 import os
 from PIL import Image
+from matplotlib.figure import Figure
 
 import kokkoro
 from kokkoro import config
 from kokkoro.typing import Union, List
 from kokkoro.R import ResImg, RemoteResImg
 
-if config.BOT_TYPE == "discord":
-    from kokkoro.discord import discord_util
-
-SupportedMessageType = Union[ResImg, RemoteResImg, Image.Image, str]
+SupportedMessageType = Union[ResImg, RemoteResImg, Image.Image, Figure, str]
 
 class BaseParameter:
     def __init__(self, msg:str):
-        if config.BOT_TYPE == "discord":
-            self.plain_text = discord_util.remove_mention_me(msg)
-        else:
-            self.plain_text = msg
+        self.plain_text = msg
         self.norm_text = util.normalize_str(self.plain_text)
 
 from kokkoro.msg_handler import handle_message
@@ -29,12 +24,29 @@ class UserInterface:
         raise NotImplementedError
     def get_raw_user(self):
         raise NotImplementedError
+    def get_nick_name(self):
+        raise NotImplementedError
 
 class EventInterface:
     def get_id(self):
         raise NotImplementedError
     def get_author_id(self):
         raise NotImplementedError
+    def get_author_name(self):
+        raise NotImplementedError
+
+    def get_author(self) -> UserInterface:
+        raise NotImplementedError
+
+    def get_members_in_group(self) -> List[UserInterface]:
+        raise NotImplementedError
+
+    def whether_user_in_group(self, uid) -> bool:
+        for member in self.get_members_in_group():
+            if member.get_id() == uid:
+                return True
+        return False
+
     def get_group_id(self):
         raise NotImplementedError
     def get_content(self) -> str:
@@ -51,6 +63,9 @@ class EventInterface:
         # coupleness
         raise NotImplementedError
 
+class UtilInterface():
+    def at(self, uid):
+        raise NotImplementedError
 
 # In case the name of function is the same as bot sdk client.
 class KokkoroBot():
@@ -77,6 +92,12 @@ class KokkoroBot():
         kokkoro.logger.debug(f'Receive message:{ev.get_content()}')
 
         await handle_message(self, ev)
+
+    def get_common_util(self) -> UtilInterface:
+        raise NotImplementedError
+
+    def at(self, user:UserInterface):
+        return self.get_common_util().at(user)
 
     def kkr_run(self):
         raise NotImplementedError

@@ -13,9 +13,24 @@ from datetime import datetime, timedelta
 from matplotlib import pyplot as plt
 from PIL import Image
 from io import BytesIO
+import itertools
 
 import kokkoro
 from kokkoro import config
+from kokkoro.typing import Iterable
+
+def img2bytes(img: Image.Image):
+    buf = BytesIO()
+    img.save(buf, format='PNG')
+    buf.seek(0)
+    return buf
+
+def plt2bytes(plt):
+    buf = BytesIO()
+    plt.savefig(buf, format='PNG', dpi=100)
+
+def add_prefix(commands: Iterable, prefixs: Iterable):
+    return [''.join(item) for item in itertools.product(commands, prefixs)]
 
 def load_config(inbuilt_file_var):
     """
