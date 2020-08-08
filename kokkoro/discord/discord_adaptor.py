@@ -46,7 +46,7 @@ class DiscordUser(UserInterface):
     def get_priv(self):
         if self.get_id() in config.SUPER_USER:
             return SUPERUSER
-        elif self.is_admin(self):
+        elif self.is_admin():
             return ADMIN
         return NORMAL
 

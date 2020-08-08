@@ -50,6 +50,5 @@ def get_user_priv(user: UserInterface):
         return BLACK
     return user.get_priv()
 
-
 def check_priv(user: UserInterface, require: int) -> bool:
-    return get_user_priv(ev) >= require
+    return get_user_priv(user) >= require
