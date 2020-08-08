@@ -138,7 +138,7 @@ class Service:
 
     def _check_all(self, ev: EventInterface):
         gid = ev.get_group_id()
-        return self.check_enabled(gid) and not priv.check_block_group(gid) and priv.check_priv(ev, self.use_priv)
+        return self.check_enabled(gid) and not priv.check_block_group(gid) and priv.check_priv(ev.get_author(), self.use_priv)
     
     def get_enable_groups(self) -> dict:
         """获取所有启用本服务的群

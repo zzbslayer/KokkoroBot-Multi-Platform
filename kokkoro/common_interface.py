@@ -26,6 +26,10 @@ class UserInterface:
         raise NotImplementedError
     def get_nick_name(self):
         raise NotImplementedError
+    def is_admin(self):
+        raise NotImplementedError
+    def get_priv(self):
+        raise NotImplementedError
 
 class EventInterface:
     def get_id(self):

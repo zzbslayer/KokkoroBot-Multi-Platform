@@ -1,24 +1,29 @@
 import discord
+from discord import User, Message
+from discord.permissions import Permissions
 import os
 from PIL import Image
 from typing import Union
 
 import kokkoro
+from kokkoro import config
+from kokkoro.priv import SUPERUSER, ADMIN, NORMAL
 from kokkoro.common_interface import EventInterface, UserInterface, UtilInterface
 from kokkoro.R import ResImg, RemoteResImg
 from kokkoro.typing import overrides, List
 from kokkoro.discord.discord_util import at
+
 
 '''
 Modules should depend on Interface instead of Discord specific concept.
 Then it would be easy to migrate to other platform.
 '''
 class DiscordUser(UserInterface):
-    def __init__(self, user: discord.User):
+    def __init__(self, user: User):
         self.raw_user = user
 
     @staticmethod
-    def from_raw_users(users: List[discord.User]):
+    def from_raw_users(users: List[User]):
         return [ DiscordUser(user) for user in users]
 
     @overrides(UserInterface)
@@ -30,15 +35,27 @@ class DiscordUser(UserInterface):
         return self.raw_user.name
     
     @overrides(UserInterface)
-    def get_raw_user(self):
+    def get_raw_user(self) -> User:
         return self.raw_user
     
     @overrides(UserInterface)
     def get_nick_name(self):
         return self.raw_user.nick
+    
+    @overrides(UserInterface)
+    def get_priv(self):
+        if self.get_id() in config.SUPER_USER:
+            return SUPERUSER
+        elif self.is_admin(self):
+            return ADMIN
+        return NORMAL
+
+    @overrides(UserInterface)
+    def is_admin(self):
+        return self.raw_user.guild_permissions == Permissions.all()
 
 class DiscordEvent(EventInterface):
-    def __init__(self, msg: discord.Message):
+    def __init__(self, msg: Message):
         self._raw_event = msg
 
     @overrides(EventInterface)
@@ -74,7 +91,7 @@ class DiscordEvent(EventInterface):
         return DiscordUser.from_raw_users(self._raw_event.mentions)
 
     @overrides(EventInterface)
-    def get_raw_event(self) -> discord.Message:
+    def get_raw_event(self) -> Message:
         return self._raw_event
     
     def get_channel(self):

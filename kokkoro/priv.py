@@ -1,7 +1,7 @@
 from datetime import datetime
 
 import kokkoro
-from kokkoro.common_interface import *
+from kokkoro.common_interface import UserInterface
 
 BLACK = -999
 DEFAULT = 0
@@ -45,11 +45,11 @@ def check_block_user(user_id):
 #========================================================#
 
 
-def get_user_priv(ev: EventInterface):
-    if is_super_user(ev.get_author_id()):
-        return SUPERUSER
-    return NORMAL
+def get_user_priv(user: UserInterface):
+    if check_block_user(user.get_id()):
+        return BLACK
+    return user.get_priv()
 
 
-def check_priv(ev: EventInterface, require: int) -> bool:
+def check_priv(user: UserInterface, require: int) -> bool:
     return get_user_priv(ev) >= require

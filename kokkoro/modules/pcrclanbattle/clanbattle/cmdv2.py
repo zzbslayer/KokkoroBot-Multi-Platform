@@ -56,7 +56,7 @@ def _check_member(bm:BattleMaster, uid:int, alt:int, tip=None):
     return mem
 
 def _check_admin(ev:EventInterface, tip:str='') -> bool:
-    if not priv.check_priv(ev, priv.ADMIN):
+    if not priv.check_priv(ev.get_author(), priv.ADMIN):
         raise PermissionDeniedError(ERROR_PERMISSION_DENIED + tip)
 
 
