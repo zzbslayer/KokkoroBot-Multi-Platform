@@ -24,20 +24,23 @@ async def rank_sheet(bot, ev:EventInterface):
     ]
     if is_jp:
         msg.append('※不定期搬运自图中Q群\n※广告为原作者推广，与本bot无关\nR17-5 rank表：')
+        await bot.kkr_send(ev, '\n'.join(msg), at_sender=True)
         pos = match.group(3)
         if not pos or '前' in pos:
-            msg.append(str(p4))
+            await bot.kkr_send(ev, p4, at_sender=True)
         if not pos or '中' in pos:
-            msg.append(str(p5))
+            await bot.kkr_send(ev, p5, at_sender=True)
         if not pos or '后' in pos:
-            msg.append(str(p6))
-        await bot.kkr_send(ev, '\n'.join(msg), at_sender=True)
+            await bot.kkr_send(ev, p6, at_sender=True)
+        
     elif is_tw:
-        msg.append(f'※不定期搬运自漪夢奈特\n※油管频道有介绍视频及原文档\nR16-5 rank表：\n{p1} {p2}')
+        msg.append(f'※不定期搬运自漪夢奈特\n※油管频道有介绍视频及原文档\nR16-5 rank表：\n')
         await bot.kkr_send(ev, '\n'.join(msg), at_sender=True)
+        await bot.kkr_send(ev, p1)
+        await bot.kkr_send(ev, p2)
     elif is_cn:
-        msg.append(str(cn_rank))
         await bot.kkr_send(ev, '\n'.join(msg), at_sender=True)
+        await bot.kkr_send(ev, cn_rank)
 
 @sv.on_fullmatch(('jjc', 'JJC', 'JJC作业', 'JJC作业网', 'JJC数据库', 'jjc作业', 'jjc作业网', 'jjc数据库', 'JJC作業', 'JJC作業網', 'JJC數據庫', 'jjc作業', 'jjc作業網', 'jjc數據庫'))
 async def say_arina_database(bot, ev):
