@@ -1,7 +1,9 @@
 import kokkoro
 from kokkoro import trigger, util, config
+from kokkoro.platform_patch import preprocess_message
 
 async def handle_message(bot, ev):
+    preprocess_message(ev)
     kokkoro.logger.debug(f'Searching for Message Handler...')
     for t in trigger.chain:
         sf = t.find_handler(ev)

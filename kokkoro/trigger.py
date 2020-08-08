@@ -57,11 +57,7 @@ class PrefixTrigger(BaseTrigger):
 
 
     def find_handler(self, ev):
-        if config.BOT_TYPE=="discord":
-            from kokkoro.discord.discord_util import remove_mention_me
-            first_text = remove_mention_me(ev.get_content())
-        else:
-            first_text = ev.get_content()
+        first_text = ev.get_content()
 
         kokkoro.logger.debug(f'Searching for Prefix Handler for {first_text}...')
         item = self.trie.longest_prefix(first_text)
@@ -93,11 +89,7 @@ class SuffixTrigger(BaseTrigger):
 
 
     def find_handler(self, ev):
-        if config.BOT_TYPE=="discord":
-            from kokkoro.discord.discord_util import remove_mention_me
-            last_text = remove_mention_me(ev.get_content())
-        else:
-            last_text = ev.get_content()
+        last_text = ev.get_content()
         item = self.trie.longest_prefix(last_text[::-1])
         if not item:
             return None
@@ -125,11 +117,7 @@ class KeywordTrigger(BaseTrigger):
 
 
     def find_handler(self, ev):
-        if config.BOT_TYPE=="discord":
-            from kokkoro.discord.discord_util import remove_mention_me
-            text = remove_mention_me(ev.get_content())
-        else:
-            text = ev.get_content()
+        text = ev.get_content()
         for kw in self.allkw:
             if kw in text:
                 ev.set_param(KeywordHandlerParameter(ev.get_content()))
@@ -147,11 +135,7 @@ class RexTrigger(BaseTrigger):
         kokkoro.logger.debug(f'Succeed to add rex trigger `{rex.pattern}`')
 
     def find_handler(self, ev):
-        if config.BOT_TYPE=="discord":
-            from kokkoro.discord.discord_util import remove_mention_me
-            text = remove_mention_me(ev.get_content())
-        else:
-            text = ev.get_content()
+        text = ev.get_content()
         for rex in self.allrex:
             match = rex.search(text)
             if match:
