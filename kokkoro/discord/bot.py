@@ -9,14 +9,7 @@ import kokkoro
 from kokkoro.typing import overrides, Union
 from kokkoro.R import ResImg, RemoteResImg
 from kokkoro.discord.discord_adaptor import *
-from kokkoro.common_interface import KokkoroBot, SupportedMessageType, EventInterface
-
-def message_preprocess(msg: Union[ResImg, RemoteResImg, Image.Image, str]):
-    if isinstance(msg, ResImg) or isinstance(msg, RemoteResImg):
-        msg = res_adaptor(msg)
-    elif isinstance(msg, Image.Image):
-        msg = pil_image(img, filename=filename)
-    
+from kokkoro.common_interface import KokkoroBot, SupportedMessageType, EventInterface 
 
 class KokkoroDiscordBot(discord.Client, KokkoroBot):
     def __init__(self, config):
