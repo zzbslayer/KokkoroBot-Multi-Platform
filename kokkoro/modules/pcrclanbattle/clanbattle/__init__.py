@@ -31,7 +31,7 @@ def cb_cmd(prefixes, parser:ArgParser) -> Callable:
                 return
             try:
                 return await func(bot, ev, args)
-            except (ParseError, NotFoundError) as e:
+            except ClanBattleError as e:
                 await bot.kkr_send(ev, e.message, at_sender=True)
             except Exception as e:
                 await bot.kkr_send(ev, f'{SORRY} 发生未知错误', at_sender=True)
