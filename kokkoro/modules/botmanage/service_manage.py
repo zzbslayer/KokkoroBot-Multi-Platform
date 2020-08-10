@@ -4,7 +4,7 @@ from argparse import ArgumentParser
 
 from kokkoro import priv
 from kokkoro.service import Service
-from kokkoro.common_interface import *
+from kokkoro.common_interface import EventInterface
 
 PRIV_TIP = f'群员={priv.NORMAL} GameMaster={priv.SUPERUSER}'
 
@@ -48,7 +48,7 @@ async def enable_service(bot, ev):
 async def disable_service(bot, ev):
     await switch_service(bot, ev, turn_on=False)
 
-async def switch_service(bot, ev, turn_on:bool):
+async def switch_service(bot, ev:EventInterface , turn_on:bool):
     action_tip = '启用' if turn_on else '禁用'
 
     names = ev.get_param().remain.split()
@@ -61,7 +61,7 @@ async def switch_service(bot, ev, turn_on:bool):
     for name in names:
         if name in svs:
             sv = svs[name]
-            u_priv = priv.get_user_priv(ev)
+            u_priv = priv.get_user_priv(ev.get_author())
             if u_priv >= sv.manage_priv:
                 sv.set_enable(group_id) if turn_on else sv.set_disable(group_id)
                 succ.append(name)

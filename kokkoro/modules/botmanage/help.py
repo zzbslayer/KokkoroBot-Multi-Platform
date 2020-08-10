@@ -2,7 +2,7 @@ import itertools
 
 from kokkoro import priv
 from kokkoro.service import Service
-from kokkoro.common_interface import *
+from kokkoro.common_interface import EventInterface
 
 sv = Service('_help_', manage_priv=priv.SUPERUSER, visible=False)
 
