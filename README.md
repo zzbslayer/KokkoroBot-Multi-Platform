@@ -125,6 +125,7 @@ HoshinoBot 群：367501912。KokkoroBot 群：887897168。
 TODO
 
 ## 3. 二次开发与新平台适配
+详情见 DEVELOPER-README.md .这里只做简要介绍。
 ### 3.1 接口设计
 KokkoroBot 在基础设施与应用层中加一层统一接口 `common_interface` 以达到解耦合的目的。
 
