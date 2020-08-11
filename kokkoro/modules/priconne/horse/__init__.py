@@ -69,17 +69,17 @@ class Player(object):
         return result
 
 
-g_result = []
+g_result_dict = defaultdict(lambda:[], {})
 
-g_uid = 0
+g_uid_dict = defaultdict(lambda :[], {})
 
 
-def save_player(result_name):
+def save_player(gid, result_name):
     if result_name != []:
-        global g_result
-        g_result = [f'{c}' for c in result_name]
+        global g_result_dict
+        g_result_dict[gid] = [f'{c}' for c in result_name]
     else:
-        g_result = []
+        g_result_dict[gid] = []
         return
 
 
@@ -133,7 +133,8 @@ def step(y, z:int):
 
 #逻辑有待优化
 async def compe(bot, ev: EventInterface, p:str):
-    global g_result
+    global g_result_dict
+    gid = ev.get_group_id()
     r = 15
     result = []
     msg = f'========================\n'
@@ -152,24 +153,24 @@ async def compe(bot, ev: EventInterface, p:str):
         c += step(pc, _)
         d += step(pd, _)
         if a >= r:
-            pri.append(g_result[0])
+            pri.append(g_result_dict[gid][0])
         if b >= r:
-            pri.append(g_result[1])
+            pri.append(g_result_dict[gid][1])
         if c >= r:
-            pri.append(g_result[2])
+            pri.append(g_result_dict[gid][2])
         if d >= r:
-            pri.append(g_result[3])
+            pri.append(g_result_dict[gid][3])
     pri_r = [a, b, c, d]
     pri_r = sorted(pri_r, reverse=True)
     for _ in pri_r:
         if a == _:
-            pri.append(g_result[0])
+            pri.append(g_result_dict[gid][0])
         if b == _:
-            pri.append(g_result[1])
+            pri.append(g_result_dict[gid][1])
         if c == _:
-            pri.append(g_result[2])
+            pri.append(g_result_dict[gid][2])
         if d == _:
-            pri.append(g_result[3])
+            pri.append(g_result_dict[gid][3])
     for k in pri:
         if k not in r_pri:
             r_pri.append(k)
@@ -179,37 +180,38 @@ async def compe(bot, ev: EventInterface, p:str):
         if p == r_pri[j]:
             msg += f'恭喜获得第{j+1}位奖励，宝石×{stone[j]}\n========================'
     await bot.kkr_send(ev, msg)
-    save_player(result)
+    save_player(gid, result)
 
 
 
 
 async def select_player(bot, ev: EventInterface, pkey):
-    global g_result, g_uid
+    global g_result_dict, g_uid_dict
+    gid = ev.get_group_id()
     id_ = chara.name2id(pkey)
     p = chara.fromid(id_)
-    if p.name not in g_result:
+    if p.name not in g_result_dict[gid]:
         await bot.kkr_send(ev, f'所选角色未在参赛角色中')
         return
     await bot.kkr_send(ev, f'已选择{p.name},比赛开始', at_sender=True)
     await compe(bot, ev, p.name)
-    g_uid = 0
+    g_uid_dict[gid] = 0
 
 
 
 @sv.on_fullmatch(('赛跑', '赛马', '兰德索尔杯'), only_to_me=False)
 async def pcr_comp(bot, ev: EventInterface):
-    global g_result, g_uid
+    global g_result_dict, g_uid_dict
+    gid = ev.get_group_id()
     uid = ev.get_author_id()
     if not lmt.check(uid):
         await bot.kkr_send(ev, '今天已经赛过5次力', at_sender=True)
         return
-    if g_result != []:
+    if g_result_dict[gid] != []:
         await bot.kkr_send(ev, '上一场比赛尚未结束，请等待', at_sender=True)
         return
     lmt.increase(uid)
     await bot.kkr_send(ev, f'第○届兰德索尔杯比赛开始！', at_sender=True)
-    gid = str(ev.get_group_id())
     player = Player(_group_pool[gid])
     result = player.get_chara()
     result_number = player.get_num()
@@ -223,18 +225,19 @@ async def pcr_comp(bot, ev: EventInterface):
         await bot.kkr_send(ev, f'{res_name}\n※发送“选中+角色名称”开始比赛', at_sender=False)
     else:
         await bot.kkr_send(ev, f'Image is disabled')
-    save_player(result_name)
-    g_uid = uid
+    save_player(gid, result_name)
+    g_uid_dict[gid] = uid
 
 @sv.on_prefix('选中')
 async def _select_(bot, ev: EventInterface):
-    global g_uid, g_result
+    global g_uid_dict, g_result_dict
+    gid = ev.get_group_id()
     uid = ev.get_author_id()
-    if uid != g_uid and g_result != []:
+    if uid != g_uid_dict[gid] and g_result_dict[gid] != []:
         await bot.kkr_send(ev, f'仅限比赛发起人进行选择~')
-    elif uid != g_uid and g_result == []:
+    elif uid != g_uid_dict[gid] and g_result_dict[gid] == []:
         await bot.kkr_send(ev, f'上一场比赛已经结束，您可以用“@bot赛跑模拟”发起新的比赛', at_sender=True)
-    elif uid == g_uid:
+    elif uid == g_uid_dict[gid]:
         await select_player(bot, ev,  ev.get_param().remain)
     else:
         await bot.kkr_send(ev, f'出现错误，请联系维护组嘤嘤嘤')
