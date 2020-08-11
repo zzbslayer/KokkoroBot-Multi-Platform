@@ -60,7 +60,7 @@ async def set_pool(bot:KokkoroBot, ev: EventInterface):
     if not priv.check_priv(ev.get_author(), priv.ADMIN):
         await bot.kkr_send(ev, '只有群管理才能切换卡池', at_sender=True)
         return
-    name = util.normalize_str(param.remain)
+    name = util.normalize_str(ev.get_param().remain)
     if not name:
         await bot.kkr_send(ev, POOL_NAME_TIP)
         return
