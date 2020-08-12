@@ -8,6 +8,7 @@ from wechatpy.work import parse_message, create_reply
 from wechatpy.messages import BaseMessage
 
 import kokkoro
+from kokkoro.typing import overrides
 from kokkoro.common_interface import KokkoroBot, EventInterface, SupportedMessageType
 from kokkoro.wechat_enterprise.wechat_enterprise_adaptor import WechatEpEvent
 
@@ -55,9 +56,11 @@ class KokkoroWechatEpBot(KokkoroBot):
         self.app.route("/wechat", methods=["GET", "POST"])(wechat_handler(self))
         self.ret_val = None
 
+    @overrides(KokkoroBot)
     def kkr_event_adaptor(self, raw_event: BaseMessage) -> EventInterface:
         return WechatEpEvent(raw_event)
     
+    @overrides(KokkoroBot)
     async def kkr_send(self, ev: EventInterface, msg: SupportedMessageType, at_sender=False, filename="image.png"):
         if isinstance(msg, str):
             kokkoro.logger.debug(f"Send result: {msg}")
@@ -65,5 +68,6 @@ class KokkoroWechatEpBot(KokkoroBot):
         else:
             raise NotImplementedError
 
+    @overrides(KokkoroBot)
     def kkr_run(self):
         self.app.run("0.0.0.0", 5001, debug=True)

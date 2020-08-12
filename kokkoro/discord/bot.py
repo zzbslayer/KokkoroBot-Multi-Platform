@@ -56,7 +56,11 @@ class KokkoroDiscordBot(discord.Client, KokkoroBot):
         return at(uid)
 
     @overrides(KokkoroBot)
-    async def kkr_run(self):
+    def kkr_run(self):
+        super().run(self.config.bot.discord.DISCORD_TOKEN)
+
+    @overrides(KokkoroBot)
+    async def kkr_async_run(self):
         await super().start(self.config.bot.discord.DISCORD_TOKEN) # discord_Client start
     
     async def _send_remote_img(self, channel, url, filename="image.png"):

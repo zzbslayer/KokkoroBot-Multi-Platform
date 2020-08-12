@@ -98,3 +98,6 @@ class KokkoroBot:
 
     def kkr_run(self):
         raise NotImplementedError
+
+    async def kkr_async_run(self):
+        raise NotImplementedError

@@ -3,6 +3,7 @@ from kokkoro import log
 logger = log.new_logger('config')
 
 BOT_TYPE="discord"
+ENABLE_WEB=False
 
 try:
     platform_config = importlib.import_module('kokkoro.config.bot.' + BOT_TYPE)
