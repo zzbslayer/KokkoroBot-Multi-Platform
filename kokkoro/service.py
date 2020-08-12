@@ -91,7 +91,7 @@ class Service:
         config = _load_service_config(name)
         self.name = name
         self.use_priv = config.get('use_priv') or use_priv or priv.NORMAL
-        self.manage_priv = config.get('manage_priv') or manage_priv or priv.SUPERUSER
+        self.manage_priv = config.get('manage_priv') or manage_priv or priv.ADMIN
         self.enable_on_default = config.get('enable_on_default')
         if self.enable_on_default is None:
             self.enable_on_default = enable_on_default

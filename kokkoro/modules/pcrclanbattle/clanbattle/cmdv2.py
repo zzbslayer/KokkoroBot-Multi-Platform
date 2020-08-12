@@ -113,10 +113,10 @@ async def add_member(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     mem = bm.get_member(uid, bm.group) or bm.get_member(uid, 0)     # 兼容cmdv1
     if mem:
         bm.mod_member(uid, mem['alt'], name, 1)
-        await bot.kkr_send(ev, f'成员{bot.at(uid)}昵称已修改为{name}')
+        await bot.kkr_send(ev, f'成员{bot.kkr_at(uid)}昵称已修改为{name}')
     else:
         bm.add_member(uid, bm.group, name, 1)
-        await bot.kkr_send(ev, f"成员{bot.at(uid)}添加成功！欢迎{name}加入{clan['name']}")
+        await bot.kkr_send(ev, f"成员{bot.kkr_at(uid)}添加成功！欢迎{name}加入{clan['name']}")
 
 
 @cb_cmd(('查看成员', '成员查看', '查询成员', '成员查询'), ArgParser(USAGE_LIST_MEMBER))
@@ -342,7 +342,7 @@ async def del_challenge(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     if ch['uid'] != ev.get_author_id():
         _check_admin(ev, '才能删除其他人的记录')
     bm.del_challenge(args.E, 1, now)
-    await bot.kkr_send(ev, f"{clan['name']}已删除{bot.at(ch['uid'])}的出刀记录E{args.E}", at_sender=True)
+    await bot.kkr_send(ev, f"{clan['name']}已删除{bot.kkr_at(ch['uid'])}的出刀记录E{args.E}", at_sender=True)
 
 
 # TODO 将预约信息转至数据库
@@ -436,7 +436,7 @@ def _save_sub(sub:SubscribeData, gid):
 
 def _gen_namelist_text(bot:KokkoroBot, bm:BattleMaster, uidlist:List[int], memolist:List[str]=None, do_at=False):
     if do_at:
-        mems = map(lambda x: str(bot.at(x)), uidlist)
+        mems = map(lambda x: str(bot.kkr_at(x)), uidlist)
     else:
         mems = map(lambda x: bm.get_member(x, bm.group) or bm.get_member(x, 0) or {'name': str(x)}, uidlist)
         mems = map(lambda x: x['name'], mems)
@@ -512,7 +512,7 @@ async def auto_unsubscribe(bot:KokkoroBot, ev:EventInterface, gid, uid, boss):
         return
     sub.remove_sub(boss, uid)
     _save_sub(sub, gid)
-    await bot.kkr_send(ev, f'已为{bot.at(uid)}自动取消{BattleMaster.int2kanji(boss)}王的订阅')
+    await bot.kkr_send(ev, f'已为{bot.kkr_at(uid)}自动取消{BattleMaster.int2kanji(boss)}王的订阅')
 
 
 async def call_subscribe(bot:KokkoroBot, ev:EventInterface, round_:int, boss:int):
@@ -529,7 +529,7 @@ async def call_subscribe(bot:KokkoroBot, ev:EventInterface, round_:int, boss:int
         msg.append("==========")
     if tlist:
         msg.append(f"以下成员可以下树了")
-        msg.extend(map(lambda x: str(bot.at(x)), tlist))
+        msg.extend(map(lambda x: str(bot.kkr_at(x)), tlist))
         sub.clear_tree()
         _save_sub(sub, bm.group)
     if msg:
@@ -830,7 +830,7 @@ async def _do_show_remain(bot:KokkoroBot, ev:EventInterface, args:ParseResult, a
     sum_remain = 0
     for uid, _, name, r_n, r_e in rlist:
         if r_n or r_e:
-            msg.append(f"剩{r_n}刀 补时{r_e}刀 | {bot.at(uid) if at_user else name}")
+            msg.append(f"剩{r_n}刀 补时{r_e}刀 | {bot.kkr_at(uid) if at_user else name}")
             sum_remain += r_n
     
     if len(msg) == 1:
