@@ -67,12 +67,8 @@ class EventInterface:
         # coupleness
         raise NotImplementedError
 
-class UtilInterface():
-    def at(self, uid):
-        raise NotImplementedError
-
 # In case the name of function is the same as bot sdk client.
-class KokkoroBot():
+class KokkoroBot:
     def kkr_load_modules(self, config):
         for module_name in config.MODULES_ON:
             util.load_modules(
@@ -97,11 +93,8 @@ class KokkoroBot():
 
         await handle_message(self, ev)
 
-    def get_common_util(self) -> UtilInterface:
+    def kkr_at(self, uid):
         raise NotImplementedError
-
-    def at(self, uid):
-        return self.get_common_util().at(uid)
 
     def kkr_run(self):
         raise NotImplementedError

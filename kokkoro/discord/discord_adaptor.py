@@ -8,11 +8,9 @@ from typing import Union
 import kokkoro
 from kokkoro import config
 from kokkoro.priv import SUPERUSER, ADMIN, NORMAL
-from kokkoro.common_interface import EventInterface, UserInterface, UtilInterface
+from kokkoro.common_interface import EventInterface, UserInterface
 from kokkoro.R import ResImg, RemoteResImg
 from kokkoro.typing import overrides, List
-from kokkoro.discord.discord_util import at
-
 
 '''
 Modules should depend on Interface instead of Discord specific concept.
@@ -96,10 +94,3 @@ class DiscordEvent(EventInterface):
     
     def get_channel(self):
         return self._raw_event.channel
-    
-class DiscordUtil(UtilInterface):
-    
-    def at(self, uid):
-        return at(uid)
-
-common_util = DiscordUtil()

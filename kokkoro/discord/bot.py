@@ -9,6 +9,7 @@ import kokkoro
 from kokkoro.typing import overrides, Union
 from kokkoro.R import ResImg, RemoteResImg
 from kokkoro.discord.discord_adaptor import *
+from kokkoro.discord.discord_util import at
 from kokkoro.common_interface import KokkoroBot, SupportedMessageType, EventInterface 
 
 class KokkoroDiscordBot(discord.Client, KokkoroBot):
@@ -16,8 +17,6 @@ class KokkoroDiscordBot(discord.Client, KokkoroBot):
         super().__init__() # discord.Client init
         self.config = config
         super().kkr_load_modules(self.config) # KokkoroBot init
-
-        self.common_util = common_util
 
     async def on_ready(self):
         kokkoro.logger.info(f'Logged on as {self.user}')
@@ -53,8 +52,8 @@ class KokkoroDiscordBot(discord.Client, KokkoroBot):
             raise NotImplementedError
 
     @overrides(KokkoroBot)
-    def get_common_util(self) -> DiscordUtil:
-        return self.common_util
+    def kkr_at(self, uid):
+        return at(uid)
 
     @overrides(KokkoroBot)
     def kkr_run(self):
