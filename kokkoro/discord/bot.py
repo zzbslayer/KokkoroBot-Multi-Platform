@@ -53,8 +53,8 @@ class KokkoroDiscordBot(discord.Client, KokkoroBot):
         await ev.get_channel().send(msg)
 
     @overrides(KokkoroBot)
-    def kkr_run(self):
-        super().run(self.config.bot.discord.DISCORD_TOKEN) # discord_Client run
+    async def kkr_run(self):
+        await super().start(self.config.bot.discord.DISCORD_TOKEN) # discord_Client start
     
     async def _send_remote_img(self, channel, url, filename="image.png"):
         async with httpx.AsyncClient() as client:
