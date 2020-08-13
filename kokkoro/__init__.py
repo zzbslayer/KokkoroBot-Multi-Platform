@@ -26,9 +26,13 @@ def _quart_init():
         return kkr_bot.app
     else:
         return Quart(__name__)
-        
-quart_app : Quart = _quart_init()
+
+if config.ENABLE_WEB:
+    quart_app : Quart = _quart_init()
 
 def get_app() -> Quart:
-    return quart_app
+    if config.ENABLE_WEB:
+        return quart_app
+    else:
+        raise RuntimeError
 
