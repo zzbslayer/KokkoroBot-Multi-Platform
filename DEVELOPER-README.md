@@ -3,6 +3,7 @@
 
 ## 1. 上层功能开发
 接口与 HoshinoBot 几乎保持一致，如果之前有过 HoshinoBot 二次开发经验，相信你一定能快速上手 KokkoroBot 的二次开发。
+功能管理如下所示，
 
 - Module A
     - Service 1
@@ -40,21 +41,27 @@ KokkoroBot 延用了 HoshinoBot 中的模块管理机制。KokkoroBot 仅仅会�
 执行完以上三步就完成了新模块的创建与启用。
 
 ### 1.3 服务层 (Services)
-一个模块中可以有一个或多个服务。每个服务中可以有一个或多个功能函数。可以通过群聊来管理当前群内的服务。`lssv` 列出群内服务；`enable` 开启群内服务；`disable` 关闭群内服务。
+一个模块中可以有一个或多个服务。每个服务中可以有一个或多个功能函数。可以通过在群聊中发送特殊命令，来管理当前群内的服务。
+- `lssv` 列出群内服务
+- `enable <service_name>` 开启群内服务
+- `disable <service_name>` 关闭群内服务。
 
 ```python
 #Example
 from kokkoro.service import Service
-sv = Service('new-service', enable)
+sv = Service('echo')  # <------------------------------ 这里是服务
+@sv.on_prefix(('echo'), only_to_me=False)            
+async def help(bot: KokkoroBot, ev: EventInterface):
+    await bot.send(ev, ev.get_param().remain)
 ```
 
 #### 1.3.1 构造函数
 Service 构造函数
 - `name: str` - 服务名
 - `use_priv: int` - 使用所需要的权限
-    - 默认为 `priv.NORMAL`
+    - 默认为 `kokkoro.priv.NORMAL`，即普通群员
 - `manage_priv: int` - 管理所需要的权限
-    - 默认为 `priv.ADMIN`
+    - 默认为 `kokkoro.priv.ADMIN`，即管理员
 - `enable_on_default: bool` - 是否默认开启
     - 默认为 `True`
 - `visible: bool` - 是否对 `lssv` 命令可见
@@ -62,7 +69,8 @@ Service 构造函数
     - 默认为 `True`
 
 ```python
-def __init__(self, name, use_priv=None, manage_priv=None, enable_on_default=None, visible=None):
+class Service:
+    def __init__(self, name, use_priv=None, manage_priv=None, enable_on_default=None, visible=None):
 ```
 
 #### 1.3.2 broadcast
@@ -74,13 +82,13 @@ def __init__(self, name, use_priv=None, manage_priv=None, enable_on_default=None
     - 默认为 0.5
 
 #### 1.3.3 装饰器
-使用服务层提供的装饰器(decorator)装饰功能函数，装饰器会自动将功能函数注册到 KokkoroBot中，一旦消息触发了装饰器的匹配条件，将会自动触发对应功能函数。
+使用服务层提供的装饰器(decorator)装饰功能函数，装饰器会自动将功能函数注册到 KokkoroBot 中，一旦群内消息触发了装饰器的匹配条件，将会自动触发对应功能函数。
 
 ```python
 #Example
 from kokkoro.service import Service
 sv = Service('echo')
-@sv.on_prefix(('echo'), only_to_me=False)
+@sv.on_prefix(('echo'), only_to_me=False)  # <---------- 这里是装饰器
 async def help(bot: KokkoroBot, ev: EventInterface):
     await bot.send(ev, ev.get_param().remain)
 ```
@@ -93,10 +101,11 @@ async def help(bot: KokkoroBot, ev: EventInterface):
 def on_prefix(self, prefix, only_to_me=False) -> Callable:
 ```
 
-匹配完成后，功能函数可通过 `EvnetInterface.get_param()` 获取到前缀匹配相关的结果。
-- `prefix: str` - 匹配的前缀
-- `remain: str` - 从原消息中删除前缀后的剩余部分
-- `args: str` - 将剩余部分(remain)转化为 ArgParser 的参数
+匹配完成后，功能函数可通过 `EvnetInterface.get_param()` 获取到前缀匹配相关的结果，类型为`PrefixHandlerParameter`。
+- `PrefixHandlerParameter`
+    - `prefix: str` - 匹配的前缀
+    - `remain: str` - 从原消息中删除前缀后的剩余部分
+    - `args: str` - 将剩余部分(remain)转化为 ArgParser 的参数
 ```python
 class PrefixHandlerParameter(BaseParameter):
     def __init__(self, msg:str, prefix, remain):
@@ -117,9 +126,10 @@ class PrefixHandlerParameter(BaseParameter):
 def on_suffix(self, suffix, only_to_me=False) -> Callable:
 ```
 
-匹配完成后，功能函数可通过 `EvnetInterface.get_param()` 获取到后缀匹配相关的结果。
-- `suffix: str` - 匹配的后缀
-- `remain: str` - 从原消息中删除后缀后的剩余部分
+匹配完成后，功能函数可通过 `EvnetInterface.get_param()` 获取到后缀匹配相关的结果。类型为 `SuffixHandlerParameter`。
+- `SuffixHandlerParameter`
+    - `suffix: str` - 匹配的后缀
+    - `remain: str` - 从原消息中删除后缀后的剩余部分
 ```python
 class SuffixHandlerParameter(BaseParameter):
     def __init__(self, msg:str, suffix, remain):
@@ -153,8 +163,9 @@ def on_keyword(self, keywords, only_to_me=False) -> Callable:
 def on_rex(self, rex: Union[str, re.Pattern], only_to_me=False) -> Callable:
 ```
 
-匹配完成后，功能函数可通过 `EvnetInterface.get_param()` 获取到正则匹配相关的结果。
-- `match: re.Match` - re.search 的匹配结果
+匹配完成后，功能函数可通过 `EvnetInterface.get_param()` 获取到正则匹配相关的结果。类型为 `RegexHandlerParameter`。
+- `RegexHandlerParameter`
+    - `match: re.Match` - re.search 的匹配结果
 ```python
 class RegexHandlerParameter(BaseParameter):
     def __init__(self, msg:str, match):
@@ -175,7 +186,7 @@ def scheduled_job(self, *args, **kwargs)
 ```python
 # Example
 @sv.on_prefix(('帮助', 'help'), only_to_me=False)
-async def help(bot: KokkoroBot, ev: EventInterface):
+async def help(bot: KokkoroBot, ev: EventInterface): # <---- 这里是功能函数
     await bot.send(ev, '这也是帮助信息')
 ```
 
