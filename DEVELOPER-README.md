@@ -36,8 +36,8 @@ async def help(bot: KokkoroBot, ev: EventInterface):
 KokkoroBot 延用了 HoshinoBot 中的模块管理机制。KokkoroBot 仅仅会加载 `MODULES_ON` 中开启的模块。
 1. 在 `kokkoro/modules` 中新建文件夹 `new_module`
 2. 在 `kokkoro/config/__bot__.py` 中的 `MODULES_ON` 中添加 `new_module` 模块。
-3. 在 `okkoro/modules/new_module` 中编写业务逻辑
-
+3. 在 `kokkoro/modules/new_module` 中编写业务逻辑
+执行完以上三步就完成了新模块的创建与启用。
 
 ### 1.3 服务层 (Services)
 一个模块中可以有一个或多个服务。每个服务中可以有一个或多个功能函数。可以通过群聊来管理当前群内的服务。`lssv` 列出群内服务；`enable` 开启群内服务；`disable` 关闭群内服务。

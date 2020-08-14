@@ -16,7 +16,9 @@ HELP_HEADER='''
 '''.strip()
 
 HELP_BOTTOM='''
-※※该bot是基于HoshinoBot开发的分支版本KokkoroBot的跨平台版本
+※※KokkoroBot是基于HoshinoBot开发的跨平台bot
+※※可以从github下载源码自行搭建部署，欢迎star&pr
+※※https://github.com/zzbslayer/KokkoroBot-Multi-Platform
 '''.strip()
 
 PRC_HELP = '''

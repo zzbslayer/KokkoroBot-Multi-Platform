@@ -30,7 +30,7 @@ def plt2bytes(plt):
     plt.savefig(buf, format='PNG', dpi=100)
 
 def add_prefix(commands: Iterable, prefixs: Iterable):
-    return [''.join(item) for item in itertools.product(commands, prefixs)]
+    return tuple([''.join(item) for item in itertools.product(commands, prefixs)])
 
 def load_config(inbuilt_file_var):
     """

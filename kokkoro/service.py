@@ -113,7 +113,7 @@ class Service:
 
     @property
     def bot(self):
-        return kokkoro.get_bot()
+        return kokkoro.bot.get_bot()
     
     @staticmethod
     def get_loaded_services() -> Dict[str, "Service"]:
