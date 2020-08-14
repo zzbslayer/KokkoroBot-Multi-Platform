@@ -125,7 +125,7 @@ HoshinoBot 群：367501912。KokkoroBot 群：887897168。
 TODO
 
 ## 3. 二次开发与新平台适配
-详情见 DEVELOPER-README.md .这里只做简要介绍。
+详情见 `DEVELOPER-README.md` .这里只做简要介绍。
 ### 3.1 接口设计
 KokkoroBot 在基础设施与应用层中加一层统一接口 `common_interface` 以达到解耦合的目的。
 
@@ -141,29 +141,31 @@ KokkoroBot 在基础设施与应用层中加一层统一接口 `common_interface
     - 完成平台相关的机器人
         - 机器人需要实现 `kokkoro.common_interface.KokkoroBot` 接口
         - 需要支持 `common_interface.SupportedMessageType` 中所有消息类型的发送
-        - 示例: `kokkoro.discord.KokkroDiscordBot`
+        - 示例: `kokkoro.bot.discord.KokkroDiscordBot`
     - 实现 `Event` 的适配
         - 将平台相关 `Event` 适配为 `common_interface.EventInterface`
             - 比如 `CQEvent`, `discord.Message`
-        - 示例：`kokkoro.discord.discord_adaptor.DiscordEvent`
+        - 示例：`kokkoro.bot.discord.discord_adaptor.DiscordEvent`
     - 实现 `User` 的适配
         - 将平台相关 `User` 适配为 `common_interface.UserInterface`
             - 比如 `CQEvent` 中的 at 信息，`discord.User`
-        - 示例：`kokkoro.discord.discord_adaptor.DiscordUser`
+        - 示例：`kokkoro.bot.discord.discord_adaptor.DiscordUser`
 
 ### 3.2 新 IM 平台适配
 以 telegram 为例，从零对 telegram 平台进行开发主要包含以下几步。
 - `kokkoro.config.__bot__` 中配置 `BOT_TYPE = 'telegram'`
 - `kokkoro.config.bot` 中添加 `telegram.py` 配置文件
-- 在 `kokkoro.telegram` 中实现相关适配
-- 在 `kokkoro.__init__` 中添加 telegram bot
+- 在 `kokkoro.bot.telegram` 包中实现相关适配
+- 在 `kokkoro.bot.__init__` 中添加 telegram bot
 
 # TODO
+- [ ] Web
+    - Doing by @SonodaHanami
 - [x] Isolate platform specific logic from application services
 - [ ] Scheduler
 - [ ] Modules migration
     - [ ] Arknights
-    - [ ] Pcr Clanbattle
+    - [x] Pcr Clanbattle
     - [ ] Dice
     - [ ] Flac
     - [ ] Group Master

@@ -5,7 +5,7 @@ from functools import wraps
 
 import kokkoro
 from kokkoro.typing import *
-from kokkoro import logger, KokkoroBot
+from kokkoro import logger
 from kokkoro import priv, log, typing, trigger
 from kokkoro.common_interface import *
 

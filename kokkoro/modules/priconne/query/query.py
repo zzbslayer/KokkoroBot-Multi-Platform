@@ -8,7 +8,7 @@ p2 = R.img('priconne/quick/r16-5-tw-1.png')
 p4 = R.img('priconne/quick/r17-5-jp-1.png')
 p5 = R.img('priconne/quick/r17-5-jp-2.png')
 p6 = R.img('priconne/quick/r17-5-jp-3.png')
-cn_rank = R.img('priconne/quick/r9-5.jpg')
+cn_rank = R.img('priconne/quick/r10-3.jpg')
 
 @sv.on_rex(r'^(\*?([日台国陆b])服?([前中后]*)卫?)?rank(表|推荐|指南)?$')
 async def rank_sheet(bot, ev:EventInterface):

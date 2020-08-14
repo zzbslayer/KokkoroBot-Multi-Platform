@@ -2,8 +2,8 @@ version: "3"
 services:
   kokkoro-bot:
     build: .
-    ports:
-      - "5001:5001"
+    # ports:
+    #   - "5001:5001" Ports for wechat_enterprise
     volumes:
       - ./:/bot/
       - ~/.kokkoro:/root/.kokkoro

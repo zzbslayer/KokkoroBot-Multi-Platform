@@ -1,5 +1,6 @@
-import kokkoro
-app = kokkoro.get_app()
+from . import get_app
+
+app = get_app()
 
 @app.route('/')
 async def hello():

@@ -8,8 +8,8 @@ import httpx
 import kokkoro
 from kokkoro.typing import overrides, Union
 from kokkoro.R import ResImg, RemoteResImg
-from kokkoro.discord.discord_adaptor import *
-from kokkoro.discord.discord_util import at
+from kokkoro.bot.discord.discord_adaptor import *
+from kokkoro.bot.discord.discord_util import at
 from kokkoro.common_interface import KokkoroBot, SupportedMessageType, EventInterface 
 
 class KokkoroDiscordBot(discord.Client, KokkoroBot):
