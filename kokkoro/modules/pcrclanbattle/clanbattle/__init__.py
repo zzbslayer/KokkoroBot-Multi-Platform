@@ -7,7 +7,7 @@ from .exception import *
 from kokkoro.typing import *
 from kokkoro.common_interface import KokkoroBot, EventInterface
 from kokkoro.service import Service
-from kokkoro.util import add_prefix
+from kokkoro.util import join_iterable
 
 sv = Service('clanbattle')
 SORRY = 'ごめんなさい！嘤嘤嘤(〒︿〒)'
@@ -15,7 +15,7 @@ SORRY = 'ごめんなさい！嘤嘤嘤(〒︿〒)'
 def cb_prefix(cmds):
     if isinstance(cmds, str):
         cmds = (cmds, )
-    return add_prefix(('!', '！'), cmds)
+    return join_iterable(('!', '！'), cmds)
 
 def cb_cmd(prefixes, parser:ArgParser) -> Callable:
     prefixes = cb_prefix(prefixes)

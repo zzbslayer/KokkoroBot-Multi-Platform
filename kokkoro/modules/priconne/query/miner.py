@@ -27,7 +27,7 @@ all_season[4001:7999] = 1
 all_season[8100:15001:100] = 30
 
 
-@sv.on_prefix(('挖矿', 'jjc钻石', '竞技场钻石', 'jjc钻石查询', '竞技场钻石查询'))
+@sv.on_prefix(('挖矿', 'jjc钻石', '竞技场钻石', 'jjc钻石查询', '竞技场钻石查询', 'arena-miner'))
 async def arena_miner(bot, ev: EventInterface):
     try:
         rank = int(ev.get_param().remain)

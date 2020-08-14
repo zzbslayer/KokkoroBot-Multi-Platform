@@ -199,7 +199,7 @@ async def select_player(bot, ev: EventInterface, pkey):
 
 
 
-@sv.on_fullmatch(('赛跑', '赛马', '兰德索尔杯'), only_to_me=False)
+@sv.on_fullmatch(('赛跑', '赛马', '兰德索尔杯', 'horse'), only_to_me=False)
 async def pcr_comp(bot, ev: EventInterface):
     global g_result_dict, g_uid_dict
     gid = ev.get_group_id()

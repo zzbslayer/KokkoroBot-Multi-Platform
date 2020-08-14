@@ -7,7 +7,7 @@ from kokkoro.common_interface import EventInterface
 total_mana = kokkoro.config.modules.priconne.total_mana
 total_exp = kokkoro.config.modules.priconne.total_exp
 
-@sv.on_prefix(('角色计算'))
+@sv.on_prefix(('角色计算', 'mana-burner'))
 async def manaburner(bot, ev: EventInterface):
     prm = re.findall("\d+", ev.get_param().remain)
     if len(prm) == 0 or len(prm) >= 4:

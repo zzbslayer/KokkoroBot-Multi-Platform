@@ -17,7 +17,7 @@ from . import arena
 
 lmt = FreqLimiter(5)
 
-aliases = ('怎么拆', '怎么解', '怎么打', '如何拆', '如何解', '如何打', '怎麼拆', '怎麼解', '怎麼打', 'jjc查询', 'jjc查詢')
+aliases = ('怎么拆', '怎么解', '怎么打', '如何拆', '如何解', '如何打', '怎麼拆', '怎麼解', '怎麼打', 'jjc查询', 'jjc查詢', 'arena-query')
 aliases_b = tuple('b' + a for a in aliases) + tuple('B' + a for a in aliases)
 aliases_tw = tuple('台' + a for a in aliases)
 aliases_jp = tuple('日' + a for a in aliases)
@@ -128,11 +128,11 @@ async def _arena_query(bot, ev: EventInterface, region: int):
     await bot.kkr_send(ev, '\n'.join(msg))
     sv.logger.debug('Arena result sent!')
 
-@sv.on_prefix('点赞')
+@sv.on_prefix(('点赞', 'arena-like'))
 async def arena_like(bot, ev):
     await _arena_feedback(bot, ev, 1)
 
-@sv.on_prefix('点踩')
+@sv.on_prefix(('点踩', 'arena_dislike'))
 async def arena_dislike(bot, ev):
     await _arena_feedback(bot, ev, -1)
 

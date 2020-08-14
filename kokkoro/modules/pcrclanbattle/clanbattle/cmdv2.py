@@ -60,7 +60,7 @@ def _check_admin(ev:EventInterface, tip:str='') -> bool:
         raise PermissionDeniedError(ERROR_PERMISSION_DENIED + tip)
 
 
-@cb_cmd('建会', ArgParser(usage=USAGE_ADD_CLAN, arg_dict={
+@cb_cmd(('建会', 'add-clan'), ArgParser(usage=USAGE_ADD_CLAN, arg_dict={
         'N': ArgHolder(tip='公会名'),
         'S': ArgHolder(tip='服务器地区', type=server_code)}))
 async def add_clan(bot: KokkoroBot, ev: EventInterface, args:ParseResult):
@@ -75,7 +75,7 @@ async def add_clan(bot: KokkoroBot, ev: EventInterface, args:ParseResult):
 
     
 
-@cb_cmd('查看公会', ArgParser('!查看公会'))
+@cb_cmd(('查看公会', 'list-clan'), ArgParser('!查看公会'))
 async def list_clan(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     bm = BattleMaster(ev.get_group_id())
     clans = bm.list_clan()
@@ -87,7 +87,7 @@ async def list_clan(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
         raise NotFoundError(ERROR_CLAN_NOTFOUND)
 
 
-@cb_cmd('入会', ArgParser(usage=USAGE_ADD_MEMBER, arg_dict={
+@cb_cmd(('入会', 'add-member'), ArgParser(usage=USAGE_ADD_MEMBER, arg_dict={
         '': ArgHolder(tip='昵称', default=''),
         '@': ArgHolder(tip='id', type=int, default=0)}))
 async def add_member(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
@@ -119,7 +119,7 @@ async def add_member(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
         await bot.kkr_send(ev, f"成员{bot.kkr_at(uid)}添加成功！欢迎{name}加入{clan['name']}")
 
 
-@cb_cmd(('查看成员', '成员查看', '查询成员', '成员查询'), ArgParser(USAGE_LIST_MEMBER))
+@cb_cmd(('查看成员', '成员查看', '查询成员', '成员查询', 'list-member'), ArgParser(USAGE_LIST_MEMBER))
 async def list_member(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     bm = BattleMaster(ev.get_group_id())
     clan = _check_clan(bm)
@@ -134,7 +134,7 @@ async def list_member(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
         raise NotFoundError(ERROR_ZERO_MEMBER)
 
 
-@cb_cmd('退会', ArgParser(usage='!退会 (@id)', arg_dict={
+@cb_cmd(('退会', 'del-member'), ArgParser(usage='!退会 (@id)', arg_dict={
         '@': ArgHolder(tip='id', type=int, default=0)}))
 async def del_member(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     bm = BattleMaster(ev.get_group_id())
@@ -147,7 +147,7 @@ async def del_member(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     await bot.kkr_send(ev, f"成员{mem['name']}已从公会删除", at_sender=True)
 
 
-@cb_cmd('清空成员', ArgParser('!清空成员'))
+@cb_cmd(('清空成员', 'clear-member'), ArgParser('!清空成员'))
 async def clear_member(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     bm = BattleMaster(ev.get_group_id())
     clan = _check_clan(bm)
@@ -157,7 +157,7 @@ async def clear_member(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     await bot.kkr_send(ev, msg, at_sender=True)
 
 
-@cb_cmd('一键入会', ArgParser('!一键入会'))
+@cb_cmd(('一键入会', 'batch-add-member'), ArgParser('!一键入会'))
 async def batch_add_member(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     bm = BattleMaster(ev.get_group_id())
     clan = _check_clan(bm)
@@ -255,7 +255,7 @@ async def jiuzhe(bot, ev):
     index = random.randint(0, len(msglist)-1)
     await bot.kkr_send(ev, msglist[index])
 
-@cb_cmd(('出刀', '报刀'), ArgParser(usage='!出刀 <伤害值> (@id)', arg_dict={
+@cb_cmd(('出刀', '报刀', 'add-challenge'), ArgParser(usage='!出刀 <伤害值> (@id)', arg_dict={
     '': ArgHolder(tip='伤害值', type=damage_int),
     '@': ArgHolder(tip='id', type=int, default=0),
     'R': ArgHolder(tip='周目数', type=round_code, default=0),
@@ -279,7 +279,7 @@ async def add_challenge(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
         
 
 
-@cb_cmd(('出尾刀', '收尾', '尾刀'), ArgParser(usage='!出尾刀 (<伤害值>) (@<id>)', arg_dict={
+@cb_cmd(('出尾刀', '收尾', '尾刀', 'add-challenge-last'), ArgParser(usage='!出尾刀 (<伤害值>) (@<id>)', arg_dict={
     '': ArgHolder(tip='伤害值', type=damage_int, default=0),
     '@': ArgHolder(tip='id', type=int, default=0),
     'R': ArgHolder(tip='周目数', type=round_code, default=0),
@@ -296,7 +296,7 @@ async def add_challenge_last(bot:KokkoroBot, ev:EventInterface, args:ParseResult
     await process_challenge(bot, ev, challenge)
 
 
-@cb_cmd(('出补时刀', '补时刀', '补时'), ArgParser(usage='!出补时刀 <伤害值> (@id)', arg_dict={
+@cb_cmd(('出补时刀', '补时刀', '补时', 'add-challenge-ext'), ArgParser(usage='!出补时刀 <伤害值> (@id)', arg_dict={
     '': ArgHolder(tip='伤害值', type=damage_int),
     '@': ArgHolder(tip='id', type=int, default=0),
     'R': ArgHolder(tip='周目数', type=round_code, default=0),
@@ -313,7 +313,7 @@ async def add_challenge_ext(bot:KokkoroBot, ev:EventInterface, args:ParseResult)
     await process_challenge(bot, ev, challenge)
 
 
-@cb_cmd('掉刀', ArgParser(usage='!掉刀 (@id)', arg_dict={
+@cb_cmd(('掉刀', 'add-challenge-timeout'), ArgParser(usage='!掉刀 (@id)', arg_dict={
     '@': ArgHolder(tip='id', type=int, default=0),
     'R': ArgHolder(tip='周目数', type=round_code, default=0),
     'B': ArgHolder(tip='Boss编号', type=boss_code, default=0)}))
@@ -329,7 +329,7 @@ async def add_challenge_timeout(bot:KokkoroBot, ev:EventInterface, args:ParseRes
     await process_challenge(bot, ev, challenge)
 
 
-@cb_cmd('删刀', ArgParser(usage='!删刀 E记录编号', arg_dict={
+@cb_cmd(('删刀', 'del-challenge'), ArgParser(usage='!删刀 E记录编号', arg_dict={
     'E': ArgHolder(tip='记录编号', type=int)}))
 async def del_challenge(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     bm = BattleMaster(ev.get_group_id())
@@ -450,7 +450,7 @@ def _gen_namelist_text(bot:KokkoroBot, bm:BattleMaster, uidlist:List[int], memol
 
 SUBSCRIBE_TIP = ''
 
-@cb_cmd('预约', ArgParser(usage='!预约 <Boss号> M留言', arg_dict={
+@cb_cmd(('预约', 'subscribe'), ArgParser(usage='!预约 <Boss号> M留言', arg_dict={
     '': ArgHolder(tip='Boss编号', type=boss_code),
     'M': ArgHolder(tip='留言', default='')}))
 async def subscribe(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
@@ -481,7 +481,7 @@ async def subscribe(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     await bot.kkr_send(ev, '\n'.join(msg), at_sender=True)
 
 
-@cb_cmd(('取消预约', '预约取消'), ArgParser(usage='!取消预约 <Boss号>', arg_dict={
+@cb_cmd(('取消预约', '预约取消', 'unsubscribe'), ArgParser(usage='!取消预约 <Boss号>', arg_dict={
     '': ArgHolder(tip='Boss编号', type=boss_code)}))
 async def unsubscribe(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     bm = BattleMaster(ev.get_group_id())
@@ -536,7 +536,7 @@ async def call_subscribe(bot:KokkoroBot, ev:EventInterface, round_:int, boss:int
         await bot.kkr_send(ev, '\n'.join(msg), at_sender=False)    # do not at the sender
 
 
-@cb_cmd(('查询预约', '预约查询', '查看预约', '预约查看'), ArgParser('!查询预约'))
+@cb_cmd(('查询预约', '预约查询', '查看预约', '预约查看', 'list-subscribe'), ArgParser('!查询预约'))
 async def list_subscribe(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     bm = BattleMaster(ev.get_group_id())
     clan = _check_clan(bm)
@@ -552,7 +552,7 @@ async def list_subscribe(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     await bot.kkr_send(ev, '\n'.join(msg), at_sender=True)
 
 
-@cb_cmd(('清空预约', '预约清空', '清理预约', '预约清理'), ArgParser('!清空预约', arg_dict={
+@cb_cmd(('清空预约', '预约清空', '清理预约', '预约清理', 'clear-subscribe'), ArgParser('!清空预约', arg_dict={
     '': ArgHolder(tip='Boss编号', type=boss_code)}))
 async def clear_subscribe(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     bm = BattleMaster(ev.get_group_id())
@@ -572,7 +572,7 @@ async def clear_subscribe(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
         raise NotFoundError(f"无人预约{bm.int2kanji(boss)}王")
 
 
-@cb_cmd(('预约上限', ), ArgParser(usage='!预约上限 B<Boss号> <上限值>', arg_dict={
+@cb_cmd(('预约上限', 'set-subscribe-limit'), ArgParser(usage='!预约上限 B<Boss号> <上限值>', arg_dict={
     'B': ArgHolder(tip='Boss编号', type=boss_code),
     '': ArgHolder(tip='上限值', type=int)
 }))
@@ -590,7 +590,7 @@ async def set_subscribe_limit(bot:KokkoroBot, ev, args:ParseResult):
     await bot.kkr_send(ev, f'{bm.int2kanji(args.B)}王预约上限已设置为：{limit}')
 
 
-@cb_cmd(('挂树', '上树'), ArgParser('!挂树'))
+@cb_cmd(('挂树', '上树', 'add-sos'), ArgParser('!挂树'))
 async def add_sos(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     bm = BattleMaster(ev.get_group_id())
     uid = ev.get_author_id()
@@ -610,7 +610,7 @@ async def add_sos(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     await bot.kkr_send(ev, R.img('priconne/挂树.jpg'))
 
 
-@cb_cmd(('查树', ), ArgParser('!查树'))
+@cb_cmd(('查树', 'list-sos'), ArgParser('!查树'))
 async def list_sos(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     bm = BattleMaster(ev.get_group_id())
     clan = _check_clan(bm)
@@ -622,7 +622,7 @@ async def list_sos(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     await bot.kkr_send(ev, '\n'.join(msg), at_sender=True)
 
 
-@cb_cmd(('锁定', '申请出刀'), ArgParser('!锁定'))
+@cb_cmd(('锁定', '申请出刀', 'lock'), ArgParser('!锁定'))
 async def lock_boss(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     bm = BattleMaster(ev.get_group_id())
     _check_clan(bm)
@@ -647,7 +647,7 @@ async def lock_boss(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
         await bot.kkr_send(ev, msg, at_sender=True)
 
 
-@cb_cmd(('解锁', ), ArgParser('!解锁'))
+@cb_cmd(('解锁', 'unlock'), ArgParser('!解锁'))
 async def unlock_boss(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     bm = BattleMaster(ev.get_group_id())
     _check_clan(bm)
@@ -690,7 +690,7 @@ async def auto_unlock_boss(bot:KokkoroBot, ev:EventInterface, bm:BattleMaster):
             await bot.kkr_send(ev, msg, at_sender=True)
 
 
-@cb_cmd(('进度', '进度查询', '查询进度', '进度查看', '查看进度', '状态'), ArgParser(usage='!进度'))
+@cb_cmd(('进度', '进度查询', '查询进度', '进度查看', '查看进度', '状态', 'progress'), ArgParser(usage='!进度'))
 async def show_progress(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     bm = BattleMaster(ev.get_group_id())
     clan = _check_clan(bm)
@@ -701,7 +701,7 @@ async def show_progress(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     await bot.kkr_send(ev, '\n' + msg, at_sender=True)
 
 
-@cb_cmd(('统计', '伤害统计'), ArgParser(usage='!伤害统计'))
+@cb_cmd(('统计', '伤害统计', 'stat-damage'), ArgParser(usage='!伤害统计'))
 async def stat_damage(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     bm = BattleMaster(ev.get_group_id())
     now = datetime.now()
@@ -764,7 +764,7 @@ async def stat_damage(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     await bot.kkr_send(ev, msg, at_sender=True)
 
 
-@cb_cmd('分数统计', ArgParser(usage='!分数统计'))
+@cb_cmd(('分数统计', 'stat-score'), ArgParser(usage='!分数统计'))
 async def stat_score(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     bm = BattleMaster(ev.get_group_id())
     now = datetime.now()
@@ -845,16 +845,16 @@ async def _do_show_remain(bot:KokkoroBot, ev:EventInterface, args:ParseResult, a
             await bot.kkr_send(ev, R.img('priconne/催刀.jpg'))
 
 
-@cb_cmd('查刀', ArgParser(usage='!查刀', arg_dict={
+@cb_cmd(('查刀', 'list-remain'), ArgParser(usage='!查刀', arg_dict={
         'D': ArgHolder(tip='日期差', type=int, default=0)}))
 async def list_remain(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     await _do_show_remain(bot, ev, args, at_user=False)
-@cb_cmd('催刀', ArgParser(usage='!催刀'))
+@cb_cmd(('催刀', 'urge-remain'), ArgParser(usage='!催刀'))
 async def urge_remain(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     await _do_show_remain(bot, ev, args, at_user=True)
 
 
-@cb_cmd('出刀记录', ArgParser(usage='!出刀记录 (@id)', arg_dict={
+@cb_cmd(('出刀记录', 'list-challenge'), ArgParser(usage='!出刀记录 (@id)', arg_dict={
         '@': ArgHolder(tip='id', type=int, default=0),
         'D': ArgHolder(tip='日期差', type=int, default=0)}))
 async def list_challenge(bot:KokkoroBot, ev:EventInterface, args:ParseResult):

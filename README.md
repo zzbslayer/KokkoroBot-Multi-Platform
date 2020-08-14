@@ -124,9 +124,66 @@ HoshinoBot 群：367501912。KokkoroBot 群：887897168。
 ### 2.4 第三方应用的 API Key
 TODO
 
-## 3. 二次开发与新平台适配
+## 3. 指令集
+多个匹配指令以逗号分隔，实际操作时可匹配指令更多，该表格仅显示最标准的命令。后续会有更多功能实装，敬请期待~
+
+
+| 所属服务       | 简中 zh-cn       | 繁中 zh-tw   | English       | 功能            | 备注 |
+|---------------|------------------|--------------|---------------|----------------|------|
+| help          | 帮助             | 幫助         | help          | 帮助信息概览    |      |
+|               | 公主连结帮助      |             | pcr-help       | 公主连结帮助信息 |      |
+|               | 通用帮助         |             | general-help  | 通用帮助信息    |      |
+| pcrclanbattle | !帮助            | !幫助       | !help         | 公主连结会战帮助 |     |
+| 会战命令均以感叹号为前缀，全半角皆可 | !建会 |             |!add-clan| 建立公会        | 接受两个参数分别为公会名与服务器地区。示例 !建会 N公会名 Scn |
+|               | !查看公会         |             | !list-clan     | 查看公会信息 |      |
+|               | !入会            |              | !add-member    | 加入公会     | 可以通过at让其他人入会。示例：!入会 @群友    |
+|               | !一键入会        |              | !batch-add-member|             | 目前该功能会将群内 bot 一起拉入公会，后续会将 bot 过滤 |
+|               | !查看成员        |              | !list-member    | 查看公会成员信息 |  |
+|               | !退会           |               | !del-member    | 退出公会     | 可以通过at让其他人退会。如果群友退群，可以at后面直接跟 id。示例：!退会 @12345 |
+|               | !清空成员        |               | !clear-member   | 清空公会成员信息 | | 
+|               | !出刀, !报刀     |               | !add-challenge  | 汇报出刀伤害     | 可以通过at代替报刀。示例：!出刀 123456 @群友|
+|               | !尾刀, !收尾     |               | !add-challenge-last  | 汇报尾刀   | 可以通过at代替报刀。示例：!收尾 @群友|
+|               | !补时刀, !补时   |               | !add-challenge-ext   | 汇报补时刀 | 可以通过at代替报刀。示例：!补时 123456 @群友|
+|               | !掉刀            |               | !add-challenge-timeout | 汇报掉刀 | 本质上跟 !出刀 0 相同 |
+|               | !删刀            |               | !del-challenge         | 删除报刀 | 根据记录编号删刀。示例: !删刀 E10 |
+|               | !预约            |               | !subscribe           | 预约boss  | 可留言。示例：!预约 5 M这是留言 |
+|               | !取消预约        |                | !unsubscribe        | 取消预约boss | 示例：!取消预约 5
+|               | !查看预约        |                | !list-subscribe     | 查询预约情况 | |
+|               | !清空预约        |                | !clear-subscribe    | 清空预约情况 | |
+|               | !预约上限        |                | !set-subscribe-limit | 清空预约情况 | |
+|               | !挂树            |                | !add-sos            | 会长我挂树了  | |
+|               | !查树            |                | !list-sos           | 查看挂树情况  | |
+|               | !锁定, !申请出刀  |                | !lock               | 出刀前锁定boss防止撞刀 | |
+|               | !解锁            |                | !unlock             | 出刀后自动解锁，若放弃出刀请使用 !解锁 功能 | |
+|               | !进度            |                | !progress           | 查看目前会战进度 | |
+|               | !统计, !伤害统计  |                | !stat-damage        | 统计目前伤害情况 | |
+|               | !分数统计        |                 | !stat-score         | 统计目前分数情况 | |
+|               | !查刀            |                | !list-remain         | 查看今日剩余出刀情况 | |
+|               | !出刀记录        |                 | !list-challenge     | 查看今日历史出刀情况 | 可以通过at查看指定群友出刀情况。示例：!出刀记录 @群友 |
+|               | !催刀            |                | !urge-remain         | at所有有刀未出得群友 | |
+| pcr-login-bonus | @bot 签到,盖章,妈 |                | @bot login-bonus     | 给主さま盖章章      | |
+| pcr-query      | 挖矿, jjc钻石, 竞技场钻石 |         | arena-miner          | 查询竞技场剩余钻石  | 示例：挖矿 15001 |
+|               | 角色计算          |                | mana-burner          | 查询角色升级所需经验药水与 mana | 示例：角色计算 50 100 |
+|               | 谁是             | 誰是            | whois                | 根据别称查询角色   | 示例：谁是妈 |
+|               | 日/台/国/b服rank表 |               |                       | rank表查询，仅供参考 | |
+|               | jjc作业, jjc数据库 | jjc作業, jjc數據庫 | jjc               | 竞技场作业网        | |
+|               | pcr速查, pcr图书馆 | pcr圖書館, 圖書館 | pcr-sites          | 日台服相关网站   | |
+|               | bcr速查, bcr攻略   |                  | bcr-sites          | 国服相关网站     | |
+|               | 黄骑充电表         |                  | yukari-sheet       | 黄骑充电表       | |
+| pcr-horse     | 赛马, 赛跑, 兰德索尔杯 |               | horse              | 兰德索尔赛🐎大赛 | |
+| gacha         | /单抽, /来发单抽   | /單抽, /來發單抽  | gacha1             | 来发单抽          | |
+| 抽卡命令均以斜杠为前缀| /十连, /来发十连   | /十連, /來發十連  | gacha10            | 来发十连          | |
+|               | /井, /来一井       | /井,   /來一井   | gacha300, tenjo     | 来一井           | |
+|               | 查看卡池, 卡池资讯  | 查看卡池, 卡池資訊 | gacha-info        | 查看卡池          | |
+|               | 选择卡池, 切换卡池  | 選擇卡池, 切換卡池 | switch-pool       | 切换卡池          | |
+| pcr-arena     | 怎么拆, jjc查询     | 怎麼拆, jjc查詢   | arena-query       | 竞技场作业在线查询 | 需申请 pcrdfans 的 API Key。可指定服务器查询。示例：日怎么拆 布丁 空花 真步 猫剑 望。|
+|               | 点赞               |                   | arena-like        | 竞技场作业点赞    | |
+|               | 点踩               |                   | arena-dislike     | 竞技场作业点踩    | |
+
+
+## 4. 二次开发与新平台适配
 详情见 `DEVELOPER-README.md` .这里只做简要介绍。
-### 3.1 接口设计
+### 4.1 接口设计
 KokkoroBot 在基础设施与应用层中加一层统一接口 `common_interface` 以达到解耦合的目的。
 
 任何平台的机器人都需要实现 `kokkoro.common_interface.KokkoroBot` 接口。
@@ -151,7 +208,7 @@ KokkoroBot 在基础设施与应用层中加一层统一接口 `common_interface
             - 比如 `CQEvent` 中的 at 信息，`discord.User`
         - 示例：`kokkoro.bot.discord.discord_adaptor.DiscordUser`
 
-### 3.2 新 IM 平台适配
+### 4.2 新 IM 平台适配
 以 telegram 为例，从零对 telegram 平台进行开发主要包含以下几步。
 - `kokkoro.config.__bot__` 中配置 `BOT_TYPE = 'telegram'`
 - `kokkoro.config.bot` 中添加 `telegram.py` 配置文件

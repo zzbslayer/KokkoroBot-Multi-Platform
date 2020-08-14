@@ -6,7 +6,7 @@ from collections import defaultdict
 from kokkoro import priv, util, R
 from kokkoro.service import Service
 from kokkoro.common_interface import *
-from kokkoro.util import DailyNumberLimiter, concat_pic, pic2b64, silence, add_prefix
+from kokkoro.util import DailyNumberLimiter, concat_pic, pic2b64, silence, join_iterable
 
 from .. import chara
 from .gacha import Gacha
@@ -34,18 +34,18 @@ _gacha_10_aliases = ('抽十连', '十连', '十连！', '十连抽', '来个十
                     '十連', '十連！', '十連抽', '來個十連', '來發十連', '來次十連', '抽個十連', '抽發十連', '抽次十連', '十連轉蛋', '轉蛋十連',
                     '10連', '10連！', '10連抽', '來個10連', '來發10連', '來次10連', '抽個10連', '抽發10連', '抽次10連', '10連轉蛋', '轉蛋10連')
 en_10 = ('gacha-10', 'gacha10', '10gacha')
-gacha_10_aliases = add_prefix(("/"), _gacha_10_aliases) + en_10
+gacha_10_aliases = join_iterable(("/"), _gacha_10_aliases) + en_10
 
 en_1 = ('gacha-1', 'gacha1', '1gacha')
 _gacha_1_aliases = ('单抽', '单抽！', '来发单抽', '来个单抽', '来次单抽', '扭蛋单抽', '单抽扭蛋',
                    '單抽', '單抽！', '來發單抽', '來個單抽', '來次單抽', '轉蛋單抽', '單抽轉蛋')
-gacha_1_aliases = add_prefix(("/"), _gacha_1_aliases) + en_1
+gacha_1_aliases = join_iterable(("/"), _gacha_1_aliases) + en_1
 
 en_300 = ('gacha-300', 'gacha300', '300gacha', 'tenjo')
 _gacha_300_aliases = ('井', '抽一井', '来一井', '来发井', '來一井', '抽发井', '天井扭蛋', '扭蛋天井', '天井轉蛋', '轉蛋天井')
-gacha_300_aliases = add_prefix(("/"), _gacha_300_aliases) + en_300
+gacha_300_aliases = join_iterable(("/"), _gacha_300_aliases) + en_300
 
-@sv.on_fullmatch(('卡池资讯', '查看卡池', '看看卡池', '康康卡池', '卡池資訊', '看看up', '看看UP'))
+@sv.on_fullmatch(('卡池资讯', '查看卡池', '看看卡池', '康康卡池', '卡池資訊', '看看up', '看看UP', 'gacha-info'))
 async def gacha_info(bot:KokkoroBot, ev: EventInterface):
     gid = str(ev.get_group_id())
     gacha = Gacha(_group_pool[gid])
@@ -58,7 +58,7 @@ async def gacha_info(bot:KokkoroBot, ev: EventInterface):
 
 
 POOL_NAME_TIP = '请选择以下卡池\n> 切换卡池jp\n> 切换卡池tw\n> 切换卡池b\n> 切换卡池mix'
-@sv.on_prefix(('切换卡池', '选择卡池', '切換卡池', '選擇卡池'))
+@sv.on_prefix(('切换卡池', '选择卡池', '切換卡池', '選擇卡池', 'set-pool'))
 async def set_pool(bot:KokkoroBot, ev: EventInterface):
     if not priv.check_priv(ev.get_author(), priv.ADMIN):
         await bot.kkr_send(ev, '只有群管理才能切换卡池', at_sender=True)
