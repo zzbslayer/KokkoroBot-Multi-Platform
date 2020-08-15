@@ -75,11 +75,13 @@ class Service:
 
 #### 1.3.2 broadcast
 向开启该服务的群组广播消息
-- `msgs: List[str]` - 消息列表
+- `msgs: Union[SupportedMessageType, List[SupportedMessageType]]` - 消息或消息列表
 - `TAG: str` - 广播标签，仅用于日志打印
     - 默认为空字符串
-- `interval_time: double` - 广播消息的间隔时间（秒）
-    - 默认为 0.5
+
+```python
+async def broadcast(self, msgs: Union[SupportedMessageType, List[SupportedMessageType]], TAG=''):
+```
 
 #### 1.3.3 装饰器
 使用服务层提供的装饰器(decorator)装饰功能函数，装饰器会自动将功能函数注册到 KokkoroBot 中，一旦群内消息触发了装饰器的匹配条件，将会自动触发对应功能函数。
@@ -174,10 +176,14 @@ class RegexHandlerParameter(BaseParameter):
 ```
 
 ##### 1.3.3.6 scheduled_job
-定时任务，支持 cron。TODO 暂未实现。
-
+使用 apscheduler 实现定时任务，接口可参考[文档](https://apscheduler.readthedocs.io/en/stable/modules/schedulers/base.html#apscheduler.schedulers.base.BaseScheduler.scheduled_job)，支持 cron。或参考 `kokkoro.modules.arena_reminder` 中的使用。
 ```python
-def scheduled_job(self, *args, **kwargs)
+def scheduled_job(self, *args, **kwargs) -> Callable:
+
+#example 背刺提醒
+@svjp.scheduled_job('cron', hour='13', minute='45')
+async def pcr_reminder_utc9():
+    await svjp.broadcast(msg, 'pcr-reminder-utc9', 0.2)
 ```
 
 ### 1.4 功能函数
