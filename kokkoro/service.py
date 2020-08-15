@@ -1,13 +1,16 @@
 import re
 import json
 import os
+import pytz
 from functools import wraps
+from collections import defaultdict
 
 import kokkoro
 from kokkoro.typing import *
 from kokkoro import logger
 from kokkoro import priv, log, typing, trigger
 from kokkoro.common_interface import *
+from kokkoro.bot import get_scheduler, get_bot
 
 # service management
 _loaded_services: Dict[str, "Service"] = {}  # {name: service}
@@ -113,7 +116,11 @@ class Service:
 
     @property
     def bot(self):
-        return kokkoro.bot.get_bot()
+        return get_bot()
+    
+    @property
+    def scheduler(self):
+        return get_scheduler()
     
     @staticmethod
     def get_loaded_services() -> Dict[str, "Service"]:
@@ -219,17 +226,35 @@ class Service:
             return func
         return deco
 
-    async def broadcast(self, msgs, TAG='', interval_time=0.5):
+    def scheduled_job(self, *args, **kwargs) -> Callable:
+        kwargs.setdefault('timezone', pytz.timezone('Asia/Shanghai'))
+        kwargs.setdefault('misfire_grace_time', 60)
+        kwargs.setdefault('coalesce', True)
+        def deco(func: Callable) -> Callable:
+            @wraps(func)
+            async def wrapper():
+                try:
+                    self.logger.info(f'Scheduled job {func.__name__} start.')
+                    ret = await func()
+                    self.logger.info(f'Scheduled job {func.__name__} completed.')
+                    return ret
+                except Exception as e:
+                    self.logger.error(f'{type(e)} occured when doing scheduled job {func.__name__}.')
+                    self.logger.exception(e)
+            return self.scheduler.scheduled_job(*args, **kwargs)(wrapper)
+        return deco
+
+    async def broadcast(self, msgs: Union[SupportedMessageType, List[SupportedMessageType]], TAG='', interval_time=0.5):
         bot = self.bot
         glist = self.get_enable_groups()
         for gid in glist:
             try:
-                for msg in msgs:
-                    await asyncio.sleep(interval_time)
-                    channels = bot.get_guild(gid).channels
-                    for channel in channels:
-                        if channel.name == "broadcast":
-                            await bot.send_message(channel, msg)
+                if isinstance(msgs, list):
+                    for msg in msgs:
+                        await bot.kkr_send_by_group(gid, msg)
+                        #await asyncio.sleep(interval_time)
+                else:
+                    await bot.kkr_send_by_group(gid, msgs)
                 l = len(msgs)
                 if l:
                     self.logger.info(f"群{gid} 投递{TAG}成功 共{l}条消息")

@@ -46,8 +46,10 @@ PRC_HELP = '''
 ※[切噜～♪切啰巴切拉切蹦切蹦] 切噜语翻译
 [国/日服日程表] 查看国服活动日程表
 ※[国/台服新闻] 查看国服新闻
-※[启用/禁用 pcr-arena-reminder-cn] 背刺时间提醒(UTC+8)
-※[启用/禁用 pcr-portion-reminder-cn] 提醒买药小助手(UTC+8)
+※[启用/禁用 pcr-arena-reminder-jp] 背刺时间提醒(UTC+9)
+※[启用/禁用 pcr-arena-reminder-tw] 背刺时间提醒(UTC+8)
+※[启用/禁用 pcr-portion-reminder-jp] 背刺时间提醒(UTC+9)
+※[启用/禁用 pcr-portion-reminder-tw] 提醒买药小助手(UTC+8)
 ※[启用/禁用 weibo-pcr] 国服官微推送
 ※[！帮助] 查看会战管理功能的说明
 '''.strip()

@@ -22,15 +22,13 @@ class KokkoroDiscordBot(discord.Client, KokkoroBot):
         kokkoro.logger.info(f'Logged on as {self.user}')
 
     async def on_message(self, raw_event):
-        await super().kkr_on_message(raw_event)
+        await super().kkr_on_message(raw_event)  
 
     @overrides(KokkoroBot)
     def kkr_event_adaptor(self, raw_event:discord.Message) -> EventInterface:
         return DiscordEvent(raw_event)
 
-    @overrides(KokkoroBot)
-    async def kkr_send(self, ev: DiscordEvent, msg: SupportedMessageType, at_sender=False, filename="image.png"):
-        channel = ev.get_channel()
+    async def _send_by_channel(self, channel, msg:SupportedMessageType, filename="image.png"):
         if isinstance(msg, ResImg):
             if kokkoro.config.RES_PROTOCOL == 'http':
                 await self._send_remote_img(channel, url=msg.url, filename=filename)
@@ -45,11 +43,29 @@ class KokkoroDiscordBot(discord.Client, KokkoroBot):
         elif isinstance(msg, Figure):
             await self._send_matplotlib_fig(channel, msg, filename=filename)
         elif isinstance(msg, str):
-            if at_sender:
-                msg = f'{msg} <@{ev.get_author_id()}>'
             await channel.send(msg)
         else:
             raise NotImplementedError
+
+
+    @overrides(KokkoroBot)
+    async def kkr_send(self, ev: DiscordEvent, msg: SupportedMessageType, at_sender=False, filename="image.png"):
+        if isinstance(msg, str) and at_sender:
+            msg = f'{msg} <@{ev.get_author_id()}>'
+
+        channel = ev.get_channel()
+        await self._send_by_channel(channel, msg, filename)
+        
+
+    @overrides(KokkoroBot)
+    async def kkr_send_by_group(self, gid, msg: SupportedMessageType, filename="image.png"):
+        guild = self.get_guild(gid)
+        channels = guild.channels
+        for channel in channels:
+            if channel.name == kokkoro.config.BROADCAST_CHANNEL:
+                await self._send_by_channel(channel, msg, filename=filename)
+                return
+        kokkoro.logger.warning(f"Guild <{guild.id}> doesn't contains channel named as <{kokkoro.config.BROADCAST_CHANNEL}>")
 
     @overrides(KokkoroBot)
     def kkr_at(self, uid):

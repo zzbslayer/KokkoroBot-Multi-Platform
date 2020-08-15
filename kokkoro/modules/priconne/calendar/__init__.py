@@ -3,6 +3,8 @@ from kokkoro.common_interface import *
 
 sv = Service('pcr-calendar')
 cn_official_url = 'https://game.bilibili.com/pcr/#p8'
+jp_calendar = 'https://calendar.google.com/calendar/embed?src=obeb9cdv0osjuau8e7dbgmnhts%40group.calendar.google.com&ctz=Asia%2FHong_Kong' # Thanks for @KaiLK
+
 @sv.on_rex(r'^\*?([日台国bB])服?(日历|日程|日程表)?$')
 async def calendar(bot, ev:EventInterface):
     match = ev.get_param().match
@@ -19,4 +21,6 @@ async def calendar(bot, ev:EventInterface):
     msg = f'{server}服日程表\nyobot: {yobot_url}'
     if region == 'cn':
         msg = f'{msg}\nbilibili: {cn_official_url}'
+    elif region == 'jp':
+        msg = f'{msg}\n@KaiLK: {jp_calendar}'
     await bot.kkr_send(ev, msg)

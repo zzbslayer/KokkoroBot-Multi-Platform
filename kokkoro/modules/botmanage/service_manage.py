@@ -8,7 +8,7 @@ from kokkoro.common_interface import EventInterface
 
 PRIV_TIP = f'群员={priv.NORMAL} GameMaster={priv.SUPERUSER}'
 
-sv = Service('service_management',use_priv=priv.SUPERUSER, manage_priv=priv.SUPERUSER, visible=False)
+sv = Service('service_management',use_priv=priv.ADMIN, manage_priv=priv.SUPERUSER, visible=False)
 
 @sv.on_prefix(('lssv','服务列表', '功能列表'), only_to_me=False)
 async def lssv(bot, ev: EventInterface):
