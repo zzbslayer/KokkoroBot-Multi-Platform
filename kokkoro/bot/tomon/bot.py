@@ -1,12 +1,14 @@
 import asyncio
 import nest_asyncio
 from tomon_sdk import bot
+from requests_toolbelt import MultipartEncoder
 
 import kokkoro
-from kokkoro.bot.tomon.tomon_adaptor import *
 from kokkoro.common_interface import KokkoroBot, EventInterface
 from kokkoro.R import ResImg, RemoteResImg
 from kokkoro.typing import overrides, Image, Figure
+from kokkoro.bot.tomon.tomon_adaptor import *
+from kokkoro.bot.tomon.tomon_util import at
 
 nest_asyncio.apply()
 loop = asyncio.get_event_loop()
@@ -38,6 +40,12 @@ class KokkoroTomonBot(KokkoroBot):
             payload = {}
             payload['content'] = msg
         elif isinstance(msg, ResImg):
+            # multipart_data = MultipartEncoder(
+            #     fields = {
+            #         'images': (filename, open(msg.path, 'rb')),
+            #         'payload_json': '{"content":"test_image_upload"}'
+            #     }
+            # )
             raise NotImplementedError
         elif isinstance(msg, RemoteResImg):
             raise NotImplementedError
@@ -58,4 +66,4 @@ class KokkoroTomonBot(KokkoroBot):
 
     @overrides(KokkoroBot)
     def kkr_at(self, uid):
-        return f'<@{uid}>'
+        return at(uid)
