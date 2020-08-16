@@ -1,10 +1,8 @@
 import os
-from PIL import Image
-from matplotlib.figure import Figure
 
 import kokkoro
 from kokkoro import config
-from kokkoro.typing import Union, List
+from kokkoro.typing import Union, List, Image, Figure
 from kokkoro.R import ResImg, RemoteResImg
 
 SupportedMessageType = Union[ResImg, RemoteResImg, Image.Image, Figure, str]
@@ -18,13 +16,13 @@ from kokkoro.msg_handler import handle_message
 from kokkoro import config, util
 
 class UserInterface:
-    def get_id(self):
+    def get_id(self) -> str:
         raise NotImplementedError
-    def get_name(self):
+    def get_name(self) -> str:
         raise NotImplementedError
     def get_raw_user(self):
         raise NotImplementedError
-    def get_nick_name(self):
+    def get_nick_name(self) -> str:
         raise NotImplementedError
     def is_admin(self):
         raise NotImplementedError
@@ -32,11 +30,14 @@ class UserInterface:
         raise NotImplementedError
 
 class EventInterface:
-    def get_id(self):
+
+    def get_type(self):
         raise NotImplementedError
-    def get_author_id(self):
+    def get_id(self) -> str:
         raise NotImplementedError
-    def get_author_name(self):
+    def get_author_id(self) -> str:
+        raise NotImplementedError
+    def get_author_name(self) -> str:
         raise NotImplementedError
 
     def get_author(self) -> UserInterface:
@@ -51,7 +52,7 @@ class EventInterface:
                 return True
         return False
 
-    def get_group_id(self):
+    def get_group_id(self) -> str:
         raise NotImplementedError
     def get_content(self) -> str:
         raise NotImplementedError
@@ -87,12 +88,10 @@ class KokkoroBot:
     async def kkr_on_message(self, raw_event):
         # don't respond to ourselves
         ev = self.kkr_event_adaptor(raw_event)
-        if ev.get_author_id() == self.config.BOT_ID:
+        if self.config.BOT_TYPE != 'tomon' and ev.get_author_id() == self.config.BOT_ID: #FIXME
             return
         if ev.get_group_id() not in config.ENABLED_GROUP:
             return
-
-        kokkoro.logger.debug(f'Receive message:{ev.get_content()}')
 
         await handle_message(self, ev)
 

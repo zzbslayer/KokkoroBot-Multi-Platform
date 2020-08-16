@@ -3,6 +3,8 @@ from kokkoro import trigger, util, config
 from kokkoro.platform_patch import preprocess_message
 
 async def handle_message(bot, ev):
+    kokkoro.logger.debug(f'Receive message:{ev.get_content()}')
+    
     preprocess_message(ev)
     kokkoro.logger.debug(f'Searching for Message Handler...')
     for t in trigger.chain:

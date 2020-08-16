@@ -59,13 +59,14 @@ class KokkoroDiscordBot(discord.Client, KokkoroBot):
 
     @overrides(KokkoroBot)
     async def kkr_send_by_group(self, gid, msg: SupportedMessageType, filename="image.png"):
+        channel_name=kokkoro.config.bot.discord.BROADCAST_CHANNEL
         guild = self.get_guild(gid)
         channels = guild.channels
         for channel in channels:
-            if channel.name == kokkoro.config.BROADCAST_CHANNEL:
+            if channel.name == channel_name:
                 await self._send_by_channel(channel, msg, filename=filename)
                 return
-        kokkoro.logger.warning(f"Guild <{guild.id}> doesn't contains channel named as <{kokkoro.config.BROADCAST_CHANNEL}>")
+        kokkoro.logger.warning(f"Guild <{guild.id}> doesn't contains channel named as <{channel_name}>")
 
     @overrides(KokkoroBot)
     def kkr_at(self, uid):

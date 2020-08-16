@@ -37,8 +37,8 @@ async def boss_slayer(bot, ev: EventInterface):
                 ans1 = f'先出{dmg1:,}再出{dmg2:,}，返还时间{ext1}秒'
                 ext2 = min(math.ceil(ext0-((hp-dmg2)/dmg1)*90), 90)
                 ans2 = f'先出{dmg2:,}再出{dmg1:,}，返还时间{ext2}秒'
-        not_my_fault = "计算结果仅供参考，可能与游戏内实际返还时间有偏差"
-        msg = '\n'.join([servertag, ans1, ans2, not_my_fault])
+            not_my_fault = "计算结果仅供参考，可能与游戏内实际返还时间有偏差"
+            msg = '\n'.join([servertag, ans1, ans2, not_my_fault])
         await bot.kkr_send(ev, msg, at_sender=False)
     else: 
         usage = "使用方法：\n合刀计算 [服务器] BOSS剩余血量 伤害1 伤害2"

@@ -5,3 +5,5 @@ ENABLED_GROUP = [
     guild-id
 ]
 BOT_ID = bot-id
+
+BROADCAST_CHANNEL="broadcast"

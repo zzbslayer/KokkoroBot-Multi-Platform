@@ -8,23 +8,23 @@ class TelegramEvent(EventInterface):
 
     @overrides(EventInterface)
     def get_id(self):
-        return self.raw_event.message_id
+        return str(self.raw_event.message_id)
 
     @overrides(EventInterface)
     def get_author_id(self):
-        return self.raw_event.from_user.id
+        return str(self.raw_event.from_user.id)
     
     @overrides(EventInterface)
     def get_author_name(self):
-        return self.raw_event.from_user.username
+        return str(self.raw_event.from_user.username)
 
     @overrides(EventInterface)
     def get_group_id(self):
-        return self.raw_event.chat.id
+        return str(self.raw_event.chat.id)
 
     @overrides(EventInterface)
     def get_content(self) -> str:
-        return self.raw_event.text
+        return str(self.raw_event.text)
 
     @overrides(EventInterface)
     def get_mentions(self) -> List[UserInterface]:

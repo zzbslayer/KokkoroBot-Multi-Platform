@@ -58,7 +58,7 @@ async def gacha_info(bot:KokkoroBot, ev: EventInterface):
 
 
 POOL_NAME_TIP = '请选择以下卡池\n> 切换卡池jp\n> 切换卡池tw\n> 切换卡池b\n> 切换卡池mix'
-@sv.on_prefix(('切换卡池', '选择卡池', '切換卡池', '選擇卡池', 'set-pool'))
+@sv.on_prefix(('切换卡池', '选择卡池', '切換卡池', '選擇卡池', 'switch-pool'))
 async def set_pool(bot:KokkoroBot, ev: EventInterface):
     if not priv.check_priv(ev.get_author(), priv.ADMIN):
         await bot.kkr_send(ev, '只有群管理才能切换卡池', at_sender=True)

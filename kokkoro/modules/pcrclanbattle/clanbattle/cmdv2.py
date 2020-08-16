@@ -128,7 +128,7 @@ async def list_member(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     mems = bm.list_member(1)
     if l := len(mems):
         # 数字太多会被腾讯ban
-        mems = map(lambda x: '{uid: <11,d} | {name}'.format_map(x), mems)
+        mems = map(lambda x: '{uid} | {name}'.format_map(x), mems)
         msg = [ f"\n{clan['name']}   {l}/30 人\n____ ID ____ | 昵称", *mems]
         await bot.kkr_send(ev, '\n'.join(msg), at_sender=True)
     else:
@@ -918,11 +918,12 @@ async def boss_slayer(bot, ev: EventInterface, args: ParseResult):
                 ans1 = f'先出{dmg1:,}再出{dmg2:,}，返还时间{ext1}秒'
                 ext2 = min(math.ceil(ext0-((hp-dmg2)/dmg1)*90), 90)
                 ans2 = f'先出{dmg2:,}再出{dmg1:,}，返还时间{ext2}秒'
-        not_my_fault = "计算结果仅供参考，可能与游戏内实际返还时间有偏差"
-        msg = '\n'.join([servertag, ans1, ans2, not_my_fault])
+
+            not_my_fault = "计算结果仅供参考，可能与游戏内实际返还时间有偏差"
+            msg = '\n'.join([servertag, ans1, ans2, not_my_fault])
         await bot.kkr_send(ev, msg, at_sender=False)
     else: 
-        usage = "使用方法：\n合刀计算 [服务器] BOSS剩余血量 伤害1 伤害2"
+        usage = "【用法/用例】\n!补偿刀计算 伤害1 伤害2"
         await bot.kkr_send(ev, usage, at_sender=True)
 
 async def get_cookies(url, **kwargs):

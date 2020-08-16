@@ -26,11 +26,11 @@ class DiscordUser(UserInterface):
 
     @overrides(UserInterface)
     def get_id(self):
-        return self.raw_user.id
+        return str(self.raw_user.id)
 
     @overrides(UserInterface)
     def get_name(self):
-        return self.raw_user.name
+        return str(self.raw_user.name)
     
     @overrides(UserInterface)
     def get_raw_user(self) -> User:
@@ -38,7 +38,7 @@ class DiscordUser(UserInterface):
     
     @overrides(UserInterface)
     def get_nick_name(self):
-        return self.raw_user.nick
+        return str(self.raw_user.nick)
     
     @overrides(UserInterface)
     def get_priv(self):
@@ -55,22 +55,23 @@ class DiscordUser(UserInterface):
 class DiscordEvent(EventInterface):
     def __init__(self, msg: Message):
         self._raw_event = msg
+        self.author = DiscordUser(self._raw_event.author)
 
     @overrides(EventInterface)
     def get_id(self):
-        return self._raw_event.id
+        return str(self._raw_event.id)
 
     @overrides(EventInterface)
     def get_author_id(self):
-        return self._raw_event.author.id
+        return str(self._raw_event.author.id)
     
     @overrides(EventInterface)
     def get_author_name(self):
-        return self._raw_event.author.name
+        return str(self._raw_event.author.name)
     
     @overrides(EventInterface)
     def get_author(self):
-        return DiscordUser(self._raw_event.author)
+        return self.author
 
     @overrides(EventInterface)
     def get_members_in_group(self) -> List[DiscordUser]:
@@ -78,11 +79,11 @@ class DiscordEvent(EventInterface):
 
     @overrides(EventInterface)
     def get_group_id(self):
-        return self._raw_event.guild.id
+        return str(self._raw_event.guild.id)
 
     @overrides(EventInterface)
     def get_content(self) -> str:
-        return self._raw_event.content
+        return str(self._raw_event.content)
 
     @overrides(EventInterface)
     def get_mentions(self) -> List[DiscordUser]:
