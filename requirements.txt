@@ -13,3 +13,5 @@ aiogram>=2.9.2
 quart>=0.13.0
 APScheduler>=2.1.2
 pytz>=2020.1
+nest-asyncio==1.4.0
+tomon-sdk==0.1.5

@@ -1,10 +1,8 @@
 import os
-from PIL import Image
-from matplotlib.figure import Figure
 
 import kokkoro
 from kokkoro import config
-from kokkoro.typing import Union, List
+from kokkoro.typing import Union, List, Image, Figure
 from kokkoro.R import ResImg, RemoteResImg
 
 SupportedMessageType = Union[ResImg, RemoteResImg, Image.Image, Figure, str]
@@ -32,6 +30,9 @@ class UserInterface:
         raise NotImplementedError
 
 class EventInterface:
+
+    def get_type(self):
+        raise NotImplementedError
     def get_id(self):
         raise NotImplementedError
     def get_author_id(self):
@@ -87,7 +88,7 @@ class KokkoroBot:
     async def kkr_on_message(self, raw_event):
         # don't respond to ourselves
         ev = self.kkr_event_adaptor(raw_event)
-        if ev.get_author_id() == self.config.BOT_ID:
+        if self.config.BOT_TYPE != 'tomon' and ev.get_author_id() == self.config.BOT_ID:
             return
         if ev.get_group_id() not in config.ENABLED_GROUP:
             return

@@ -55,6 +55,7 @@ class DiscordUser(UserInterface):
 class DiscordEvent(EventInterface):
     def __init__(self, msg: Message):
         self._raw_event = msg
+        self.author = DiscordUser(self._raw_event.author)
 
     @overrides(EventInterface)
     def get_id(self):
@@ -70,7 +71,7 @@ class DiscordEvent(EventInterface):
     
     @overrides(EventInterface)
     def get_author(self):
-        return DiscordUser(self._raw_event.author)
+        return self.author
 
     @overrides(EventInterface)
     def get_members_in_group(self) -> List[DiscordUser]:

@@ -39,7 +39,7 @@ class ClanDao(SqliteDao):
             table='clan',
             columns='gid, cid, name, server',
             fields='''
-            gid INT NOT NULL,
+            gid TEXT NOT NULL,
             cid INT NOT NULL,
             name TEXT NOT NULL,
             server INT NOT NULL,
@@ -134,10 +134,10 @@ class MemberDao(SqliteDao):
             table='member',
             columns='uid, alt, name, gid, cid',
             fields='''
-            uid INT NOT NULL,
+            uid TEXT NOT NULL,
             alt INT NOT NULL,
             name TEXT NOT NULL,
-            gid INT NOT NULL,
+            gid TEXT NOT NULL,
             cid INT NOT NULL,
             PRIMARY KEY (uid, alt)
             ''')
@@ -282,7 +282,7 @@ class BattleDao(SqliteDao):
             columns='eid, uid, alt, time, round, boss, dmg, flag',
             fields='''
             eid INTEGER PRIMARY KEY AUTOINCREMENT,
-            uid INT NOT NULL,
+            uid TEXT NOT NULL,
             alt INT NOT NULL,
             time TIMESTAMP NOT NULL,
             round INT NOT NULL,
@@ -294,7 +294,7 @@ class BattleDao(SqliteDao):
 
     @staticmethod
     def get_table_name(gid, cid, yyyy, mm):
-        return 'battle_%d_%d_%04d%02d' % (gid, cid, yyyy, mm)
+        return 'battle_%s_%d_%04d%02d' % (gid, cid, yyyy, mm)
 
 
     @staticmethod

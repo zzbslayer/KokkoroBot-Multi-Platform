@@ -128,7 +128,7 @@ async def list_member(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     mems = bm.list_member(1)
     if l := len(mems):
         # 数字太多会被腾讯ban
-        mems = map(lambda x: '{uid: <11,d} | {name}'.format_map(x), mems)
+        mems = map(lambda x: '{uid} | {name}'.format_map(x), mems)
         msg = [ f"\n{clan['name']}   {l}/30 人\n____ ID ____ | 昵称", *mems]
         await bot.kkr_send(ev, '\n'.join(msg), at_sender=True)
     else:
