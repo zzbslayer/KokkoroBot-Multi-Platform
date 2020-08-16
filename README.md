@@ -3,6 +3,8 @@ KokkoroBot is a forked version of **HoshinoBot** and migrates from QQ to discrod
 
 本项目是 HoshinoBot 的分支版本，充斥着大量个人魔改产物。若希望体验原汁原味的 HoshinoBot 请自行魔改回去。
 
+web界面敬请期待。
+
 ## 1. Motivation
 HoshinoBot 无论是基础设施还是应用层，大量使用了来自 Nonebot 中的概念如 `CQEvent`, `MessageSegment`，这直接导致上层服务与 Nonebot 以及 Nonebot 底层的 CQHttp 极大程度上耦合在一起，难以将 HoshinoBot 移植到其他平台或框架，比如从 QQ 迁移至 Discord。
 
@@ -68,6 +70,9 @@ Discord 需要将客户端设置为开发者模式才能查看群组、用户 ID
     - 填写自己的 ID
 - `BOT_ID`
     - 填写 BOT 的 ID
+- `BROADCAST_CHANNEL`
+    - 广播频道的名称
+    - KokkoroBot 只会把推送消息发送到广播频道中。比如药水提醒、新闻推送。
 
 #### 2.1.3 Telegram 配置
 配置文件为 `kokkoro/config/bot/telegram.py`
@@ -110,13 +115,11 @@ TODO
 - 建立 Docker 镜像
     - 在 KokkoroBot 根目录下，运行如下命令，生成的镜像中将会包含 KokkoroBot 中需要的所有依赖
     - 建立 Docker 镜像所需要的字体文件请自行从网上或加群 367501912 获取
-```sh 
-docker build . -t kokkoro-env
-```
+
 - 使用 docker-compose 部署
     - 进行 debug 时请删除 -d 参数
 ```sh
-docker-compose up -d # 生产环境
+docker-compose -f bot-compose.yml up -d # 生产环境
 ```
 - 在群里发一句 `help`，bot 如果反馈帮助信息则说明初步搭建完成！
 
