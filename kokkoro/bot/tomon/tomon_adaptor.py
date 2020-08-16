@@ -19,11 +19,11 @@ class TomonUser(UserInterface):
 
     @overrides(UserInterface)
     def get_id(self):
-        return self.raw_user.get('id')
+        return str(self.raw_user.get('id'))
 
     @overrides(UserInterface)
     def get_name(self):
-        return self.raw_user.get('username')
+        return str(self.raw_user.get('username'))
     
     @overrides(UserInterface)
     def get_raw_user(self):
@@ -31,7 +31,7 @@ class TomonUser(UserInterface):
     
     @overrides(UserInterface)
     def get_nick_name(self):
-        return self.get_name() # FIXME
+        return str(self.get_name()) # FIXME
     
     @overrides(UserInterface)
     def get_priv(self):
@@ -55,11 +55,11 @@ class TomonEvent(EventInterface):
 
     @overrides(EventInterface)
     def get_id(self):
-        return self._raw_event.get('id')
+        return str(self._raw_event.get('id'))
 
     @overrides(EventInterface)
     def get_content(self) -> str:
-        return self._raw_event.get('content')
+        return str(self._raw_event.get('content'))
     
     @overrides(EventInterface)
     def get_author(self):
@@ -67,11 +67,11 @@ class TomonEvent(EventInterface):
 
     @overrides(EventInterface)
     def get_author_id(self):
-        return self._raw_event.get('author').get('id')
+        return str(self._raw_event.get('author').get('id'))
 
     @overrides(EventInterface)
     def get_group_id(self):
-        return "156671960473006080" # FIXME
+        return str("156671960473006080") # FIXME
 
     @overrides(EventInterface)
     def get_mentions(self) -> List[TomonUser]:
