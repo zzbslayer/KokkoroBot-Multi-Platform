@@ -1,1 +1,4 @@
 config/
+log/
+fonts/
+__pycache__/
