@@ -98,9 +98,18 @@ Telegram 获取用户与群组 ID 很麻烦，需要从 API 中自己获取，�
 
 Tomon 获取用户与群组 ID 目前需要通过 API 获取，请参考链接 https://developer.tomon.co/docs/user#%E6%9F%A5%E7%9C%8B%E4%B8%AA%E4%BA%BA%E8%B5%84%E6%96%99
 
-> 目前只能使用自己的账号作为 bot 部署，参考以下链接获取 Token。后续可惜 bot 单独创建账号。
+> 目前只能使用自己的账号作为 bot 部署，参考以下链接获取 Token。之后将允许为 bot 创建额外账号。
 >
 > https://developer.tomon.co/docs/auth
+
+- `TOMON_TOKEN`
+    - 填写从 Auth api 得到的 TOKEN
+- `ENABLED_GROUP`
+    - 允许使用 BOT 的 Tomon 群组 ID
+- `SUPER_USER`
+    - 填写自己的 ID
+- `BOT_ID`
+    - 填写 BOT 的 ID
 
 #### 2.1.5 企业微信
 TODO
@@ -112,9 +121,8 @@ TODO
     - https://docs.docker.com/engine/install/centos/
 - 安装 docker-compose
     - https://docs.docker.com/compose/install/
-- 建立 Docker 镜像
-    - 在 KokkoroBot 根目录下，运行如下命令，生成的镜像中将会包含 KokkoroBot 中需要的所有依赖
-    - 建立 Docker 镜像所需要的字体文件请自行从网上或加群 367501912 获取
+
+- 建立 Docker 镜像所需要的字体文件请自行从网上或加群 887897168 获取
 
 - 使用 docker-compose 部署
     - 进行 debug 时请删除 -d 参数
@@ -232,7 +240,7 @@ KokkoroBot 在基础设施与应用层中加一层统一接口 `common_interface
 - [ ] Web
     - Doing by @SonodaHanami
 - [x] Isolate platform specific logic from application services
-- [ ] Scheduler
+- [x] Scheduler
 - [ ] Modules migration
     - [ ] Arknights
     - [x] Pcr Clanbattle
@@ -244,9 +252,9 @@ KokkoroBot 在基础设施与应用层中加一层统一接口 `common_interface
         - [x] Calender
         - [ ] Comic Spider
         - [x] Horse 
-        - [ ] News
+        - [x] News
         - [x] Query
-        - [ ] Reminder
+        - [x] Reminder
     - [ ] Setu
     - [ ] Weibo Spider
 - [x] Multi-platform
@@ -254,8 +262,13 @@ KokkoroBot 在基础设施与应用层中加一层统一接口 `common_interface
         - [ ] Audio
         - [x] Image
         - [x] Text
-        - [ ] Permission control with admin
+        - [x] Permission control with admin
     - [x] Telegram
+        - [ ] Audio
+        - [ ] Image
+        - [x] Text
+        - [ ] Permission control with admin
+    - [x] Tomon
         - [ ] Audio
         - [ ] Image
         - [x] Text
