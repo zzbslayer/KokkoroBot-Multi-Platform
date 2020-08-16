@@ -205,7 +205,6 @@ class Service:
             return func
         return deco
 
-
     def on_keyword(self, keywords, only_to_me=False) -> Callable:
         if isinstance(keywords, str):
             keywords = (keywords, )
@@ -215,7 +214,6 @@ class Service:
                 trigger.keyword.add(kw, sf)
             return func
         return deco
-
 
     def on_rex(self, rex: Union[str, re.Pattern], only_to_me=False) -> Callable:
         if isinstance(rex, str):

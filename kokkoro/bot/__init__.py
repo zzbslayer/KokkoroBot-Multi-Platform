@@ -13,6 +13,9 @@ def _init_bot() -> KokkoroBot:
     elif config.BOT_TYPE == "wechat_enterprise":
         from kokkoro.bot import wechat_enterprise
         return wechat_enterprise.get_bot()
+    elif config.BOT_TYPE == "tomon":
+        from kokkoro.bot import tomon
+        return tomon.get_bot()
     else:
         raise NotImplementedError
 
