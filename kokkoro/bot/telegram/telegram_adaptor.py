@@ -1,6 +1,7 @@
 from aiogram import types
 from kokkoro.common_interface import EventInterface, UserInterface, BaseParameter
 from kokkoro.typing import overrides, List
+from kokkoro.util import to_string
 
 class TelegramEvent(EventInterface):
     def __init__(self, raw_event: types.Message):
@@ -8,23 +9,23 @@ class TelegramEvent(EventInterface):
 
     @overrides(EventInterface)
     def get_id(self):
-        return str(self.raw_event.message_id)
+        return to_string(self.raw_event.message_id)
 
     @overrides(EventInterface)
     def get_author_id(self):
-        return str(self.raw_event.from_user.id)
+        return to_string(self.raw_event.from_user.id)
     
     @overrides(EventInterface)
     def get_author_name(self):
-        return str(self.raw_event.from_user.username)
+        return to_string(self.raw_event.from_user.username)
 
     @overrides(EventInterface)
     def get_group_id(self):
-        return str(self.raw_event.chat.id)
+        return to_string(self.raw_event.chat.id)
 
     @overrides(EventInterface)
     def get_content(self) -> str:
-        return str(self.raw_event.text)
+        return to_string(self.raw_event.text)
 
     @overrides(EventInterface)
     def get_mentions(self) -> List[UserInterface]:

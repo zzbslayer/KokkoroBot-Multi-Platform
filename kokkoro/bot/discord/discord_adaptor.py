@@ -7,6 +7,7 @@ from typing import Union
 
 import kokkoro
 from kokkoro import config
+from kokkoro.util import to_string
 from kokkoro.priv import SUPERUSER, ADMIN, NORMAL
 from kokkoro.common_interface import EventInterface, UserInterface
 from kokkoro.R import ResImg, RemoteResImg
@@ -26,11 +27,11 @@ class DiscordUser(UserInterface):
 
     @overrides(UserInterface)
     def get_id(self):
-        return str(self.raw_user.id)
+        return to_string(self.raw_user.id)
 
     @overrides(UserInterface)
     def get_name(self):
-        return str(self.raw_user.name)
+        return to_string(self.raw_user.name)
     
     @overrides(UserInterface)
     def get_raw_user(self) -> User:
@@ -38,7 +39,7 @@ class DiscordUser(UserInterface):
     
     @overrides(UserInterface)
     def get_nick_name(self):
-        return str(self.raw_user.nick)
+        return to_string(self.raw_user.nick)
     
     @overrides(UserInterface)
     def get_priv(self):
@@ -59,15 +60,15 @@ class DiscordEvent(EventInterface):
 
     @overrides(EventInterface)
     def get_id(self):
-        return str(self._raw_event.id)
+        return to_string(self._raw_event.id)
 
     @overrides(EventInterface)
     def get_author_id(self):
-        return str(self._raw_event.author.id)
+        return to_string(self._raw_event.author.id)
     
     @overrides(EventInterface)
     def get_author_name(self):
-        return str(self._raw_event.author.name)
+        return to_string(self._raw_event.author.name)
     
     @overrides(EventInterface)
     def get_author(self):
@@ -79,11 +80,11 @@ class DiscordEvent(EventInterface):
 
     @overrides(EventInterface)
     def get_group_id(self):
-        return str(self._raw_event.guild.id)
+        return to_string(self._raw_event.guild.id)
 
     @overrides(EventInterface)
     def get_content(self) -> str:
-        return str(self._raw_event.content)
+        return to_string(self._raw_event.content)
 
     @overrides(EventInterface)
     def get_mentions(self) -> List[DiscordUser]:
