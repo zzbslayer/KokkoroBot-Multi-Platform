@@ -12,4 +12,4 @@ async def pcr_portion_reminder_utc8():
 
 @svjp.scheduled_job('cron', hour='23,5,11,17')
 async def pcr_portion_reminder_utc9():
-    await svcn.broadcast(img, 'pcr-portion-reminder-utc9')
+    await svjp.broadcast(img, 'pcr-portion-reminder-utc9')
