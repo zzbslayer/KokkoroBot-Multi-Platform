@@ -17,7 +17,7 @@ def normalize_message(raw_message: str) -> str:
     """
     规范化 at 信息，"<@123> waht<@312>a12" => "@123 waht @312 a12"
     """
-    raw_ats = re.findall(dc_at_pattern, raw_message)
+    raw_ats = re.findall(tomon_at_pattern, raw_message)
     for rat in raw_ats:
         raw_message = raw_message.replace(rat, normalize_at(rat))
     return raw_message.strip()

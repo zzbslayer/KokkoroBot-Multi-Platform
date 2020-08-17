@@ -77,6 +77,10 @@ class TomonEvent(EventInterface):
     def get_mentions(self) -> List[TomonUser]:
         return TomonUser.from_raw_users(self._raw_event.get('mentions'))
 
+    @overrides(EventInterface)
+    def get_raw_event(self):
+        return self._raw_event
+
     def get_channel_id(self):
         return self._raw_event.get('channel_id')
 
