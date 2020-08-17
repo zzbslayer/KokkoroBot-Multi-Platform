@@ -19,6 +19,12 @@ import kokkoro
 from kokkoro import config
 from kokkoro.typing import Iterable
 
+def to_string(obj):
+    if obj == None:
+        return None
+    else:
+        return str(obj)
+
 def img2bytes(img: Image.Image):
     buf = BytesIO()
     img.save(buf, format='PNG')

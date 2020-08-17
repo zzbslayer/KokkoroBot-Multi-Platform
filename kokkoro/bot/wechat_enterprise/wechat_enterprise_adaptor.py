@@ -1,5 +1,6 @@
 from wechatpy.messages import BaseMessage
 
+from kokkoro.util import to_string
 from kokkoro.common_interface import EventInterface
 from kokkoro import config
 
@@ -9,19 +10,19 @@ class WechatEpEvent(EventInterface):
 
     @overrides(EventInterface)
     def get_id(self):
-        return self.raw_event.id
+        return to_string(self.raw_event.id)
     @overrides(EventInterface)
     def get_author_id(self):
-        return self.raw_event.source # Only return name
+        return to_string(self.raw_event.source) # Only return name
     @overrides(EventInterface)
     def get_author_name(self):
-        return self.raw_event.source # Only return name
+        return to_string(self.raw_event.source) # Only return name
     @overrides(EventInterface)
     def get_group_id(self):
-        return config.bot.wechat_enterprise.CORP_ID
+        return to_string(config.bot.wechat_enterprise.CORP_ID)
     @overrides(EventInterface)
     def get_content(self) -> str:
-        return self.raw_event.content
+        return to_string(self.raw_event.content)
     @overrides(EventInterface)
     def get_mentions(self):
         return [] # Not supported in wechat enterprise

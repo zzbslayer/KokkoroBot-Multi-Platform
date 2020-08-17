@@ -1,7 +1,7 @@
 TELEGRAM_TOKEN="your-tg-token"
-SUPER_USER = [super-user-id]
+SUPER_USER = ["super-user-id"]
 
 ENABLED_GROUP = [
-    guild-id
+    "guild-id"
 ]
-BOT_ID = bot-id
+BOT_ID = "bot-id"

@@ -47,7 +47,7 @@ gacha_300_aliases = join_iterable(("/"), _gacha_300_aliases) + en_300
 
 @sv.on_fullmatch(('卡池资讯', '查看卡池', '看看卡池', '康康卡池', '卡池資訊', '看看up', '看看UP', 'gacha-info'))
 async def gacha_info(bot:KokkoroBot, ev: EventInterface):
-    gid = str(ev.get_group_id())
+    gid = ev.get_group_id()
     gacha = Gacha(_group_pool[gid])
     up_chara = gacha.up
     if sv.bot.config.ENABLE_IMAGE:
@@ -81,14 +81,14 @@ async def set_pool(bot:KokkoroBot, ev: EventInterface):
     else:
         await bot.kkr_send(ev, f'未知服务器地区 {POOL_NAME_TIP}', at_sender=True)
         return
-    gid = str(ev.get_group_id())
+    gid = ev.get_group_id()
     _group_pool[gid] = name
     dump_pool_config()
     await bot.kkr_send(ev, f'卡池已切换为{name}池', at_sender=True)
 
 @sv.on_fullmatch(gacha_1_aliases, only_to_me=False)
 async def gacha_1(bot:KokkoroBot, ev: EventInterface):
-    gid = str(ev.get_group_id())
+    gid = ev.get_group_id()
     gacha = Gacha(_group_pool[gid])
     chara, hiishi = gacha.gacha_one(gacha.up_prob, gacha.s3_prob, gacha.s2_prob)
     #silence_time = hiishi * 60
@@ -106,7 +106,7 @@ async def gacha_1(bot:KokkoroBot, ev: EventInterface):
 async def gacha_10(bot:KokkoroBot, ev: EventInterface):
     SUPER_LUCKY_LINE = 170
     
-    gid = str(ev.get_group_id())
+    gid = ev.get_group_id()
     gacha = Gacha(_group_pool[gid])
     result, hiishi = gacha.gacha_ten()
     silence_time = hiishi * 6 if hiishi < SUPER_LUCKY_LINE else hiishi * 60
@@ -134,7 +134,7 @@ async def gacha_10(bot:KokkoroBot, ev: EventInterface):
 @sv.on_fullmatch(gacha_300_aliases, only_to_me=False)
 async def gacha_300(bot, ev: EventInterface):
 
-    gid = str(ev.get_group_id())
+    gid = ev.get_group_id()
     gacha = Gacha(_group_pool[gid])
     result = gacha.gacha_tenjou()
     up = len(result['up'])

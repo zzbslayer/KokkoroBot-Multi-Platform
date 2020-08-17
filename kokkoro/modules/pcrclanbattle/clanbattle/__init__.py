@@ -88,3 +88,5 @@ async def cb_help(bot: KokkoroBot, ev:EventInterface):
     #                            title='Hoshino会战管理v2',
     #                            content='命令一览表')
     # await session.send(msg)
+
+from . import report

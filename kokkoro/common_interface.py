@@ -16,13 +16,13 @@ from kokkoro.msg_handler import handle_message
 from kokkoro import config, util
 
 class UserInterface:
-    def get_id(self):
+    def get_id(self) -> str:
         raise NotImplementedError
-    def get_name(self):
+    def get_name(self) -> str:
         raise NotImplementedError
     def get_raw_user(self):
         raise NotImplementedError
-    def get_nick_name(self):
+    def get_nick_name(self) -> str:
         raise NotImplementedError
     def is_admin(self):
         raise NotImplementedError
@@ -33,11 +33,11 @@ class EventInterface:
 
     def get_type(self):
         raise NotImplementedError
-    def get_id(self):
+    def get_id(self) -> str:
         raise NotImplementedError
-    def get_author_id(self):
+    def get_author_id(self) -> str:
         raise NotImplementedError
-    def get_author_name(self):
+    def get_author_name(self) -> str:
         raise NotImplementedError
 
     def get_author(self) -> UserInterface:
@@ -52,7 +52,7 @@ class EventInterface:
                 return True
         return False
 
-    def get_group_id(self):
+    def get_group_id(self) -> str:
         raise NotImplementedError
     def get_content(self) -> str:
         raise NotImplementedError
