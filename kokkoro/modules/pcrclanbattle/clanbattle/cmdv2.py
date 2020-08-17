@@ -50,7 +50,7 @@ def _check_clan(bm:BattleMaster):
         raise NotFoundError(ERROR_CLAN_NOTFOUND)
     return clan
 
-def _check_member(bm:BattleMaster, uid:int, alt:int, tip=None):
+def _check_member(bm:BattleMaster, uid:str, alt:int, tip=None):
     mem = bm.get_member(uid, alt) or bm.get_member(uid, 0) # 兼容cmdv1
     if not mem:
         raise NotFoundError(tip or ERROR_MEMBER_NOTFOUND)
@@ -90,17 +90,17 @@ async def list_clan(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
 
 @cb_cmd(('入会', 'add-member'), ArgParser(usage=USAGE_ADD_MEMBER, arg_dict={
         '': ArgHolder(tip='昵称', default=''),
-        '@': ArgHolder(tip='id', type=int, default=0)}))
+        '@': ArgHolder(tip='id', type=str, default=0)}))
 async def add_member(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     bm = BattleMaster(ev.get_group_id())
     clan = _check_clan(bm)
 
     uid = args['@'] or args.uid 
     name = args[''] or args.name 
+    author = ev.get_author()
+    
     if uid == None:
-        author = ev.get_author()
         uid = ev.get_author_id()
-        name = author.get_nick_name() or author.get_name()
     else:
         if uid != ev.get_author_id():
             _check_admin(ev, '才能添加其他人')
@@ -110,6 +110,8 @@ async def add_member(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
         # if not name and :
         #     m = await bot.get_group_member_info(self_id=ctx['self_id'], group_id=bm.group, user_id=uid)
         #     name = m['card'] or m['nickname'] or str(m['user_id'])
+
+    name = name or author.get_nick_name() or author.get_name()
 
     mem = bm.get_member(uid, bm.group) or bm.get_member(uid, 0)     # 兼容cmdv1
     if mem:
@@ -136,7 +138,7 @@ async def list_member(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
 
 
 @cb_cmd(('退会', 'del-member'), ArgParser(usage='!退会 (@id)', arg_dict={
-        '@': ArgHolder(tip='id', type=int, default=0)}))
+        '@': ArgHolder(tip='id', type=str, default=0)}))
 async def del_member(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     bm = BattleMaster(ev.get_group_id())
     uid = args['@'] or args.uid or ev.get_author_id()
@@ -258,7 +260,7 @@ async def jiuzhe(bot, ev):
 
 @cb_cmd(('出刀', '报刀', 'add-challenge'), ArgParser(usage='!出刀 <伤害值> (@id)', arg_dict={
     '': ArgHolder(tip='伤害值', type=damage_int),
-    '@': ArgHolder(tip='id', type=int, default=0),
+    '@': ArgHolder(tip='id', type=str, default=0),
     'R': ArgHolder(tip='周目数', type=round_code, default=0),
     'B': ArgHolder(tip='Boss编号', type=boss_code, default=0),
     'D': ArgHolder(tip='日期差', type=int, default=0)}))
@@ -282,7 +284,7 @@ async def add_challenge(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
 
 @cb_cmd(('出尾刀', '收尾', '尾刀', 'add-challenge-last'), ArgParser(usage='!出尾刀 (<伤害值>) (@<id>)', arg_dict={
     '': ArgHolder(tip='伤害值', type=damage_int, default=0),
-    '@': ArgHolder(tip='id', type=int, default=0),
+    '@': ArgHolder(tip='id', type=str, default=0),
     'R': ArgHolder(tip='周目数', type=round_code, default=0),
     'B': ArgHolder(tip='Boss编号', type=boss_code, default=0)}))
 async def add_challenge_last(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
@@ -299,7 +301,7 @@ async def add_challenge_last(bot:KokkoroBot, ev:EventInterface, args:ParseResult
 
 @cb_cmd(('出补时刀', '补时刀', '补时', 'add-challenge-ext'), ArgParser(usage='!出补时刀 <伤害值> (@id)', arg_dict={
     '': ArgHolder(tip='伤害值', type=damage_int),
-    '@': ArgHolder(tip='id', type=int, default=0),
+    '@': ArgHolder(tip='id', type=str, default=0),
     'R': ArgHolder(tip='周目数', type=round_code, default=0),
     'B': ArgHolder(tip='Boss编号', type=boss_code, default=0)}))
 async def add_challenge_ext(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
@@ -315,7 +317,7 @@ async def add_challenge_ext(bot:KokkoroBot, ev:EventInterface, args:ParseResult)
 
 
 @cb_cmd(('掉刀', 'add-challenge-timeout'), ArgParser(usage='!掉刀 (@id)', arg_dict={
-    '@': ArgHolder(tip='id', type=int, default=0),
+    '@': ArgHolder(tip='id', type=str, default=0),
     'R': ArgHolder(tip='周目数', type=round_code, default=0),
     'B': ArgHolder(tip='Boss编号', type=boss_code, default=0)}))
 async def add_challenge_timeout(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
@@ -390,18 +392,18 @@ class SubscribeData:
     def set_sub_limit(self, boss:int, limit:int):
         self._data['max'][boss] = limit
 
-    def add_sub(self, boss:int, uid:int, memo:str):
+    def add_sub(self, boss:int, uid:str, memo:str):
         self._data[str(boss)].append(uid)
         self._data[f'm{boss}'].append(memo)
 
-    def remove_sub(self, boss:int, uid:int):
+    def remove_sub(self, boss:int, uid:str):
         s = self._data[str(boss)]
         m = self._data[f'm{boss}']
         i = s.index(uid)
         s.pop(i)
         m.pop(i)
 
-    def add_tree(self, uid:int):
+    def add_tree(self, uid:str):
         self._data['tree'].append(uid)
         
     def clear_tree(self):
@@ -410,7 +412,7 @@ class SubscribeData:
     def get_lock_info(self):
         return self._data['lock']
     
-    def set_lock(self, uid:int, ts):
+    def set_lock(self, uid:str, ts):
         self._data['lock'] = [ (uid, ts) ]
 
     def clear_lock(self):
@@ -435,7 +437,7 @@ def _save_sub(sub:SubscribeData, gid):
     sub.dump(filename)
 
 
-def _gen_namelist_text(bot:KokkoroBot, bm:BattleMaster, uidlist:List[int], memolist:List[str]=None, do_at=False):
+def _gen_namelist_text(bot:KokkoroBot, bm:BattleMaster, uidlist:List[str], memolist:List[str]=None, do_at=False):
     if do_at:
         mems = map(lambda x: str(bot.kkr_at(x)), uidlist)
     else:
@@ -856,7 +858,7 @@ async def urge_remain(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
 
 
 @cb_cmd(('出刀记录', 'list-challenge'), ArgParser(usage='!出刀记录 (@id)', arg_dict={
-        '@': ArgHolder(tip='id', type=int, default=0),
+        '@': ArgHolder(tip='id', type=str, default=0),
         'D': ArgHolder(tip='日期差', type=int, default=0)}))
 async def list_challenge(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     bm = BattleMaster(ev.get_group_id())
