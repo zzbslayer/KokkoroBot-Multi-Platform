@@ -1,7 +1,13 @@
+import os
 import asyncio
 import nest_asyncio
 from tomon_sdk import bot
 from requests_toolbelt import MultipartEncoder
+from io import BytesIO
+import httpx
+
+from random import choice
+from string import ascii_letters
 
 import kokkoro
 from kokkoro.common_interface import KokkoroBot, EventInterface
@@ -9,9 +15,15 @@ from kokkoro.R import ResImg, RemoteResImg
 from kokkoro.typing import overrides, Image, Figure
 from kokkoro.bot.tomon.tomon_adaptor import *
 from kokkoro.bot.tomon.tomon_util import at
+from kokkoro.bot.tomon.tomon_hack import HackRoute
 
 nest_asyncio.apply()
 loop = asyncio.get_event_loop()
+
+def rand_temp_file():
+    rand_name = ''.join(choice(ascii_letters) for i in range(10)) + '.gif'
+    dst = os.path.join("/var/tmp/", rand_name)
+    return dst
 
 class KokkoroTomonBot(KokkoroBot):
     def __init__(self, config):
@@ -44,27 +56,59 @@ class KokkoroTomonBot(KokkoroBot):
             payload['content'] = msg
             await self._bot.api().route(f'/channels/{channel_id}/messages').post(data=payload)
         elif isinstance(msg, ResImg):
-            # multipart_data = MultipartEncoder(
-            #     fields = {
-            #         'images': (filename, open(msg.path, 'rb')),
-            #         'payload_json': '{"content":"test_image_upload"}'
-            #     }
-            # )
             if kokkoro.config.RES_PROTOCOL == 'http':
-                raise NotImplementedError
+                async with httpx.AsyncClient() as client:
+                    r = await client.get(url)
+                    with BytesIO(r) as fp:
+                        path=rand_temp_file()
+                        with open(path,'wb') as temp: 
+                            temp.write(fp.read())
+
+                await self._bot.api().route(f'/channels/{channel_id}/messages').post(data={}, files=[path])
+
             elif kokkoro.config.RES_PROTOCOL == 'file':
                 await self._bot.api().route(f'/channels/{channel_id}/messages').post(data={}, files=[msg.path])
             else:
                 raise NotImplementedError
         elif isinstance(msg, RemoteResImg):
-            raise NotImplementedError
+            async with httpx.AsyncClient() as client:
+                r = await client.get(msg.url)
+                with BytesIO(r) as fp:
+                    path=rand_temp_file()
+                    with open(path,'wb') as temp: 
+                        temp.write(fp.read())
+
+            await self._bot.api().route(f'/channels/{channel_id}/messages').post(data={}, files=[path])
+
         elif isinstance(msg, Image.Image):
-            raise NotImplementedError
+            with BytesIO() as fp:
+                msg.save(fp, format='PNG')
+                fp.seek(0)
+                path=rand_temp_file()
+                with open(path,'wb') as temp: 
+                    temp.write(fp.read())
+
+            await self._bot.api().route(f'/channels/{channel_id}/messages').post(data={}, files=[path])
         elif isinstance(msg, Figure):
-            raise NotImplementedError
+            with BytesIO() as fp:
+                msg.savefig(fp, format='PNG')
+                fp.seek(0)
+                path=rand_temp_file()
+                with open(path,'wb') as temp: 
+                    temp.write(fp.read())
+
+            await self._bot.api().route(f'/channels/{channel_id}/messages').post(data={}, files=[path])
         else:
             raise NotImplementedError
 
+    async def _send_img_by_fp(self, channel_id, fp, filename='image.png'):
+        hack_route = HackRoute(self._bot.api().route(f'/channels/{channel_id}/messages'))
+        multipart_data = {
+                'images': (filename, fp),
+                'payload_json': '{"content":"test_image_upload"}'
+            }
+        headers = {'Content-Type': multipart_data.content_type}
+        await hack_route.post(headers=headers, payload=multipart_data)
 
     @overrides(KokkoroBot)
     def kkr_run(self):

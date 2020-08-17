@@ -1,12 +1,10 @@
 import os
 import discord
-from PIL import Image
-from matplotlib.figure import Figure
 from io import BytesIO
 import httpx
 
 import kokkoro
-from kokkoro.typing import overrides, Union
+from kokkoro.typing import overrides, Union, Figure, Image
 from kokkoro.R import ResImg, RemoteResImg
 from kokkoro.bot.discord.discord_adaptor import *
 from kokkoro.bot.discord.discord_util import at

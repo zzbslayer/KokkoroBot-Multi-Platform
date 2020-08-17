@@ -64,6 +64,7 @@ https://developer.tomon.co/docs/channel#消息message
 '''
 class TomonEvent(EventInterface):
     def __init__(self, raw_event):
+        self.members_in_group = None
         self._raw_event=raw_event
         member = self._raw_event.get('member') 
         member = {} if member == None else member
@@ -90,8 +91,8 @@ class TomonEvent(EventInterface):
         return to_string(self._raw_event.get('author').get('username'))
    
     @overrides(EventInterface)
-    def get_members_in_group(self) -> List[DiscordUser]:
-        _bot = get_bot()
+    def get_members_in_group(self) -> List[TomonUser]:
+        _bot = get_bot().get_raw_bot()
         if self.members_in_group == None:
             self.members_in_group = asyncio.run(_bot.api().route(f'/guilds/{self.get_group_id()}/members').get())
         
