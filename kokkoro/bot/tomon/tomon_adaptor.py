@@ -1,6 +1,8 @@
+import asyncio
 from kokkoro import config
 from kokkoro.priv import SUPERUSER, ADMIN, NORMAL
 
+from kokkoro.bot.tomon import get_bot
 from kokkoro.typing import List, overrides
 from kokkoro.common_interface import EventInterface, UserInterface, SupportedMessageType
 from kokkoro.util import to_string
@@ -13,6 +15,14 @@ class TomonUser(UserInterface):
     def __init__(self, user, member={}):
         self.raw_user = user
         self.raw_member = member
+
+    @staticmethod
+    def from_raw_member(member):
+        return TomonUser(member.get('user'), member)
+    
+    @staticmethod
+    def from_raw_members(members):
+        return [ TomonUser.from_raw_member(member) for member in members]
 
     @staticmethod
     def from_raw_users(users: List):
@@ -79,6 +89,13 @@ class TomonEvent(EventInterface):
     def get_author_name(self):
         return to_string(self._raw_event.get('author').get('username'))
    
+    @overrides(EventInterface)
+    def get_members_in_group(self) -> List[DiscordUser]:
+        _bot = get_bot()
+        if self.members_in_group == None:
+            self.members_in_group = asyncio.run(_bot.api().route(f'/guilds/{self.get_group_id()}/members').get())
+        
+        return TomonUser.from_raw_members(self.members_in_group)
 
     @overrides(EventInterface)
     def get_group_id(self):

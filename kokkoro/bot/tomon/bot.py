@@ -28,6 +28,9 @@ class KokkoroTomonBot(KokkoroBot):
         self._bot = bot.Bot()
         self._bot.on(bot.OpCodeEvent.DISPATCH, on_message)
 
+    def get_raw_bot(self):
+        return self._bot
+
     @overrides(KokkoroBot)
     def kkr_event_adaptor(self, raw_event) -> TomonEvent:
         return TomonEvent(raw_event)
@@ -39,7 +42,7 @@ class KokkoroTomonBot(KokkoroBot):
         if isinstance(msg, str):
             payload = {}
             payload['content'] = msg
-            await self._bot.api().route('/channels/{}/messages'.format(channel_id)).post(data=payload)
+            await self._bot.api().route(f'/channels/{channel_id}/messages').post(data=payload)
         elif isinstance(msg, ResImg):
             # multipart_data = MultipartEncoder(
             #     fields = {
@@ -50,7 +53,7 @@ class KokkoroTomonBot(KokkoroBot):
             if kokkoro.config.RES_PROTOCOL == 'http':
                 raise NotImplementedError
             elif kokkoro.config.RES_PROTOCOL == 'file':
-                await self._bot.api().route('/channels/{}/messages'.format(channel_id)).post(data={}, files=[msg.path])
+                await self._bot.api().route(f'/channels/{channel_id}/messages').post(data={}, files=[msg.path])
             else:
                 raise NotImplementedError
         elif isinstance(msg, RemoteResImg):
