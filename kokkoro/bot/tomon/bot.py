@@ -15,7 +15,6 @@ from kokkoro.R import ResImg, RemoteResImg
 from kokkoro.typing import overrides, Image, Figure
 from kokkoro.bot.tomon.tomon_adaptor import *
 from kokkoro.bot.tomon.tomon_util import at
-from kokkoro.bot.tomon.tomon_hack import HackRoute
 
 nest_asyncio.apply()
 loop = asyncio.get_event_loop()
@@ -100,15 +99,6 @@ class KokkoroTomonBot(KokkoroBot):
             await self._bot.api().route(f'/channels/{channel_id}/messages').post(data={}, files=[path])
         else:
             raise NotImplementedError
-
-    async def _send_img_by_fp(self, channel_id, fp, filename='image.png'):
-        hack_route = HackRoute(self._bot.api().route(f'/channels/{channel_id}/messages'))
-        multipart_data = {
-                'images': (filename, fp),
-                'payload_json': '{"content":"test_image_upload"}'
-            }
-        headers = {'Content-Type': multipart_data.content_type}
-        await hack_route.post(headers=headers, payload=multipart_data)
 
     @overrides(KokkoroBot)
     def kkr_run(self):

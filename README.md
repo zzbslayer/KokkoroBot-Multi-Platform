@@ -1,9 +1,18 @@
 # KokkoroBot
-KokkoroBot is a forked version of **HoshinoBot** and migrates from QQ to discrod and telegram. 
+KokkoroBot is a forked version of **HoshinoBot** and migrates from QQ to other platforms. 
 
 本项目是 HoshinoBot 的分支版本，充斥着大量个人魔改产物。若希望体验原汁原味的 HoshinoBot 请自行魔改回去。
 
 web界面敬请期待。
+
+目前已适配以下平台
+- Tomon(国内平台)
+    - 体验服务器：https://beta.tomon.co/invite/BN9w4C?t=3TYgtA
+- Discord
+    - 体验服务器：https://discord.gg/U9XFCVj
+- Telegram
+- 企业微信
+
 
 ## 1. Motivation
 HoshinoBot 无论是基础设施还是应用层，大量使用了来自 Nonebot 中的概念如 `CQEvent`, `MessageSegment`，这直接导致上层服务与 Nonebot 以及 Nonebot 底层的 CQHttp 极大程度上耦合在一起，难以将 HoshinoBot 移植到其他平台或框架，比如从 QQ 迁移至 Discord。
