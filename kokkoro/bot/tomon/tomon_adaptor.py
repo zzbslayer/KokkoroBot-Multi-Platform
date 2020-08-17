@@ -10,9 +10,9 @@ Raw User (dict)
 https://developer.tomon.co/docs/guild#群组成员guild-member
 '''
 class TomonUser(UserInterface):
-    def __init__(self, user):
-
+    def __init__(self, user, member={}):
         self.raw_user = user
+        self.raw_member = member
 
     @staticmethod
     def from_raw_users(users: List):
@@ -32,7 +32,10 @@ class TomonUser(UserInterface):
     
     @overrides(UserInterface)
     def get_nick_name(self):
-        return to_string(self.get_name()) # FIXME
+        return to_string(self.raw_member.get('nick'))
+
+    def get_roles(self):
+        return self.raw_member.get('roles')
     
     @overrides(UserInterface)
     def get_priv(self):
@@ -52,7 +55,9 @@ https://developer.tomon.co/docs/channel#消息message
 class TomonEvent(EventInterface):
     def __init__(self, raw_event):
         self._raw_event=raw_event
-        self.author = TomonUser(self._raw_event.get('author'))
+        member = self._raw_event.get('member') 
+        member = {} if member == None else member
+        self.author = TomonUser(self._raw_event.get('author'), member=member)
 
     @overrides(EventInterface)
     def get_id(self):
@@ -69,10 +74,15 @@ class TomonEvent(EventInterface):
     @overrides(EventInterface)
     def get_author_id(self):
         return to_string(self._raw_event.get('author').get('id'))
+    
+    @overrides(EventInterface)
+    def get_author_name(self):
+        return to_string(self._raw_event.get('author').get('username'))
+   
 
     @overrides(EventInterface)
     def get_group_id(self):
-        return to_string("156671960473006080") # FIXME
+        return to_string(self._raw_event.get('guild_id'))
 
     @overrides(EventInterface)
     def get_mentions(self) -> List[TomonUser]:
