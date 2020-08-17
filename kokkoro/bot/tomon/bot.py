@@ -39,6 +39,7 @@ class KokkoroTomonBot(KokkoroBot):
         if isinstance(msg, str):
             payload = {}
             payload['content'] = msg
+            await self._bot.api().route('/channels/{}/messages'.format(channel_id)).post(data=payload)
         elif isinstance(msg, ResImg):
             # multipart_data = MultipartEncoder(
             #     fields = {
@@ -46,15 +47,20 @@ class KokkoroTomonBot(KokkoroBot):
             #         'payload_json': '{"content":"test_image_upload"}'
             #     }
             # )
-            raise NotImplementedError
+            if kokkoro.config.RES_PROTOCOL == 'http':
+                raise NotImplementedError
+            elif kokkoro.config.RES_PROTOCOL == 'file':
+                await self._bot.api().route('/channels/{}/messages'.format(channel_id)).post(data={}, files=[msg.path])
+            else:
+                raise NotImplementedError
         elif isinstance(msg, RemoteResImg):
             raise NotImplementedError
         elif isinstance(msg, Image.Image):
             raise NotImplementedError
         elif isinstance(msg, Figure):
             raise NotImplementedError
-
-        await self._bot.api().route('/channels/{}/messages'.format(channel_id)).post(data=payload)
+        else:
+            raise NotImplementedError
 
 
     @overrides(KokkoroBot)
