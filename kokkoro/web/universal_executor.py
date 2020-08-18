@@ -19,7 +19,7 @@ def clan_api(group_id, payload):
     if not clan:
         return jsonify(code=20, message="Group dosen't exist")
     zone = bm.get_timezone_num(clan['server'])
-    
+
     # TODO: session
 
     if payload is None:
@@ -32,12 +32,12 @@ def clan_api(group_id, payload):
     elif action == 'get_data':
         pass
     elif action == 'get_challenge':
-        d, _ = pcr_datetime(zone)
+        d = int(datetime.now().timestamp() + (zone-5)*3600 ) / 86400 + 1
         report = get_report(
             bm,
             None,
             None,
-            pcr_datetime(zone, payload['ts'])[0],
+            payload['ts'],
         )
         return jsonify(
             code=0,
@@ -47,43 +47,26 @@ def clan_api(group_id, payload):
     else:
         return jsonify(code=32, message='unknown action')
 
-def pcr_datetime(tznum, dt: Union[int, datetime, None] = None) -> Tuple[int, int]:
-    if dt is None:
-        ts = int(time.time())
-    elif isinstance(dt, int):
-        ts = dt
-    elif isinstance(dt, datetime):
-        ts = dt.timestamp()
-    else:
-        raise ValueError(f'cannot parse {type(dt)} to pcrdatetime')
-    offset = 12 - tznum
-    ts += offset * 3600
-    return divmod(ts, 86400)
-
-def pcr_timestamp(d: int, t: int, tznum: int) -> int:
-    offset = 12 - tznum
-    return 86400*d + t - (offset*3600)
-
 def get_report(bm: BattleMaster,
                battle_id: Union[str, int, None],
                userid: Optional[str] = None,
-               pcrdate: Optional[int] = None,
+               ts: Optional[int] = None,
                ) -> ClanBattleReport:
     clan = bm.get_clan(1)
     if not clan:
         return jsonofy(code=20, message="Group dosen't exist")
     zone = bm.get_timezone_num(clan['server'])
     report = []
-    dt = datetime.fromtimestamp(pcrdate*86400) if pcrdate is not None else datetime.now()
-    pd, pt = pcr_datetime(zone, pcrdate*86400)
+    dt = datetime.fromtimestamp(ts) if ts is not None else datetime.now()
     challen = bm.list_challenge_of_day(1, dt, zone)
     for c in challen:
+        ctime = int(c['time'].timestamp())
         report.append({
             'battle_id': 0,
             'qqid': c['uid'],
-            'challenge_time': c['time'],
-            'challenge_pcrdate': pd,
-            'challenge_pcrtime': pt,
+            'challenge_time': c['time'].isoformat(),
+            'challenge_pcrdate': int(ctime/86400) + 1,
+            'challenge_pcrtime': int(ctime%86400),
             'cycle': c['round'],
             'boss_num': c['boss'],
             'health_ramain': 0,

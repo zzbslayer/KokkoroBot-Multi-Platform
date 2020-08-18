@@ -23,7 +23,7 @@ var vm = new Vue({
             axios.post('../api/', {
                 action: 'get_challenge',
                 csrf_token: csrf_token,
-                ts: (thisvue.get_today() / 1000) + 43200,
+                ts: (thisvue.get_now() / 1000),
             }),
             axios.post('../api/', {
                 action: 'get_member_list',
@@ -44,18 +44,16 @@ var vm = new Vue({
                 m.detail = [];
             }
             thisvue.today = res.data.today;
-            thisvue.reportDate = thisvue.get_today();
+            thisvue.reportDate = thisvue.get_now();
             thisvue.refresh(res.data.challenges);
         })).catch(function (error) {
             thisvue.$alert(error, '获取数据失败');
         });
     },
     methods: {
-        get_today: function () {
+        get_now: function () {
             let d = new Date();
-            d -= 18000000;
-            d = new Date(d).setHours(0, 0, 0, 0);
-            return d;
+            return Date.parse(d);
         },
         csummary: function (cha) {
             if (cha == undefined) {
@@ -97,7 +95,7 @@ var vm = new Vue({
             axios.post('../api/', {
                 action: 'get_challenge',
                 csrf_token: csrf_token,
-                ts: (thisvue.reportDate ? (thisvue.reportDate.getTime() / 1000) + 43200 : null),
+                ts: (thisvue.reportDate ? ((thisvue.reportDate.getTime() - thisvue.reportDate.getTimezoneOffset()*60000) / 1000) : null),
             }).then(function (res) {
                 if (res.data.code != 0) {
                     thisvue.$alert(res.data.message, '获取记录失败');
