@@ -112,4 +112,3 @@ class TomonEvent(EventInterface):
 
     def get_channel_id(self):
         return self._raw_event.get('channel_id')
-
