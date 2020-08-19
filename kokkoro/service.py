@@ -62,6 +62,17 @@ class BroadcastTag:
     tw_broadcast = "台服推送"
     jp_broadcast = "日服推送"
 
+    @staticmethod
+    def parse(key):
+        if key == "cn_broadcast":
+            return "国服推送"
+        elif key == "tw_broadcast":
+            return "台服推送"
+        elif key == "jp_broadcast":
+            return "日服推送"
+        else:
+            raise Exception(f"Unknow broadcast tag <{key}>")
+
 class Service:
     """将一组功能包装为服务, 提供增强的触发条件与分群权限管理.
 

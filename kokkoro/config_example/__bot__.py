@@ -31,5 +31,6 @@ RES_URL = '0.0.0.0'
 MODULES_ON = [
     "botmanage",
     "priconne",
-    "pcrclanbattle"
+    "pcrclanbattle",
+    "weibo"
 ]

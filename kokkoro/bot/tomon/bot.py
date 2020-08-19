@@ -77,9 +77,10 @@ class KokkoroTomonBot(KokkoroBot):
             else:
                 raise NotImplementedError
         elif isinstance(msg, RemoteResImg):
+            
             async with httpx.AsyncClient() as client:
                 r = await client.get(msg.url)
-                with BytesIO(r) as fp:
+                with BytesIO(r.content) as fp:
                     path=rand_temp_file()
                     with open(path,'wb') as temp: 
                         temp.write(fp.read())

@@ -49,7 +49,7 @@ class RemoteResImg(RemoteResObj):
     async def open(self) -> Image:
         async with httpx.AsyncClient() as client:
             r = await client.get(self.url)
-            return Image.open(BytesIO(r))
+            return Image.open(BytesIO(r.content))
 
 
 def get(path, *paths):

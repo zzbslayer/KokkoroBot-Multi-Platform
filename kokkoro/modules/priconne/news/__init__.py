@@ -23,11 +23,11 @@ async def _async_init():
 
 #asyncio.run(_async_init())
 
-@svtw.scheduled_job('cron', minute='*/10', jitter=20)
+@svtw.scheduled_job('cron', minute='*/20', jitter=20)
 async def sonet_news_poller():
     await news_poller(SonetSpider, svtw, BroadcastTag.tw_broadcast, '台服官网')
 
-@svbl.scheduled_job('cron', minute='*/10', jitter=20)
+@svbl.scheduled_job('cron', minute='*/20', jitter=20)
 async def bili_news_poller():
     await news_poller(BiliAllSpider, svbl, BroadcastTag.cn_broadcast, 'B服官网')
 

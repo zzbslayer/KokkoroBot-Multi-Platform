@@ -8,8 +8,6 @@ qq3193377836
 魔法の書——增强显示效果
 '''
 
-本插件以GPL-v3协议开源。
-
 from io import BytesIO
 import os
 import requests
