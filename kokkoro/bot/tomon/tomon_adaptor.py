@@ -4,7 +4,7 @@ from kokkoro.priv import SUPERUSER, ADMIN, NORMAL
 
 from kokkoro.bot.tomon import get_bot
 from kokkoro.typing import List, overrides
-from kokkoro.common_interface import EventInterface, UserInterface, SupportedMessageType
+from kokkoro.common_interface import EventInterface, UserInterface, GroupInterface, SupportedMessageType
 from kokkoro.util import to_string
 
 '''
@@ -58,6 +58,30 @@ class TomonUser(UserInterface):
     @overrides(UserInterface)
     def is_admin(self):
         return False #self.raw_user.roles
+
+class TomonGroup(GroupInterface):
+    def __init__(self, raw_group):
+        self.raw_group = raw_group
+        self.members = None
+
+    @staticmethod
+    def from_raw_groups(raw_groups):
+        return [ TomonGroup(rg) for rg in raw_groups]
+
+    @overrides(GroupInterface)
+    def get_id(self):
+        return self.raw_group.get('id')
+    
+    @overrides(GroupInterface)
+    def get_name(self):
+        return self.raw_group.get('name')
+    
+    @overrides(GroupInterface)
+    def get_members(self) -> List[TomonUser]:
+        if self.members == None:
+            self.members = asyncio.run(_bot.api().route(f'/guilds/{self.get_id()}/members').get())
+        return TomonUser.from_raw_members(self.members)
+
 '''
 Raw Event (dict)
 https://developer.tomon.co/docs/channel#消息message
@@ -69,6 +93,7 @@ class TomonEvent(EventInterface):
         member = self._raw_event.get('member') 
         member = {} if member == None else member
         self.author = TomonUser(self._raw_event.get('author'), member=member)
+        self.group = TomonGroup(self._raw_event.get('group'))
 
     @overrides(EventInterface)
     def get_id(self):

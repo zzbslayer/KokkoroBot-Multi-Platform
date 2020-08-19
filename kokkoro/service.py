@@ -152,7 +152,7 @@ class Service:
         @return [group_id]
         """
         gl = defaultdict(list)
-        gids = set(g.id for g in self.bot.guilds)
+        gids = set(g.get_id() for g in self.bot.get_groups())
         if self.enable_on_default:
             gids = gids - self.disable_group
         else:

@@ -20,7 +20,7 @@ nest_asyncio.apply()
 loop = asyncio.get_event_loop()
 
 def rand_temp_file():
-    rand_name = ''.join(choice(ascii_letters) for i in range(10)) + '.gif'
+    rand_name = ''.join(choice(ascii_letters) for i in range(10)) + '.png'
     dst = os.path.join("/var/tmp/", rand_name)
     return dst
 
@@ -110,3 +110,8 @@ class KokkoroTomonBot(KokkoroBot):
     @overrides(KokkoroBot)
     def kkr_at(self, uid):
         return at(uid)
+    
+    @overrides(KokkoroBot)
+    def get_groups(self) -> List[TomonGroup]:
+        raw_groups = asyncio.run(self._bot.api().route(f'/users/@me/guilds').get())
+        return TomonGroup.from_raw_groups(raw_groups)

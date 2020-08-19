@@ -29,6 +29,14 @@ class UserInterface:
     def get_priv(self):
         raise NotImplementedError
 
+class GroupInterface:
+    def get_id(self):
+        raise NotImplementedError
+    def get_name(self):
+        raise NotImplementedError
+    def get_members(self) -> List[UserInterface]:
+        raise NotImplementedError
+
 class EventInterface:
 
     def get_type(self):
@@ -51,6 +59,9 @@ class EventInterface:
             if member.get_id() == uid:
                 return True
         return False
+    
+    def get_group(self) -> GroupInterface:
+        raise NotImplementedError
 
     def get_group_id(self) -> str:
         raise NotImplementedError
@@ -101,5 +112,5 @@ class KokkoroBot:
     def kkr_run(self):
         raise NotImplementedError
 
-    async def kkr_async_run(self):
+    def get_groups(self) -> List[GroupInterface]:
         raise NotImplementedError
