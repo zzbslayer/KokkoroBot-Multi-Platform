@@ -57,6 +57,11 @@ class ServiceFunc:
     def __call__(self, *args, **kwargs):
         return self.func(*args, **kwargs)
 
+class BroadcastTag:
+    cn_broadcast = "国服推送"
+    tw_broadcast = "台服推送"
+    jp_broadcast = "日服推送"
+
 class Service:
     """将一组功能包装为服务, 提供增强的触发条件与分群权限管理.
 
@@ -229,6 +234,7 @@ class Service:
         kwargs.setdefault('misfire_grace_time', 60)
         kwargs.setdefault('coalesce', True)
         def deco(func: Callable) -> Callable:
+            kokkoro.logger.debug(f'{func.__name__} registered to scheduler')
             @wraps(func)
             async def wrapper():
                 try:
@@ -242,20 +248,18 @@ class Service:
             return self.scheduler.scheduled_job(*args, **kwargs)(wrapper)
         return deco
 
-    async def broadcast(self, msgs: Union[SupportedMessageType, List[SupportedMessageType]], TAG='', interval_time=0.5):
+    async def broadcast(self, msg: SupportedMessageType, tag: Union[str, List[str]]=None):
         bot = self.bot
         glist = self.get_enable_groups()
+
+        if isinstance(tag, str):
+            tag = [tag]
+
         for gid in glist:
             try:
-                if isinstance(msgs, list):
-                    for msg in msgs:
-                        await bot.kkr_send_by_group(gid, msg)
-                        #await asyncio.sleep(interval_time)
-                else:
-                    await bot.kkr_send_by_group(gid, msgs)
-                l = len(msgs)
-                if l:
-                    self.logger.info(f"群{gid} 投递{TAG}成功 共{l}条消息")
+                for t in tag:
+                    await bot.kkr_send_by_group(gid, msg, t)
+                self.logger.info(f"群{gid} 投递{tag}成功 ")
             except Exception as e:
-                self.logger.error(f"群{gid} 投递{TAG}失败：{type(e)}")
+                self.logger.error(f"群{gid} 投递{tag}失败：{type(e)}")
                 self.logger.exception(e)

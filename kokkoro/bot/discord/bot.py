@@ -49,14 +49,15 @@ class KokkoroDiscordBot(discord.Client, KokkoroBot):
     @overrides(KokkoroBot)
     async def kkr_send(self, ev: DiscordEvent, msg: SupportedMessageType, at_sender=False, filename="image.png"):
         if isinstance(msg, str) and at_sender:
-            msg = f'{msg} <@{ev.get_author_id()}>'
+            at_info = self.kkr_at(ev.get_author_id())
+            msg = f'{msg} {at_info}'
 
         channel = ev.get_channel()
         await self._send_by_channel(channel, msg, filename)
         
 
     @overrides(KokkoroBot)
-    async def kkr_send_by_group(self, gid, msg: SupportedMessageType, filename="image.png"):
+    async def kkr_send_by_group(self, gid, msg: SupportedMessageType, tag=None, filename="image.png"):
         channel_name=kokkoro.config.bot.discord.BROADCAST_CHANNEL
         guild = self.get_guild(gid)
         channels = guild.channels

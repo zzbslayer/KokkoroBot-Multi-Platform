@@ -48,12 +48,19 @@ class KokkoroTomonBot(KokkoroBot):
     
     @overrides(KokkoroBot)
     async def kkr_send(self, ev: TomonEvent, msg: SupportedMessageType, at_sender=False, filename="image.png"):
-        channel_id = ev.get_channel_id()
+        if isinstance(msg, str) and at_sender:
+            at_info = self.kkr_at(ev.get_author_id())
+            msg = f'{msg} {at_info}'
+
+        cid = ev.get_channel_id()
+        await self._send_by_channel(cid, msg, filename)
         
+
+    async def _send_by_channel(self, cid, msg: SupportedMessageType, filename="image.png"):
         if isinstance(msg, str):
             payload = {}
             payload['content'] = msg
-            await self._bot.api().route(f'/channels/{channel_id}/messages').post(data=payload)
+            await self._bot.api().route(f'/channels/{cid}/messages').post(data=payload)
         elif isinstance(msg, ResImg):
             if kokkoro.config.RES_PROTOCOL == 'http':
                 async with httpx.AsyncClient() as client:
@@ -63,10 +70,10 @@ class KokkoroTomonBot(KokkoroBot):
                         with open(path,'wb') as temp: 
                             temp.write(fp.read())
 
-                await self._bot.api().route(f'/channels/{channel_id}/messages').post(data={}, files=[path])
+                await self._bot.api().route(f'/channels/{cid}/messages').post(data={}, files=[path])
 
             elif kokkoro.config.RES_PROTOCOL == 'file':
-                await self._bot.api().route(f'/channels/{channel_id}/messages').post(data={}, files=[msg.path])
+                await self._bot.api().route(f'/channels/{cid}/messages').post(data={}, files=[msg.path])
             else:
                 raise NotImplementedError
         elif isinstance(msg, RemoteResImg):
@@ -77,7 +84,7 @@ class KokkoroTomonBot(KokkoroBot):
                     with open(path,'wb') as temp: 
                         temp.write(fp.read())
 
-            await self._bot.api().route(f'/channels/{channel_id}/messages').post(data={}, files=[path])
+            await self._bot.api().route(f'/channels/{cid}/messages').post(data={}, files=[path])
 
         elif isinstance(msg, Image.Image):
             with BytesIO() as fp:
@@ -87,7 +94,7 @@ class KokkoroTomonBot(KokkoroBot):
                 with open(path,'wb') as temp: 
                     temp.write(fp.read())
 
-            await self._bot.api().route(f'/channels/{channel_id}/messages').post(data={}, files=[path])
+            await self._bot.api().route(f'/channels/{cid}/messages').post(data={}, files=[path])
         elif isinstance(msg, Figure):
             with BytesIO() as fp:
                 msg.savefig(fp, format='PNG')
@@ -96,7 +103,7 @@ class KokkoroTomonBot(KokkoroBot):
                 with open(path,'wb') as temp: 
                     temp.write(fp.read())
 
-            await self._bot.api().route(f'/channels/{channel_id}/messages').post(data={}, files=[path])
+            await self._bot.api().route(f'/channels/{cid}/messages').post(data={}, files=[path])
         else:
             raise NotImplementedError
 
@@ -110,6 +117,24 @@ class KokkoroTomonBot(KokkoroBot):
     @overrides(KokkoroBot)
     def kkr_at(self, uid):
         return at(uid)
+
+    @overrides(KokkoroBot)
+    async def kkr_send_by_group(self, gid, msg: SupportedMessageType, tag=None, filename='image.png'):
+        channels = await self.get_channels_by_gid(gid)
+        if tag == None:
+            tag = config.DEFAULT_BROADCAST_TAG 
+
+        for channel in channels:
+            if tag in channel.get('name'):
+                cid = channel.get('id')
+                await self._send_by_channel(cid, msg, filename=filename)
+                return
+        kokkoro.logger.warning(f"Guild <{gid}> doesn't contains any channel named as <{tag}>")
+
+    async def get_channels_by_gid(self, gid):
+        raw_channels = await self._bot.api().route(f'/guilds/{gid}/channels').get()
+        return raw_channels
+        
     
     @overrides(KokkoroBot)
     def get_groups(self) -> List[TomonGroup]:
