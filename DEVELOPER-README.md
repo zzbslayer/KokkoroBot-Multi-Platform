@@ -183,7 +183,7 @@ def scheduled_job(self, *args, **kwargs) -> Callable:
 #example 背刺提醒
 @svjp.scheduled_job('cron', hour='13', minute='45')
 async def pcr_reminder_utc9():
-    await svjp.broadcast(msg, 'pcr-reminder-utc9', 0.2)
+    await svjp.broadcast(msg, 'pcr-reminder-utc9')
 ```
 
 ### 1.4 功能函数

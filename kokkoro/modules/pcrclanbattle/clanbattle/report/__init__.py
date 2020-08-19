@@ -1,3 +1,15 @@
+'''
+该插件由 HoshinoBot 群友提供
+以下是作者相关信息：
+
+倚栏待月——基础代码编写
+明见——背景图片与字体提供
+qq3193377836
+魔法の書——增强显示效果
+'''
+
+本插件以GPL-v3协议开源。
+
 from io import BytesIO
 import os
 import requests

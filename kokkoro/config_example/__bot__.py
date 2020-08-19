@@ -17,6 +17,8 @@ BOT_ID = platform_config.BOT_ID
 SUPER_USER = platform_config.SUPER_USER
 ENABLED_GROUP = platform_config.ENABLED_GROUP
 
+DEFAULT_BROADCAST_TAG = "broadcast"
+
 LOG_LEVEL="DEBUG"
 ENABLE_IMAGE=True
 

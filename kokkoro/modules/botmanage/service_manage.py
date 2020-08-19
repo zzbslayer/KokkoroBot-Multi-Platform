@@ -4,14 +4,14 @@ from argparse import ArgumentParser
 
 from kokkoro import priv
 from kokkoro.service import Service
-from kokkoro.common_interface import EventInterface
+from kokkoro.common_interface import EventInterface, KokkoroBot
 
 PRIV_TIP = f'群员={priv.NORMAL} GameMaster={priv.SUPERUSER}'
 
 sv = Service('service_management',use_priv=priv.ADMIN, manage_priv=priv.SUPERUSER, visible=False)
 
 @sv.on_prefix(('lssv','服务列表', '功能列表'), only_to_me=False)
-async def lssv(bot, ev: EventInterface):
+async def lssv(bot: KokkoroBot, ev: EventInterface):
     parser = ArgumentParser()
     parser.add_argument('-a', '--all', action='store_true')
     parser.add_argument('-i', '--invisible', action='store_true')
@@ -41,11 +41,11 @@ async def lssv(bot, ev: EventInterface):
 
 
 @sv.on_prefix(('enable', '启用', '开启', '打开'), only_to_me=False)
-async def enable_service(bot, ev):
+async def enable_service(bot:KokkoroBot, ev):
     await switch_service(bot, ev, turn_on=True)
 
 @sv.on_prefix(('disable', '禁用', '关闭'), only_to_me=False)
-async def disable_service(bot, ev):
+async def disable_service(bot:KokkoroBot, ev):
     await switch_service(bot, ev, turn_on=False)
 
 async def switch_service(bot, ev:EventInterface , turn_on:bool):
