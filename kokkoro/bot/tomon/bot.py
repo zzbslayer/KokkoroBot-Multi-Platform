@@ -122,8 +122,6 @@ class KokkoroTomonBot(KokkoroBot):
     @overrides(KokkoroBot)
     async def kkr_send_by_group(self, gid, msg: SupportedMessageType, tag=None, filename='image.png'):
         channels = await self.get_channels_by_gid(gid)
-        if tag == None:
-            tag = config.DEFAULT_BROADCAST_TAG 
 
         for channel in channels:
             if tag in channel.get('name'):
@@ -134,6 +132,9 @@ class KokkoroTomonBot(KokkoroBot):
 
     async def get_channels_by_gid(self, gid):
         raw_channels = await self._bot.api().route(f'/guilds/{gid}/channels').get()
+        print(f'/guilds/{gid}/channels')
+        if raw_channels == None:
+            raise Exception('No channels')
         return raw_channels
         
     

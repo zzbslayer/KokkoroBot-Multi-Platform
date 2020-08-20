@@ -58,9 +58,6 @@ class KokkoroDiscordBot(discord.Client, KokkoroBot):
 
     @overrides(KokkoroBot)
     async def kkr_send_by_group(self, gid, msg: SupportedMessageType, tag=None, filename="image.png"):
-        if tag == None:
-            tag = kokkoro.config.DEFAULT_BROADCAST_TAG
-
         guild = self.get_guild(int(gid))
         channels = guild.channels
         for channel in channels:

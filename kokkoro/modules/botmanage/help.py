@@ -58,8 +58,8 @@ ARKNIGHTS_HELP='''
 =====================
 - 明日方舟 Arknights -
 =====================
-※[公开招募 位移 近战位] 公开招募模拟器
-※[公招TAG] 公开招募TAG一览
+[公开招募 位移 近战位] 公开招募模拟器
+[公招TAG] 公开招募TAG一览
 ※[启用/禁用 weibo-ark] 国服官微推送
 '''.strip()
 
@@ -91,7 +91,7 @@ SHORT_HELP=f'''
 ====================
 [公主连结帮助]查看公主连结相关功能
 [！帮助] 查看公主连结会战管理功能的说明
-※[明日方舟帮助]查看明日方舟相关功能
+[明日方舟帮助]查看明日方舟相关功能
 ※[微博帮助]查看微博功能
 ※[通用功能]查看通用功能
 [lssv] 查看功能模块的开关状态
@@ -105,19 +105,19 @@ _help=['帮助', 'help']
 async def pcr_help(bot, ev: EventInterface):
     await bot.kkr_send(ev, PRC_HELP)
 
-# _ark=['明日方舟', '舟游', 'arknights']
-# @sv.on_fullmatch(tuple([''.join(l) for l in itertools.product(_ark, _help)]))
-# async def ark_help(bot, ev: EventInterface):
-#     await bot.kkr_send(ev, ARKNIGHTS_HELP)
+_ark=['明日方舟', '舟游', 'arknights']
+@sv.on_fullmatch(tuple([''.join(l) for l in itertools.product(_ark, _help)]))
+async def ark_help(bot, ev: EventInterface):
+    await bot.kkr_send(ev, ARKNIGHTS_HELP)
 
 # _weibo=['wb', '微博', 'weibo']
 # @sv.on_fullmatch(tuple([''.join(l) for l in itertools.product(_weibo, _help)]))
 # async def weibo_help(bot, ev: EventInterface):
 #     await bot.kkr_send(ev, WEIBO_HELP)
 
-@sv.on_fullmatch(('通用功能', '通用帮助', 'general-help'))
-async def normal_help(bot, ev: EventInterface):
-    await bot.kkr_send(ev, NORMAL_HELP)
+# @sv.on_fullmatch(('通用功能', '通用帮助', 'general-help'))
+# async def normal_help(bot, ev: EventInterface):
+#     await bot.kkr_send(ev, NORMAL_HELP)
 
 @sv.on_fullmatch(('帮助', '幫助', 'help'))
 async def send_help(bot, ev: EventInterface):

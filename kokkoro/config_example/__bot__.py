@@ -29,7 +29,9 @@ RES_DIR = '~/.kokkoro/res/'
 RES_URL = '0.0.0.0'
 
 MODULES_ON = [
+    "arknights",
     "botmanage",
+    "groupmaster",
     "priconne",
     "pcrclanbattle",
     "weibo"

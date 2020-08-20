@@ -61,6 +61,7 @@ class BroadcastTag:
     cn_broadcast = "国服推送"
     tw_broadcast = "台服推送"
     jp_broadcast = "日服推送"
+    default = config.DEFAULT_BROADCAST_TAG
 
     @staticmethod
     def parse(key):
@@ -269,6 +270,8 @@ class Service:
         for gid in glist:
             try:
                 for t in tag:
+                    if tag == None:
+                        tag = BroadcastTag.default
                     await bot.kkr_send_by_group(gid, msg, t)
                 self.logger.info(f"群{gid} 投递{tag}成功 ")
             except Exception as e:
