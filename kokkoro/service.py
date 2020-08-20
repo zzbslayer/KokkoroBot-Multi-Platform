@@ -65,11 +65,11 @@ class BroadcastTag:
     @staticmethod
     def parse(key):
         if key == "cn_broadcast":
-            return "国服推送"
+            return BroadcastTag.cn_broadcast
         elif key == "tw_broadcast":
-            return "台服推送"
+            return BroadcastTag.tw_broadcast
         elif key == "jp_broadcast":
-            return "日服推送"
+            return BroadcastTag.jp_broadcast
         else:
             raise Exception(f"Unknow broadcast tag <{key}>")
 

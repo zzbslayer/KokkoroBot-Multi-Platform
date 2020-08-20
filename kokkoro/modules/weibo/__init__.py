@@ -128,7 +128,7 @@ async def get_last_5_weibo(bot: KokkoroBot, ev: EventInterface):
             return
     await bot.kkr_send(ev, f"未找到微博: {alias}")
 
-@sv.scheduled_job('cron', minute='*/10', jitter=20)
+@sv.scheduled_job('cron', minute='*/20', jitter=20)
 async def weibo_poller():
     for sv_name, serviceObj in subr_dic.items():
         weibos = []
