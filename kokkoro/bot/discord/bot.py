@@ -58,14 +58,16 @@ class KokkoroDiscordBot(discord.Client, KokkoroBot):
 
     @overrides(KokkoroBot)
     async def kkr_send_by_group(self, gid, msg: SupportedMessageType, tag=None, filename="image.png"):
-        channel_name=kokkoro.config.bot.discord.BROADCAST_CHANNEL
-        guild = self.get_guild(gid)
+        if tag == None:
+            tag = kokkoro.config.DEFAULT_BROADCAST_TAG
+
+        guild = self.get_guild(int(gid))
         channels = guild.channels
         for channel in channels:
-            if channel.name == channel_name:
+            if tag in channel.name:
                 await self._send_by_channel(channel, msg, filename=filename)
                 return
-        kokkoro.logger.warning(f"Guild <{guild.id}> doesn't contains channel named as <{channel_name}>")
+        kokkoro.logger.warning(f"Guild <{guild.id}> doesn't contains channel named as <{tag}>")
 
     @overrides(KokkoroBot)
     def kkr_at(self, uid):
@@ -75,10 +77,6 @@ class KokkoroDiscordBot(discord.Client, KokkoroBot):
     def kkr_run(self):
         super().run(self.config.bot.discord.DISCORD_TOKEN)
 
-    @overrides(KokkoroBot)
-    async def kkr_async_run(self):
-        await super().start(self.config.bot.discord.DISCORD_TOKEN) # discord_Client start
-    
     async def _send_remote_img(self, channel, url, filename="image.png"):
         async with httpx.AsyncClient() as client:
             r = await client.get(url)
@@ -99,3 +97,7 @@ class KokkoroDiscordBot(discord.Client, KokkoroBot):
             fig.savefig(fp, format='PNG')
             fp.seek(0)
             await channel.send(file=discord.File(fp=fp, filename=filename))
+
+    @overrides(KokkoroBot)
+    def get_groups(self) -> List[DiscordGroup]:
+        return DiscordGroup.from_raw_groups(self.guilds)

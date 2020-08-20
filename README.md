@@ -7,7 +7,7 @@ web界面敬请期待。
 
 目前已适配以下平台
 - Tomon(国内平台)
-    - 体验服务器：https://beta.tomon.co/invite/BN9w4C?t=3TYgtA
+    - 体验服务器：https://beta.tomon.co/invite/kCA4Qg?t=htMviz
 - Discord
     - 体验服务器：https://discord.gg/U9XFCVj
 - Telegram
