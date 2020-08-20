@@ -33,6 +33,3 @@ class KokkoroTelegramBot(KokkoroBot):
     def kkr_run(self):
         executor.start_polling(self.dp, skip_updates=True)
     
-    @overrides(KokkoroBot)
-    async def kkr_async_run(self):
-        raise NotImplementedError

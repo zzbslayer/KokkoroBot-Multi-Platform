@@ -9,7 +9,7 @@ import kokkoro
 from kokkoro import config
 from kokkoro.util import to_string
 from kokkoro.priv import SUPERUSER, ADMIN, NORMAL
-from kokkoro.common_interface import EventInterface, UserInterface
+from kokkoro.common_interface import EventInterface, UserInterface, GroupInterface
 from kokkoro.R import ResImg, RemoteResImg
 from kokkoro.typing import overrides, List
 
@@ -17,6 +17,7 @@ from kokkoro.typing import overrides, List
 Modules should depend on Interface instead of Discord specific concept.
 Then it would be easy to migrate to other platform.
 '''
+
 class DiscordUser(UserInterface):
     def __init__(self, user: User):
         self.raw_user = user
@@ -52,6 +53,28 @@ class DiscordUser(UserInterface):
     @overrides(UserInterface)
     def is_admin(self):
         return self.raw_user.guild_permissions == Permissions.all()
+
+class DiscordGroup(GroupInterface):
+    def __init__(self, raw_group):
+        self.raw_group=raw_group
+
+    @staticmethod
+    def from_raw_groups(rgs):
+        return [DiscordGroup(rg) for rg in rgs]
+
+    @overrides(GroupInterface)
+    def get_id(self):
+        return to_string(self.raw_group.id)
+
+    @overrides(GroupInterface)
+    def get_name(self):
+        return to_string(self.raw_group.name)
+
+    @overrides(GroupInterface)
+    def get_members(self):
+        return DiscordUser.from_raw_users(self.raw_group.members)
+
+
 
 class DiscordEvent(EventInterface):
     def __init__(self, msg: Message):
