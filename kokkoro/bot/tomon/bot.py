@@ -132,7 +132,7 @@ class KokkoroTomonBot(KokkoroBot):
 
     async def get_channels_by_gid(self, gid):
         raw_channels = await self._bot.api().route(f'/guilds/{gid}/channels').get()
-        print(f'/guilds/{gid}/channels')
+        kokkoro.logger.debug(f'Requesting for /guilds/{gid}/channels')
         if raw_channels == None:
             raise Exception('No channels')
         return raw_channels
