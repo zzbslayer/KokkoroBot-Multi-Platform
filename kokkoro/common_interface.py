@@ -99,7 +99,7 @@ class KokkoroBot:
     async def kkr_on_message(self, raw_event):
         # don't respond to ourselves
         ev = self.kkr_event_adaptor(raw_event)
-        if self.config.BOT_TYPE != 'tomon' and ev.get_author_id() == self.config.BOT_ID: #FIXME
+        if ev.get_author_id() == self.config.BOT_ID:
             return
         if ev.get_group_id() not in config.ENABLED_GROUP:
             return
