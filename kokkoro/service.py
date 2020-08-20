@@ -243,8 +243,13 @@ class Service:
 
     def scheduled_job(self, *args, **kwargs) -> Callable:
         kwargs.setdefault('timezone', pytz.timezone('Asia/Shanghai'))
-        kwargs.setdefault('misfire_grace_time', 60)
         kwargs.setdefault('coalesce', True)
+        if config.BOT_TYPE == "tomon":
+            #FIXME: Tomon 的定时任务经常会延迟触发，而且延迟较大
+            kwargs.setdefault('misfire_grace_time', 5*60)
+        else:
+            kwargs.setdefault('misfire_grace_time', 60)
+
         def deco(func: Callable) -> Callable:
             kokkoro.logger.debug(f'{func.__name__} registered to scheduler')
             @wraps(func)
