@@ -72,7 +72,7 @@ class BroadcastTag:
         elif key == "jp_broadcast":
             return BroadcastTag.jp_broadcast
         else:
-            raise Exception(f"Unknow broadcast tag <{key}>")
+            return BroadcastTag.default
 
 class Service:
     """将一组功能包装为服务, 提供增强的触发条件与分群权限管理.
