@@ -28,6 +28,11 @@ RES_PROTOCOL = 'file'
 RES_DIR = '~/.kokkoro/res/'
 RES_URL = '0.0.0.0'
 
+FONT_PATH = {
+    "msyh": "/usr/share/fonts/Microsoft YaHei.ttf", # 微软雅黑
+    "simhei": "/usr/share/fonts/simhei.ttf" # 黑体
+}
+
 MODULES_ON = [
     "arknights",
     "botmanage",

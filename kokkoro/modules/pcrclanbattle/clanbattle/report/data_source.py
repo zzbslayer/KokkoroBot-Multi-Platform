@@ -6,7 +6,9 @@ from os import path
 
 from ..dao.sqlitedao import DB_PATH
 
-FONT_PATH = "/usr/share/fonts/Microsoft YaHei.ttf" # defined in dockerfile
+import kokkoro
+
+FONT_PATH = kokkoro.config.FONT_PATH["msyh"] 
 
 def add_text(img: Image,text:str,textsize:int,font=FONT_PATH,textfill='white',position:tuple=(0,0)):
     #textsize 文字大小
