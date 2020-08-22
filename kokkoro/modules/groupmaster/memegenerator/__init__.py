@@ -4,6 +4,7 @@ import base64
 from io import BytesIO
 from PIL import Image
 
+from kokkoro.util import join_iterable
 from kokkoro.service import Service
 from kokkoro.common_interface import *
 from kokkoro.config.modules.groupmaster import MemeGenerator
@@ -24,14 +25,18 @@ load_images()
 
 sv = Service('meme-generator')
 
-@sv.on_fullmatch(('表情包列表', '表情列表','查看表情列表', 'meme-list'))
+_meme = ['表情包', '表情']
+show_meme_prefix = join_iterable(_meme, ['列表']) + join_iterable(['查看'], _meme) + ('meme-list',)
+@sv.on_fullmatch(show_meme_prefix)
 async def show_memes(bot: KokkoroBot, event: EventInterface):
 	msg = "当前表情有："
 	for meme in img_name:
 		msg += "\n" + meme
 	await bot.kkr_send(event, msg, at_sender=True)
 
-@sv.on_fullmatch(('更新表情', '更新表情包', '刷新表情', '刷新表情包', '更新表情列表','刷新表情列表', 'meme-refresh'))
+_refresh = ['刷新', '更新']
+refresh_meme_prefix = join_iterable(_meme, _refresh) + join_iterable(_refresh, _meme) + ('meme-refresh',)
+@sv.on_fullmatch(refresh_meme_prefix)
 async def reload_memes(bot: KokkoroBot, event: EventInterface):
 	load_images()
 	await bot.kkr_send(event, f"表情列表更新成功，现在有{len(img)}张表情")
@@ -43,7 +48,9 @@ def parse_alias(alias):
 			return item[0]
 	return alias
 
-@sv.on_prefix(('生成表情','生成表情包', 'meme-gen'))
+_gen=['生成']
+gen_meme_prefix = join_iterable(_meme, _gen) + join_iterable(_refresh, _gen) + ('meme-gen',)
+@sv.on_prefix(gen_meme_prefix)
 async def generate_meme(bot: KokkoroBot, event: EventInterface):
 	msg = event.get_param().remain.split(' ')
 

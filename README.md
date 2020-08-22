@@ -162,7 +162,10 @@ TODO
 | help          | 帮助             | 幫助         | help          | 帮助信息概览    |      |
 |               | 公主连结帮助      |             | pcr-help       | 公主连结帮助信息 |      |
 |               | 通用帮助         |             | general-help  | 通用帮助信息    |      |
-| pcrclanbattle | !帮助            | !幫助       | !help         | 公主连结会战帮助 |     |
+| service_management | 服务列表 | | lssv | 查看服务列表 | 默认列出可见服务。添加 -a 参数可查看不可见服务。示例: lssv -a |
+| 管理员限定功能 | 启用, 打开 | | enable | 开启指定服务 | 使用方法：enable <服务名> |
+| | 禁用, 关闭 | | disable | 关闭指定服务 | 使用方法：disable <服务名> |
+| clanbattle | !帮助            | !幫助       | !help         | 公主连结会战帮助 |     |
 | 会战命令均以感叹号为前缀，全半角皆可 | !建会 |             |!add-clan| 建立公会        | 接受两个参数分别为公会名与服务器地区。示例 !建会 N公会名 Scn |
 |               | !查看公会         |             | !list-clan     | 查看公会信息 |      |
 |               | !入会            |              | !add-member    | 加入公会     | 可以通过at让其他人入会。示例：!入会 @群友    |
@@ -191,6 +194,8 @@ TODO
 |               | !查刀            |                | !list-remain         | 查看今日剩余出刀情况 | |
 |               | !出刀记录        |                 | !list-challenge     | 查看今日历史出刀情况 | 可以通过at查看指定群友出刀情况。示例：!出刀记录 @群友 |
 |               | !催刀            |                | !urge-remain         | at所有有刀未出得群友 | |
+| clanbattle-report | 会战报告 |                     | clanbattle-report | 生成会战报告 | |
+|                   | 离职报告 |                     | retire-report     | 生成离职报告 | |
 | pcr-login-bonus | @bot 签到,盖章,妈 |                | @bot login-bonus     | 给主さま盖章章      | |
 | pcr-query      | 挖矿, jjc钻石, 竞技场钻石 |         | arena-miner          | 查询竞技场剩余钻石  | 示例：挖矿 15001 |
 |               | 角色计算          |                | mana-burner          | 查询角色升级所需经验药水与 mana | 示例：角色计算 50 100 |
@@ -209,6 +214,9 @@ TODO
 | pcr-arena     | 怎么拆, jjc查询     | 怎麼拆, jjc查詢   | arena-query       | 竞技场作业在线查询 | 需申请 pcrdfans 的 API Key。可指定服务器查询。示例：日怎么拆 布丁 空花 真步 猫剑 望。|
 |               | 点赞               |                   | arena-like        | 竞技场作业点赞    | |
 |               | 点踩               |                   | arena-dislike     | 竞技场作业点踩    | |
+| meme-generator | 生成表情 | | meme-gen | 表情包生成 | 使用方法：生成表情 <表情名> <文字>。示例：生成表情 kyaru 我好了 |
+|               | 查看表情 | | meme-list | 列出可生成的表情模板 | |
+|               | 
 
 
 ## 4. 二次开发与新平台适配
