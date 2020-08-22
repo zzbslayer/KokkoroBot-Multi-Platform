@@ -36,6 +36,9 @@ class GroupInterface:
         raise NotImplementedError
     def get_members(self) -> List[UserInterface]:
         raise NotImplementedError
+    
+    def get_owner_id(self):
+        raise NotImplementedError
 
 class EventInterface:
 
