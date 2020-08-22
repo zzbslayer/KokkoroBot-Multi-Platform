@@ -77,7 +77,7 @@ class KokkoroDiscordBot(discord.Client, KokkoroBot):
     async def _send_remote_img(self, channel, url, filename="image.png"):
         async with httpx.AsyncClient() as client:
             r = await client.get(url)
-            with BytesIO(r) as fp:
+            with BytesIO(r.content) as fp:
                 await channel.send(file=discord.File(fp=fp, filename=filename))
 
     async def _send_local_img(self, channel, path):

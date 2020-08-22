@@ -39,13 +39,13 @@ REPORT_RESIGN = 0
 REPORT_NORMAL = 1
 REPORT_UNDECLARED = -1
 
-sv = Service('clanbattle-retire')
+sv = Service('clanbattle-report')
 
-@sv.on_fullmatch('离职报告')
+@sv.on_fullmatch(('离职报告', 'retire-report'))
 async def send_resign_report(bot:KokkoroBot, event:EventInterface):
     await send_report(bot, event, type=REPORT_RESIGN)
 
-@sv.on_fullmatch('会战报告')
+@sv.on_fullmatch(('会战报告', 'clanbattle-report'))
 async def send_normal_report(bot:KokkoroBot, event:EventInterface):
     await send_report(bot, event, type=REPORT_NORMAL)
 
