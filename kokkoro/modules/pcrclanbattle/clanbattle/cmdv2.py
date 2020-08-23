@@ -884,7 +884,7 @@ async def list_challenge(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     await bot.kkr_send(ev, '\n'.join(msg))
 
 
-@cb_cmd(('合刀计算', '补偿刀计算', 'boss-slayer'), ArgParser(usage='!补偿刀计算 500000 600000', arg_dict={'': ArgHolder(tip='伤害', type=int)})) # 由于需要输入两个伤害，因此 ArgParser 仅仅是摆设
+@cb_cmd(('合刀计算', '补偿刀计算', 'boss-slayer'), ArgParser(usage='!补偿刀计算 50w 60w', arg_dict={'': ArgHolder(tip='伤害')})) # 由于需要输入两个伤害，因此 ArgParser 仅仅是摆设
 async def boss_slayer(bot, ev: EventInterface, args: ParseResult):
     bm = BattleMaster(ev.get_group_id())
     clan = _check_clan(bm)
@@ -895,38 +895,47 @@ async def boss_slayer(bot, ev: EventInterface, args: ParseResult):
         servertag = '**日服/台服合刀**'
         ext0 = 110 # 日服补偿刀20秒起
 
-    prm = re.findall("\d+", ev.get_param().remain)
-    
+    remain = ev.get_param().remain
+    prm = re.findall("\d+[wW万]", remain)
     if len(prm) == 2:
-        r, b, hp = bm.get_challenge_progress(1, datetime.now())
-        dmg1 = int(prm[0])
-        dmg2 = int(prm[1])
-        if dmg1 + dmg2 < hp:
-            msg = '0x0 这两刀合起来还打不死BOSS喔'
+        dmg1 = int(prm[0][:-1]) * 10000
+        dmg2 = int(prm[1][:-1]) * 10000
+    else:
+        prm = re.findall("\d+", remain)
+        if len(prm) == 2:
+            dmg1 = int(prm[0])
+            dmg2 = int(prm[1])
         else:
-            if dmg1 >= hp and dmg2 >= hp:
-                ans1 = f'先出{dmg1:,}，BOSS直接就被打死啦'
-                ans2 = f'先出{dmg2:,}，BOSS直接就被打死啦'
-            elif dmg1 >= hp and dmg2 < hp:
-                ans1 = f'先出{dmg1:,}，BOSS直接就被打死啦'
-                ext2 = min(math.ceil(ext0-((hp-dmg2)/dmg1)*90), 90)
-                ans2 = f'先出{dmg2:,}再出{dmg1:,}，返还时间{ext2}秒'
-            elif dmg1 < hp and dmg2 >= hp:
-                ext1 = min(math.ceil(ext0-((hp-dmg1)/dmg2)*90), 90)
-                ans1 = f'先出{dmg1:,}再出{dmg2:,}，返还时间{ext1}秒'
-                ans2 = f'先出{dmg2:,}，BOSS直接就被打死啦'
-            else:
-                ext1 = min(math.ceil(ext0-((hp-dmg1)/dmg2)*90), 90)
-                ans1 = f'先出{dmg1:,}再出{dmg2:,}，返还时间{ext1}秒'
-                ext2 = min(math.ceil(ext0-((hp-dmg2)/dmg1)*90), 90)
-                ans2 = f'先出{dmg2:,}再出{dmg1:,}，返还时间{ext2}秒'
+            usage = "【用法/用例】\n!补偿刀计算 50w 60w"
+            await bot.kkr_send(ev, usage, at_sender=True)
+            return
 
-            not_my_fault = "计算结果仅供参考，可能与游戏内实际返还时间有偏差"
-            msg = '\n'.join([servertag, ans1, ans2, not_my_fault])
-        await bot.kkr_send(ev, msg, at_sender=False)
-    else: 
-        usage = "【用法/用例】\n!补偿刀计算 伤害1 伤害2"
-        await bot.kkr_send(ev, usage, at_sender=True)
+    r, b, hp = bm.get_challenge_progress(1, datetime.now())
+
+    if dmg1 + dmg2 < hp:
+        msg = '0x0 这两刀合起来还打不死BOSS喔'
+    else:
+        if dmg1 >= hp and dmg2 >= hp:
+            ans1 = f'先出{dmg1:,}，BOSS直接就被打死啦'
+            ans2 = f'先出{dmg2:,}，BOSS直接就被打死啦'
+        elif dmg1 >= hp and dmg2 < hp:
+            ans1 = f'先出{dmg1:,}，BOSS直接就被打死啦'
+            ext2 = min(math.ceil(ext0-((hp-dmg2)/dmg1)*90), 90)
+            ans2 = f'先出{dmg2:,}再出{dmg1:,}，返还时间{ext2}秒'
+        elif dmg1 < hp and dmg2 >= hp:
+            ext1 = min(math.ceil(ext0-((hp-dmg1)/dmg2)*90), 90)
+            ans1 = f'先出{dmg1:,}再出{dmg2:,}，返还时间{ext1}秒'
+            ans2 = f'先出{dmg2:,}，BOSS直接就被打死啦'
+        else:
+            ext1 = min(math.ceil(ext0-((hp-dmg1)/dmg2)*90), 90)
+            ans1 = f'先出{dmg1:,}再出{dmg2:,}，返还时间{ext1}秒'
+            ext2 = min(math.ceil(ext0-((hp-dmg2)/dmg1)*90), 90)
+            ans2 = f'先出{dmg2:,}再出{dmg1:,}，返还时间{ext2}秒'
+
+        not_my_fault = "计算结果仅供参考，可能与游戏内实际返还时间有偏差"
+        msg = '\n'.join([servertag, ans1, ans2, not_my_fault])
+    await bot.kkr_send(ev, msg, at_sender=False)
+
 
 async def get_cookies(url, **kwargs):
     async with httpx.AsyncClient() as client:
