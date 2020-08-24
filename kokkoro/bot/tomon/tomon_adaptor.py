@@ -35,7 +35,8 @@ class TomonUser(UserInterface):
 
     @overrides(UserInterface)
     def get_name(self):
-        return to_string(self.raw_user.get('username'))
+        res = self.raw_user.get('name', self.raw_user.get('username')) # 优先获取昵称，若无则获取用户名
+        return to_string(res)
     
     @overrides(UserInterface)
     def get_raw_user(self):
