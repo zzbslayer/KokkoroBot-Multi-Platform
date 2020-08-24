@@ -69,7 +69,7 @@ var vm = new Vue({
             nd.setTime(cha.challenge_time * 1000);
             var detailstr = nd.toLocaleString('chinese', { hour12: false, timeZone: 'asia/shanghai' }) + '\n';
             detailstr += cha.cycle + '周目' + cha.boss_num + '号boss\n';
-            detailstr += (cha.health_remain + cha.damage).toLocaleString(options = { timeZone: 'asia/shanghai' }) + '→' + cha.health_remain.toLocaleString(options = { timeZone: 'asia/shanghai' });
+            //detailstr += (cha.health_remain + cha.damage).toLocaleString(options = { timeZone: 'asia/shanghai' }) + '→' + cha.health_remain.toLocaleString(options = { timeZone: 'asia/shanghai' });
             if (cha.message) {
                 detailstr += '\n留言：' + cha.message;
             }

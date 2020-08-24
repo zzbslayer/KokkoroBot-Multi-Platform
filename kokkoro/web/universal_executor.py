@@ -38,7 +38,7 @@ def clan_api(group_id, payload):
             }
         )
     elif action == 'get_challenge':
-        d = int((datetime.now().timestamp() + (zone-5)*3600 ) / 86400 ) + 1
+        d = int((datetime.now().timestamp()+(zone-5)*3600)/86400) + 1
         report = get_report(
             bm,
             None,
