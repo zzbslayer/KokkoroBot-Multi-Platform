@@ -69,7 +69,7 @@ var vm = new Vue({
             nd.setTime(cha.challenge_time * 1000);
             var detailstr = nd.toLocaleString('chinese', { hour12: false, timeZone: 'asia/shanghai' }) + '\n';
             detailstr += cha.cycle + '周目' + cha.boss_num + '号boss\n';
-            detailstr += (cha.health_ramain + cha.damage).toLocaleString(options = { timeZone: 'asia/shanghai' }) + '→' + cha.health_ramain.toLocaleString(options = { timeZone: 'asia/shanghai' });
+            detailstr += (cha.health_remain + cha.damage).toLocaleString(options = { timeZone: 'asia/shanghai' }) + '→' + cha.health_remain.toLocaleString(options = { timeZone: 'asia/shanghai' });
             if (cha.message) {
                 detailstr += '\n留言：' + cha.message;
             }
@@ -79,12 +79,12 @@ var vm = new Vue({
             if (columnIndex >= 4) {
                 if (columnIndex % 2 == 0) {
                     var detail = row.detail[columnIndex - 4];
-                    if (detail != undefined && detail.health_ramain != 0) {
+                    if (detail != undefined && detail.health_remain != 0) {
                         return [1, 2];
                     }
                 } else {
                     var detail = row.detail[columnIndex - 5];
-                    if (detail != undefined && detail.health_ramain != 0) {
+                    if (detail != undefined && detail.health_remain != 0) {
                         return [0, 0];
                     }
                 }
@@ -128,7 +128,7 @@ var vm = new Vue({
                 if (c.is_continue) {
                     m.finished += 0.5;
                 } else {
-                    if (c.health_ramain != 0) {
+                    if (c.health_remain != 0) {
                         m.finished += 1;
                     } else {
                         m.finished += 0.5;
