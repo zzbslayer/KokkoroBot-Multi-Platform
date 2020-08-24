@@ -93,6 +93,7 @@ class TomonGroup(GroupInterface):
     
     @overrides(GroupInterface)
     def get_members(self) -> List[TomonUser]:
+        _bot = get_bot().get_raw_bot()
         if self.members == None:
             self.members = asyncio.run(_bot.api().route(f'/guilds/{self.get_id()}/members').get())
         return TomonUser.from_raw_members(self.members)
