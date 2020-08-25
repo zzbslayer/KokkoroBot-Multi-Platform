@@ -1,5 +1,5 @@
 # KokkoroBot
-KokkoroBot is a forked version of **HoshinoBot** and migrates from QQ to other platforms. 
+KokkoroBot is a forked version of **HoshinoBot** and migrates from QQ to other platforms.
 
 本项目是 HoshinoBot 的分支版本，充斥着大量个人魔改产物。若希望体验原汁原味的 HoshinoBot 请自行魔改回去。
 
@@ -67,18 +67,20 @@ cp -r config_example config
 
 Discord 需要将客户端设置为开发者模式才能查看群组、用户 ID。开发者模式的开启请参考该链接 https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-
 
-> 在修改配置文件之前，先在 discord 网站上申请好 bot
-> 
-> https://discord.com/developers/docs/intro
+修改配置文件之前，先按照以下链接的说明在 Discord 网站上创建好 App，然后在 App 内创建好 Bot。
+
+https://discord.com/developers/docs/intro
+
+此外如果你还没有一个 Discord Server（群组），需要在 Discord 客户端中自行创建。
 
 - `DISCORD_TOKEN`
-    - 填写之前申请得到的 TOKEN
+    - 填写之前创建的 Bot 的 TOKEN
 - `ENABLED_GROUP`
-    - 允许使用 BOT 的 discord 群组 ID
+    - 允许使用 Bot 的 Discord Server ID
 - `SUPER_USER`
-    - 填写自己的 ID
+    - 填写自己的用户 ID
 - `BOT_ID`
-    - 填写 BOT 的 ID
+    - 填写之前创建的 App 的 CLIENT ID（在 General Information 页面）
 - `BROADCAST_CHANNEL`
     - 广播频道的名称
     - KokkoroBot 只会把推送消息发送到广播频道中。比如药水提醒、新闻推送。
@@ -172,7 +174,7 @@ TODO
 |               | !一键入会        |              | !batch-add-member|             | 目前该功能会将群内 bot 一起拉入公会，后续会将 bot 过滤 |
 |               | !查看成员        |              | !list-member    | 查看公会成员信息 |  |
 |               | !退会           |               | !del-member    | 退出公会     | 可以通过at让其他人退会。如果群友退群，可以at后面直接跟 id。示例：!退会 @12345 |
-|               | !清空成员        |               | !clear-member   | 清空公会成员信息 | | 
+|               | !清空成员        |               | !clear-member   | 清空公会成员信息 | |
 |               | !出刀, !报刀     |               | !add-challenge  | 汇报出刀伤害     | 可以通过at代替报刀。示例：!出刀 123456 @群友|
 |               | !尾刀, !收尾     |               | !add-challenge-last  | 汇报尾刀   | 可以通过at代替报刀。示例：!收尾 @群友|
 |               | !补时刀, !补时   |               | !add-challenge-ext   | 汇报补时刀 | 可以通过at代替报刀。示例：!补时 123456 @群友|
@@ -216,7 +218,7 @@ TODO
 |               | 点踩               |                   | arena-dislike     | 竞技场作业点踩    | |
 | meme-generator | 生成表情 | | meme-gen | 表情包生成 | 使用方法：生成表情 <表情名> <文字>。示例：生成表情 kyaru 我好了 |
 |               | 查看表情 | | meme-list | 列出可生成的表情模板 | |
-|               | 
+|               |
 
 
 ## 4. 二次开发与新平台适配
@@ -268,7 +270,7 @@ KokkoroBot 在基础设施与应用层中加一层统一接口 `common_interface
         - [x] Arena
         - [x] Calender
         - [ ] Comic Spider
-        - [x] Horse 
+        - [x] Horse
         - [x] News
         - [x] Query
         - [x] Reminder
