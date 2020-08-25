@@ -2,7 +2,11 @@ from kokkoro.modules.pcrclanbattle.clanbattle.battlemaster import BattleMaster
 from typing import Any, Dict, List, NewType, Optional, Tuple, Union
 import time
 from datetime import datetime, timedelta
-from quart import jsonify
+from quart import jsonify, make_response
+
+SERVER_NAME = { 0x00: 'jp', 0x01: 'tw', 0x02: 'cn' }
+ClanBattleReport = NewType('ClanBattleReport', List[Dict[str, Any]])
+
 
 ''' route_elucidator side start ---------------------------------------------'''
 def hello():
@@ -59,6 +63,34 @@ def clan_api(group_id, payload):
         )
     else:
         return jsonify(code=32, message='unknown action')
+
+async def clan_statistics_api(group_id, apikey, ):
+    bm = BattleMaster(group_id)
+    clan = _check_clan(bm)
+    if not clan:
+        return jsonify(code=20, message="Group dosen't exist")
+    report = get_report(bm, None, None, 0)
+    mems = bm.list_member(1)
+    members = [{'qqid': m['uid'], 'nickname': m['name']} for m in mems]
+    groupinfo = {
+        'group_id': group_id,
+        'group_name': "GROUP_NAME",
+        'game_server': "cn",
+        'battle_id': 0,
+    }
+    response = await make_response(jsonify(
+        code=0,
+        message='OK',
+        api_version=1,
+        challenges=report,
+        groupinfo=groupinfo,
+        members=members,
+    ))
+    #if (group.privacy & 0x2):
+    #    response.headers['Access-Control-Allow-Origin'] = '*'
+    return response
+
+
 ''' route_elucidator side end -----------------------------------------------'''
 
 ''' BattleMaster side start -------------------------------------------------'''
@@ -97,8 +129,6 @@ def get_member(bm:BattleMaster, uid):
     member = bm.get_member(uid, bm.group)
     return None if not member else member
 
-ClanBattleReport = NewType('ClanBattleReport', List[Dict[str, Any]])
-
 def get_report(bm: BattleMaster,
                battle_id: Union[str, int, None],
                userid: Optional[str] = None,
@@ -109,8 +139,12 @@ def get_report(bm: BattleMaster,
         return None
     zone = bm.get_timezone_num(clan['server'])
     report = []
-    dt = datetime.fromtimestamp(ts) if ts is not None else datetime.now()
-    challen = bm.list_challenge_of_day(1, dt, zone)
+    if ts == 0: # get all of the challenge
+        dt = datetime.now()
+        challen = bm.list_challenge(1, dt)
+    else:       # get challenge of one day
+        dt = datetime.fromtimestamp(ts) if ts is not None else datetime.now()
+        challen = bm.list_challenge_of_day(1, dt, zone)
     for c in challen:
         ctime = int(c['time'].timestamp())
         remain = 0 if bool(c['flag'] & bm.LAST) else c['dmg'] * (-1)

@@ -37,12 +37,37 @@ async def yobot_clan_home(group_id):
 async def yobot_clan_progress(group_id):
     return await render_template( 'clan/progress.html', )
 
+@app.route( '/clan/<group_id>/statistics/',
+            methods=['GET'])
+async def yobot_clan_statistics(group_id):
+    bm = ue.get_bm(group_id)
+    group = ue.get_group(bm)
+    if group is None:
+        return await render_template( '404.html', item='公会' ), 404
+    return await render_template(
+        'clan/statistics.html',
+        )
+
+@app.route( '/clan/<group_id>/statistics/<int:sid>/',
+            methods=['GET'])
+async def yobot_clan_statistics_details(group_id, sid):
+    bm = ue.get_bm(group_id)
+    group = ue.get_group(bm)
+    if group is None:
+        return await render_template( '404.html', item='公会' ), 404
+    return await render_template( f'clan/statistics/statistics{sid}.html', )
+
 @app.route('/clan/<group_id>/api/',
             methods=['POST'])
 async def yobot_clan_api(group_id):
     payload = await request.get_json()
     return ue.clan_api(group_id, payload)
 
+@app.route( '/clan/<group_id>/statistics/api/',
+            methods=['GET'])
+async def yobot_clan_statistics_api(group_id):
+    apikey = 'apikey' # request.args.get('apikey')
+    return await ue.clan_statistics_api(group_id, apikey)
 ''' routing end -------------------------------------------------------------'''
 
 ''' templating start --------------------------------------------------------'''
