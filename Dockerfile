@@ -17,5 +17,9 @@ RUN pip install -r requirements.txt
 RUN pip install https://github.com/jxtech/wechatpy/archive/master.zip
 # RUN pip install -i https://mirrors.aliyun.com/pypi/simple/ -r requirements.txt
 
+COPY kokkoro /bot/kokkoro
+COPY run.py /bot
+COPY run_web.py /bot
+
 # font for matplotlib, clanbattle report, meme-generator
 ADD ["fonts/", "/usr/share/fonts/"]

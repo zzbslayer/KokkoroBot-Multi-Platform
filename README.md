@@ -126,21 +126,39 @@ Tomon 获取用户与群组 ID 目前需要通过 API 获取，请参考链接 h
 TODO
 
 ### 2.2 部署流程
-#### 2.2.1 Linux (推荐)
-使用 Linux 部署可以通过 docker 省去自行搭建环境的麻烦与各种平台问题。
-- 安装 docker 环境
-    - https://docs.docker.com/engine/install/centos/
-- 安装 docker-compose
-    - https://docs.docker.com/compose/install/
+#### 2.2.1 Linux/macOS (推荐)
+使用 Linux 部署可以通过 Docker 省去自行搭建环境的麻烦与各种平台问题。
+- 安装 Docker 环境
 
-- 建立 Docker 镜像所需要的字体文件请自行从网上或加群 887897168 获取
+    https://docs.docker.com/engine/install/centos/
 
-- 使用 docker-compose 部署
-    - 进行 debug 时请删除 -d 参数
-```sh
-docker-compose -f bot-compose.yml up -d # 生产环境
-```
-- 在群里发一句 `help`，bot 如果反馈帮助信息则说明初步搭建完成！
+- 安装 Docker Compose
+
+    https://docs.docker.com/compose/install/
+
+- 构建 Docker 镜像
+
+    构建 Docker 镜所需要的字体文件请自行从网上或加群 887897168 获取。
+
+    ```bash
+    docker-compose build
+    ```
+
+- 使用 Docker Compose 部署
+
+    进行 debug 时请删除 `-d` 参数。
+
+    ```sh
+    docker-compose up -d # 生产环境
+    ```
+
+    也可以只启动 Bot，不运行 Web 界面。
+
+    ```bash
+    docker-compose up bot -d
+    ```
+
+- 在群里发一句 `help`，Bot 如果反馈帮助信息则说明初步搭建完成！
 
 #### 2.2.2 Windows
 TODO
