@@ -31,8 +31,8 @@ def clan_api(group_id, payload):
             bossData=get_boss_data(bm),
             groupData={
                 'group_id': group_id,
-                'group_name': "GROUP_NAME", #group.group_name,
-                'game_server': "cn", # FIXME
+                'group_name': clan['name'],
+                'game_server': SERVER_NAME[clan['server']],
                 'level_4': False # FIXME
             },
             selfData={
@@ -74,8 +74,8 @@ async def clan_statistics_api(group_id, apikey, ):
     members = [{'qqid': m['uid'], 'nickname': m['name']} for m in mems]
     groupinfo = {
         'group_id': group_id,
-        'group_name': "GROUP_NAME",
-        'game_server': "cn",
+        'group_name': clan['name'],
+        'game_server': SERVER_NAME[clan['server']],
         'battle_id': 0,
     }
     response = await make_response(jsonify(
