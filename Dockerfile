@@ -1,4 +1,4 @@
-FROM python:3.8-slim-buster
+FROM python:3.8-slim-buster AS develop
 
 RUN mkdir -p /bot
 WORKDIR /bot
@@ -17,9 +17,11 @@ RUN pip install -r requirements.txt
 RUN pip install https://github.com/jxtech/wechatpy/archive/master.zip
 # RUN pip install -i https://mirrors.aliyun.com/pypi/simple/ -r requirements.txt
 
+# font for matplotlib, clanbattle report, meme-generator
+ADD ["fonts/", "/usr/share/fonts/"]
+
+FROM develop AS release
+
 COPY kokkoro /bot/kokkoro
 COPY run.py /bot
 COPY run_web.py /bot
-
-# font for matplotlib, clanbattle report, meme-generator
-ADD ["fonts/", "/usr/share/fonts/"]

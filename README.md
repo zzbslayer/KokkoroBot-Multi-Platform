@@ -128,37 +128,48 @@ TODO
 ### 2.2 部署流程
 #### 2.2.1 Linux/macOS (推荐)
 使用 Linux 部署可以通过 Docker 省去自行搭建环境的麻烦与各种平台问题。
-- 安装 Docker 环境
+- 安装 Docker 环境。
 
     https://docs.docker.com/engine/install/centos/
 
-- 安装 Docker Compose
+- 安装 Docker Compose。
 
     https://docs.docker.com/compose/install/
 
-- 构建 Docker 镜像
+- 构建 Docker 镜像。
 
     构建 Docker 镜所需要的字体文件请自行从网上或加群 887897168 获取。
 
     ```bash
+    cd deploy
     docker-compose build
     ```
 
-- 使用 Docker Compose 部署
+- 使用 Docker Compose 部署。
 
     进行 debug 时请删除 `-d` 参数。
 
     ```sh
-    docker-compose up -d # 生产环境
+    # 确保处于 deploy 目录中
+    docker-compose up -d
     ```
 
     也可以只启动 Bot，不运行 Web 界面。
 
     ```bash
+    # 确保处于 deploy 目录中
     docker-compose up bot -d
     ```
 
 - 在群里发一句 `help`，Bot 如果反馈帮助信息则说明初步搭建完成！
+
+- 如果对配置文件或者代码有任何修改，需要重新执行以下命令才能生效。
+
+    ```bash
+    # 确保处于 deploy 目录中
+    docker-compose build
+    docker-compose up -d
+    ```
 
 #### 2.2.2 Windows
 TODO
