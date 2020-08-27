@@ -110,6 +110,10 @@ class DiscordEvent(EventInterface):
         return to_string(self._raw_event.content)
 
     @overrides(EventInterface)
+    def set_content(self, msg) -> str:
+        self._raw_event.content = msg
+
+    @overrides(EventInterface)
     def get_mentions(self) -> List[DiscordUser]:
         return DiscordUser.from_raw_users(self._raw_event.mentions)
 

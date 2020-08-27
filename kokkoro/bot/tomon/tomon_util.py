@@ -7,10 +7,10 @@ def at(uid):
 
 MENTION_BOT = at(config.BOT_ID)
 
-def remove_mention_me(raw_message) -> str:
+def remove_mention_me(raw_message) -> (str, bool):
     if (raw_message.startswith(MENTION_BOT)):
-        return raw_message.replace(MENTION_BOT, "").strip()
-    return raw_message
+        return raw_message.replace(MENTION_BOT, "").strip(), True
+    return raw_message, False
 
 tomon_at_pattern = r'<@[a-z0-9A-Z]+>'
 def normalize_message(raw_message: str) -> str:
