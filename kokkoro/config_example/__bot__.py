@@ -22,7 +22,7 @@ DEFAULT_BROADCAST_TAG = "broadcast"
 LOG_LEVEL="DEBUG"
 ENABLE_IMAGE=True
 
-NICK_NAME = ['可可萝', '妈']
+NICK_NAME = ['可可萝', '妈', 'kkr', 'kokkoro']
 
 RES_PROTOCOL = 'file'
 RES_DIR = '~/.kokkoro/res/'
