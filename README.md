@@ -62,6 +62,8 @@ cp -r config_example config
     - 开启的模块
     - 将 `kokkoro/modules/` 目录下想要开启的模块名称填写在这个列表中
 
+**注意**：2020-08-27 之前的老用户需要从 `kokkoro/config_example/__bot__.py` 复制 `FONT_PATH` 部分的内容过来覆盖以前的内容，并且复制 `kokkoro/config_example/__init__.py` 直接覆盖 `kokkoro/config/__init__.py`，新用户无需任何特殊操作。
+
 #### 2.1.2 Discord 配置
 配置文件为 `kokkoro/config/bot/discord.py`。
 
@@ -138,9 +140,7 @@ TODO
 
 - 构建 Docker 镜像。
 
-    构建 Docker 镜所需要的字体文件请自行从网上或加群 887897168 获取。
-
-    ```bash
+    ```sh
     cd deploy
     docker-compose build
     ```
@@ -156,7 +156,7 @@ TODO
 
     也可以只启动 Bot，不运行 Web 界面。
 
-    ```bash
+    ```sh
     # 确保处于 deploy 目录中
     docker-compose up bot -d
     ```
@@ -165,7 +165,7 @@ TODO
 
 - 如果对配置文件或者代码有任何修改，需要重新执行以下命令才能生效。
 
-    ```bash
+    ```sh
     # 确保处于 deploy 目录中
     docker-compose build
     docker-compose up -d
@@ -175,9 +175,9 @@ TODO
 TODO
 
 ### 2.3 资源文件
-目前 KokkoroBot 中的图片等资源文件来自于 HoshinoBot 群内提供的资源包，可以直接去 HoshinoBot 群内下载。未来可能会使用到部分额外资源，因此在 KokkoroBot 中会另外提供一份 KokkoroBot 专用资源包。
+目前 KokkoroBot 中的图片等资源文件基于 HoshinoBot 群内提供的资源包，额外添加了字体文件，因此只能从 KokkoroBot 群下载。
 
-HoshinoBot 群：367501912。KokkoroBot 群：887897168。
+KokkoroBot 群：887897168。
 
 下载好的资源文件放在服务器的 `~/.kokkoro` 目录下，保证目录看上去是如下结构 `~/.kokkoro/res/img`。
 

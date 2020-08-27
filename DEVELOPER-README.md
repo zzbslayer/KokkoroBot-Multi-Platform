@@ -14,9 +14,7 @@
 
 - 构建 Docker 镜像。
 
-  构建 Docker 镜所需要的字体文件请自行从网上或加群 887897168 获取。
-
-  ```bash
+  ```sh
   # 确保处于项目根目录
   docker-compose build
   ```
@@ -30,7 +28,7 @@
 
   也可以只运行 Bot，不运行 Web 界面。
 
-  ```bash
+  ```sh
   # 确保处于项目根目录
   docker-compose up bot
   ```
