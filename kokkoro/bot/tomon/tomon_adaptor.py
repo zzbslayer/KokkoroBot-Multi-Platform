@@ -127,6 +127,10 @@ class TomonEvent(EventInterface):
     @overrides(EventInterface)
     def get_content(self) -> str:
         return to_string(self._raw_event.get('content'))
+
+    @overrides(EventInterface)
+    def set_content(self, msg):
+        self._raw_event['content']=msg
     
     @overrides(EventInterface)
     def get_author(self):

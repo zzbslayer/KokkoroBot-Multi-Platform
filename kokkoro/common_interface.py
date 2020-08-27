@@ -70,6 +70,8 @@ class EventInterface:
         raise NotImplementedError
     def get_content(self) -> str:
         raise NotImplementedError
+    def set_content(self):
+        raise NotImplementedError
     def get_mentions(self) -> List[UserInterface]:
         raise NotImplementedError
 

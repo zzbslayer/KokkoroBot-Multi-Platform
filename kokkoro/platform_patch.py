@@ -1,19 +1,30 @@
 from kokkoro import config
 
-def preprocess_message(ev):
+def process_mention_me(raw_msg:str):
+    to_me1 = False
+    processed_msg = raw_msg
+    for nick in config.NICK_NAME:
+        if processed_msg.startswith(nick):
+            processed_msg = processed_msg[len(nick):] # remove nick
+            to_me1 = True
+            break
+    #to_me2 = False
     if config.BOT_TYPE == "discord":
         from kokkoro.bot.discord.discord_util import remove_mention_me, normalize_message
-        dc_msg = ev.get_raw_event()
-        new_content = dc_msg.content
-        if new_content != None:
-            new_content = remove_mention_me(new_content)
-            new_content = normalize_message(new_content)
-            dc_msg.content = new_content
+        processed_msg, to_me2 = remove_mention_me(processed_msg)
+        processed_msg = normalize_message(processed_msg)
     elif config.BOT_TYPE == "tomon":
         from kokkoro.bot.tomon.tomon_util import remove_mention_me, normalize_message
-        tm_msg = ev.get_raw_event()
-        new_content = tm_msg.get('content')
-        if new_content != None:
-            new_content = remove_mention_me(new_content)
-            new_content = normalize_message(new_content)
-            tm_msg['content'] = new_content
+        processed_msg, to_me2 = remove_mention_me(processed_msg)
+        processed_msg = normalize_message(processed_msg)
+    return processed_msg, to_me1 or to_me2
+
+def preprocess_message(ev) -> bool:
+    raw_msg = ev.get_content()
+    processed_msg, to_me = process_mention_me(raw_msg)
+    ev.set_content(processed_msg)
+    return to_me
+
+
+
+    
