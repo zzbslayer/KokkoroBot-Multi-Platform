@@ -1,7 +1,47 @@
 # 开发者文档
-开发者文档分为两部分：基于 `kokkoro.service` 与 `kokkoro.common_interface` 接口进行上层功能开发；基于 `kokkoro.common_interface` 与 `kokkoro.platform_patch` 进行新平台适配。
 
-## 1. 上层功能开发
+## 开发环境
+
+无论 Linux 还是 macOS，使用 Docker 运行开发环境都可以避免 Python 版本冲突、依赖管理等很多琐碎问题。
+
+- 安装 Docker 环境。
+
+  https://docs.docker.com/engine/install/centos/
+
+- 安装 Docker Compose。
+
+  https://docs.docker.com/compose/install/
+
+- 构建 Docker 镜像。
+
+  ```sh
+  # 确保处于项目根目录
+  docker-compose build
+  ```
+
+- 使用 Docker Compose 运行所有服务。
+
+  ```sh
+  # 确保处于项目根目录
+  docker-compose up
+  ```
+
+  也可以只运行 Bot，不运行 Web 界面。
+
+  ```sh
+  # 确保处于项目根目录
+  docker-compose up bot
+  ```
+
+- 在群里发一句 `help`，Bot 如果反馈帮助信息则说明初步搭建完成！
+
+- 修改代码后无需重新构建 Docker 镜像，只需要再次执行 `docker-compose up` 即可生效。
+
+## 项目架构
+
+项目架构文档分为两部分：基于 `kokkoro.service` 与 `kokkoro.common_interface` 接口进行上层功能开发；基于 `kokkoro.common_interface` 与 `kokkoro.platform_patch` 进行新平台适配。
+
+### 1. 上层功能开发
 接口与 HoshinoBot 几乎保持一致，如果之前有过 HoshinoBot 二次开发经验，相信你一定能快速上手 KokkoroBot 的二次开发。
 功能管理如下所示，
 
@@ -16,7 +56,7 @@
         - Functionality d
         - Functionality e
 
-### 1.1 Quick Example
+#### 1.1 Quick Example
 1. 在 `kokkoro/modules` 中新建文件夹 `echo`
 2. 在 `kokkoro/config/__bot__.py` 中的 `MODULES_ON` 中添加 `echo` 模块。
 3. 在 `kokkoro/modules/echo` 中新建文件 `__init__.py`
@@ -33,14 +73,14 @@ async def help(bot: KokkoroBot, ev: EventInterface):
 5. 启动 bot
 6. 在群聊中发送消息 `echo 优质复读机` 后，会收到 bot 的回复消息 `优质复读机`
 
-### 1.2 模块管理 (Modules)
+#### 1.2 模块管理 (Modules)
 KokkoroBot 延用了 HoshinoBot 中的模块管理机制。KokkoroBot 仅仅会加载 `MODULES_ON` 中开启的模块。
 1. 在 `kokkoro/modules` 中新建文件夹 `new_module`
 2. 在 `kokkoro/config/__bot__.py` 中的 `MODULES_ON` 中添加 `new_module` 模块。
 3. 在 `kokkoro/modules/new_module` 中编写业务逻辑
 执行完以上三步就完成了新模块的创建与启用。
 
-### 1.3 服务层 (Services)
+#### 1.3 服务层 (Services)
 一个模块中可以有一个或多个服务。每个服务中可以有一个或多个功能函数。可以通过在群聊中发送特殊命令，来管理当前群内的服务。
 - `lssv` 列出群内服务
 - `enable <service_name>` 开启群内服务
@@ -50,12 +90,12 @@ KokkoroBot 延用了 HoshinoBot 中的模块管理机制。KokkoroBot 仅仅会�
 #Example
 from kokkoro.service import Service
 sv = Service('echo')  # <------------------------------ 这里是服务
-@sv.on_prefix(('echo'), only_to_me=False)            
+@sv.on_prefix(('echo'), only_to_me=False)
 async def help(bot: KokkoroBot, ev: EventInterface):
     await bot.send(ev, ev.get_param().remain)
 ```
 
-#### 1.3.1 构造函数
+##### 1.3.1 构造函数
 Service 构造函数
 - `name: str` - 服务名
 - `use_priv: int` - 使用所需要的权限
@@ -73,7 +113,7 @@ class Service:
     def __init__(self, name, use_priv=None, manage_priv=None, enable_on_default=None, visible=None):
 ```
 
-#### 1.3.2 broadcast
+##### 1.3.2 broadcast
 向开启该服务的群组广播消息
 - `msgs: Union[SupportedMessageType, List[SupportedMessageType]]` - 消息或消息列表
 - `TAG: str` - 广播标签，仅用于日志打印
@@ -83,7 +123,7 @@ class Service:
 async def broadcast(self, msgs: Union[SupportedMessageType, List[SupportedMessageType]], TAG=''):
 ```
 
-#### 1.3.3 装饰器
+##### 1.3.3 装饰器
 使用服务层提供的装饰器(decorator)装饰功能函数，装饰器会自动将功能函数注册到 KokkoroBot 中，一旦群内消息触发了装饰器的匹配条件，将会自动触发对应功能函数。
 
 ```python
@@ -95,7 +135,7 @@ async def help(bot: KokkoroBot, ev: EventInterface):
     await bot.send(ev, ev.get_param().remain)
 ```
 
-##### 1.3.3.1 on_prefix
+###### 1.3.3.1 on_prefix
 前缀匹配。
 - `prefix: Union[str, Tuple[str]]` - 前缀
 - `only_to_me: bool` - 是否需要 at bot
@@ -114,13 +154,13 @@ class PrefixHandlerParameter(BaseParameter):
         super().__init__(msg)
         self.prefix=prefix
         self.remain=remain.strip()
-    
+
     @property
     def args(self):
         return self.remain.split(' ')
 ```
 
-##### 1.3.3.2 on_suffix
+###### 1.3.3.2 on_suffix
 后缀匹配。
 - `suffix: Union[str, Tuple[str]]` - 后缀
 - `only_to_me: bool` - 是否需要 at bot
@@ -140,7 +180,7 @@ class SuffixHandlerParameter(BaseParameter):
         self.remain=remain.strip()
 ```
 
-##### 1.3.3.3 on_fullmatch
+###### 1.3.3.3 on_fullmatch
 完全匹配。
 - `word: Union[str, Tuple[str]]` - 完全匹配
 - `only_to_me: bool` - 是否需要 at bot
@@ -148,7 +188,7 @@ class SuffixHandlerParameter(BaseParameter):
 def on_fullmatch(self, word, only_to_me=False) -> Callable:
 ```
 
-##### 1.3.3.4 on_keyword
+###### 1.3.3.4 on_keyword
 关键词匹配。
 - `keywords: Union[str, Tuple[str]]` - 关键词
 - `only_to_me: bool` - 是否需要 at bot
@@ -157,7 +197,7 @@ def on_keyword(self, keywords, only_to_me=False) -> Callable:
 ```
 
 
-##### 1.3.3.5 on_rex
+###### 1.3.3.5 on_rex
 正则匹配。
 - `rex: Union[str, re.Pattern]` - 正则表达式
 - `only_to_me: bool` - 是否需要 at bot
@@ -175,7 +215,7 @@ class RegexHandlerParameter(BaseParameter):
         self.match=match
 ```
 
-##### 1.3.3.6 scheduled_job
+###### 1.3.3.6 scheduled_job
 使用 apscheduler 实现定时任务，接口可参考[文档](https://apscheduler.readthedocs.io/en/stable/modules/schedulers/base.html#apscheduler.schedulers.base.BaseScheduler.scheduled_job)，支持 cron。或参考 `kokkoro.modules.arena_reminder` 中的使用。
 ```python
 def scheduled_job(self, *args, **kwargs) -> Callable:
@@ -186,7 +226,7 @@ async def pcr_reminder_utc9():
     await svjp.broadcast(msg, 'pcr-reminder-utc9')
 ```
 
-### 1.4 功能函数
+#### 1.4 功能函数
 
 功能函数仅仅接受两个参数 `kokkoro.common_interface.KokkoroBot` bot 对象与 `kokkoro.common_interface.EventInterface` 事件对象。
 ```python
@@ -198,10 +238,10 @@ async def help(bot: KokkoroBot, ev: EventInterface): # <---- 这里是功能函�
 
 `EventInterface` 对象包含当前会话信息，包括发送者、消息内容等等；`KokkoroBot` 对象包含了对于 bot 的基本操作，包括发送信息等等
 
-### 1.5 Kokkoro 标准接口 (kokkoro.common_interface)
+#### 1.5 Kokkoro 标准接口 (kokkoro.common_interface)
 仅介绍与功能开发相关的**部分接口**。
 
-#### 1.5.1 SupportedMessageType
+##### 1.5.1 SupportedMessageType
 KokkoroBot 支持发送的消息类型。
 - `str`: 字符串类型消息
 - `kokkoro.R.ResImg`: 图片资源文件
@@ -214,7 +254,7 @@ KokkoroBot 支持发送的消息类型。
 ```python
 SupportedMessageType = Union[ResImg, RemoteResImg, Image.Image, Figure, str]
 ```
-#### 1.5.2 KokkoroBot
+##### 1.5.2 KokkoroBot
 ```python
 class KokkoroBot:
     def kkr_send(self, ev: EventInterface, msg: SupportedMessageType, at_sender=False, filename="image.png"):
@@ -223,7 +263,7 @@ class KokkoroBot:
     def at(self, uid):
         raise NotImplementedError
 ```
-##### 1.5.2.1 kkr_send
+###### 1.5.2.1 kkr_send
 发送消息。可发送的消息类型为 `SupportedMessageType`，主要包含字符串、若干种图片类型、语音（暂未实现）。
 - `ev: EventInterface` - 当前事件对象
 - `msg: SupportedMessageType` - 发送的消息
@@ -232,10 +272,10 @@ class KokkoroBot:
 - `filename: str` - discord 等平台在发送图片、文件时可以指定文件名进行发送。发送其他类型消息时，该参数无作用。
     - 默认为 `image.png`
 
-##### 1.5.2.2 at
-根据用户 id at 指定用户。不同平台的 at 不同，比如 QQ 为 `@12345` 而 discord 为 `<@!12345>`。因此通过 `bot.at(uid)` 生成 at 信息。 
+###### 1.5.2.2 at
+根据用户 id at 指定用户。不同平台的 at 不同，比如 QQ 为 `@12345` 而 discord 为 `<@!12345>`。因此通过 `bot.at(uid)` 生成 at 信息。
 
-#### 1.5.3 UserInterface
+##### 1.5.3 UserInterface
 ```python
 class UserInterface:
     # 获取用户 id
@@ -260,7 +300,7 @@ class UserInterface:
         raise NotImplementedError
 ```
 
-#### 1.5.4 EventInterface
+##### 1.5.4 EventInterface
 ```python
 class EventInterface:
     # 获取事件（消息） id
@@ -294,7 +334,7 @@ class EventInterface:
     def get_mentions(self) -> List[UserInterface]:
         raise NotImplementedError
     # 获取匹配结果
-    def get_param(self) -> BaseParameter: 
+    def get_param(self) -> BaseParameter:
         return self.param
     # 获取原始事件对象，如 discord.Message
     # 上层功能开发时不推荐使用该接口，一旦使用则该功能将与平台耦合。
@@ -304,10 +344,10 @@ class EventInterface:
         raise NotImplementedError
 ```
 
-## 2. 新平台适配
+### 2. 新平台适配
 目前新平台适配主要涉及两个模块 `kokkoro.common_interface` 与 `kokkoro.platform_patch`。
 
-### 2.1 kokkoro.common_interface
+#### 2.1 kokkoro.common_interface
 TODO
-### 2.2 kokkoro.platform_patch
+#### 2.2 kokkoro.platform_patch
 TODO
