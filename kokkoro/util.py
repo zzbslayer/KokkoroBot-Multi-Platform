@@ -7,6 +7,7 @@ import zhconv
 import json
 import re
 import importlib
+import random
 
 from collections import defaultdict
 from datetime import datetime, timedelta
@@ -158,3 +159,9 @@ def load_modules(module_dir, module_prefix):
 
         load_module(f'{module_prefix}.{m.group(1)}')
 
+def rand_string(n=16):
+    rand_string_chaset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    return ''.join(
+        random.choice(rand_string_chaset)
+        for _ in range(n)
+    )

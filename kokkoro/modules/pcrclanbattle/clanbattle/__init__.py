@@ -4,6 +4,7 @@
 from .argparse import ArgParser
 from .exception import *
 
+from kokkoro import config
 from kokkoro.typing import *
 from kokkoro.common_interface import KokkoroBot, EventInterface
 from kokkoro.service import Service
@@ -42,7 +43,8 @@ def cb_cmd(prefixes, parser:ArgParser) -> Callable:
 
 
 from .cmdv2 import *
-
+if config.ENABLE_WEB:
+    from .cmd_web import *
 
 QUICK_START = f'''
 ======================
