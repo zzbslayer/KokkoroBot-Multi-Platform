@@ -1,0 +1,22 @@
+version: "3.4"
+services:
+  bot:
+    build:
+      context: .
+      target: develop
+    image: zzbslayer/kokkoro_bot:latest
+    # ports:
+    #   - "5001:5001" Ports for wechat_enterprise
+    volumes:
+      - ./:/bot/
+      - ~/.kokkoro:/root/.kokkoro
+    command: python3.8 -u /bot/run.py
+
+  web:
+    image: zzbslayer/kokkoro_bot:latest
+    ports:
+      - "5100:5001"
+    volumes:
+      - ./:/bot/
+      - ~/.kokkoro:/root/.kokkoro
+    command: python3.8 -u /bot/run_web.py
