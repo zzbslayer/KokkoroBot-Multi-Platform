@@ -47,7 +47,7 @@ async def reset_password(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
 def get_login_code_url(ev:EventInterface) -> str:
     wm = WebMaster()
     login_code = rand_string(6)
-    user = wm.get_or_add_user(ev.get_author_id())
+    user = wm.get_or_add_user(ev)
     user['login_code'] = login_code
     user['login_code_available'] = True
     user['login_code_expire_time'] = int(time.time()) + 60
@@ -66,7 +66,7 @@ def get_login_code_url(ev:EventInterface) -> str:
 def reset_pwd(ev:EventInterface):
     wm = WebMaster()
     raw_pwd = rand_string(8)
-    user = wm.get_or_add_user(ev.get_author_id())
+    user = wm.get_or_add_user(ev)
     frontend_salted_pwd = add_salt_and_hash(raw_pwd + user['uid'], FRONTEND_SALT)
     user['password'] = add_salt_and_hash(frontend_salted_pwd, user['salt'])
     user['privacy'] = 0

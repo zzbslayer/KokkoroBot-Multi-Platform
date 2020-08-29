@@ -1,6 +1,8 @@
 from datetime import datetime, timezone, timedelta
 
 from kokkoro import config
+from kokkoro.common_interface import EventInterface
+from kokkoro.priv import SUPERUSER, ADMIN, NORMAL
 from kokkoro.util import rand_string
 from .dao.sqlitedao import ClanDao, MemberDao, UserDao, UserLoginDao
 from .exception import NotFoundError
@@ -13,10 +15,14 @@ class WebMaster():
         self.userdao = UserDao()
         self.logindao = UserLoginDao()
 
-    def get_or_add_user(self, uid):
+    def get_or_add_user(self, ev:EventInterface):
         authority_group = 100
-        if uid in config.SUPER_USER:
+        uid = ev.get_author_id()
+        authority = ev.get_author().get_priv()
+        if authority == SUPERUSER:
             authority_group = 1
+        elif authority == ADMIN:
+            authority_group = 10
         return self.userdao.get_or_add(uid, authority_group, rand_string())
     def get_user(self, uid):
         return self.userdao.find_one(uid)

@@ -132,7 +132,7 @@ async def yobot_clan_statistics_api(group_id):
         return jsonify(code=20, message="Group dosen't exist")
     apikey = request.args.get('apikey') or 'apikey'
     return await ue.clan_statistics_api(bm, apikey)
-    
+
 @app.route( urljoin(PATH, 'clan/<group_id>/setting/api/'),
             methods=['POST'])
 async def yobot_clan_setting_api(group_id):
