@@ -81,13 +81,13 @@ var vm = new Vue({
         },
     },
     methods: {
-        find_name: function (qqid) {
+        find_name: function (uid) {
             for (m of this.members) {
-                if (m.qqid == qqid) {
+                if (m.uid == uid) {
                     return m.nickname;
                 }
             };
-            return qqid;
+            return uid;
         },
         /*
         status_long_polling: function () {

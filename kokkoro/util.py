@@ -14,6 +14,7 @@ from datetime import datetime, timedelta
 from matplotlib import pyplot as plt
 from PIL import Image
 from io import BytesIO
+from hashlib import sha256
 import itertools
 
 import kokkoro
@@ -110,7 +111,7 @@ class FreqLimiter:
 
 class DailyNumberLimiter:
     tz = pytz.timezone('Asia/Shanghai')
-    
+
     def __init__(self, max_num):
         self.today = -1
         self.count = defaultdict(int)
@@ -165,3 +166,6 @@ def rand_string(n=16):
         random.choice(rand_string_chaset)
         for _ in range(n)
     )
+
+def add_salt_and_hash(raw: str, salt: str):
+    return sha256((raw + salt).encode()).hexdigest()

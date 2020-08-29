@@ -1,5 +1,6 @@
 import importlib
 from .__bot__ import *
+from .__web__ import *
 
 for module in MODULES_ON:
     try:

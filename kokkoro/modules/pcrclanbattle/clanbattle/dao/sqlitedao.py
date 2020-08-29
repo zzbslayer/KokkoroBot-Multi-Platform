@@ -184,13 +184,19 @@ class MemberDao(SqliteDao):
                 raise DatabaseError('修改成员失败')
 
 
-    def find_one(self, uid, alt):
+    def find_one(self, uid, alt=None):
         with self._connect() as conn:
             try:
-                ret = conn.execute('''
-                    SELECT {1} FROM {0} WHERE uid=? AND alt=?
-                    '''.format(self._table, self._columns),
-                    (uid, alt) ).fetchone()
+                if not alt is None:
+                    ret = conn.execute('''
+                        SELECT {1} FROM {0} WHERE uid=? AND alt=?
+                        '''.format(self._table, self._columns),
+                        (uid, alt) ).fetchone()
+                else:
+                    ret = conn.execute('''
+                        SELECT {1} FROM {0} WHERE uid=?
+                        '''.format(self._table, self._columns),
+                        (uid, ) ).fetchone()
                 return self.row2item(ret)
             except (sqlite3.DatabaseError) as e:
                 logger.error(f'[MemberDao.find_one] {e}')
@@ -437,10 +443,14 @@ class UserDao(SqliteDao):
                 conn.execute('''
                     INSERT OR IGNORE INTO {0} ({1}) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     '''.format(self._table, self._columns),
-                    (uid, authority_group, 0, None, 0, 0, 0, None, 0, 0, salt) )
+                    (uid, authority_group, 0, None, 1, 0, 0, None, 0, 0, salt) )
             except (sqlite3.DatabaseError) as e:
                 logger.error(f'[UserDao.add] {e}')
                 raise DatabaseError('添加用户失败')
+        return self.find_one(uid)
+
+    def find_one(self, uid):
+        with self._connect() as conn:
             try:
                 ret = conn.execute('''
                     SELECT {1} FROM {0} WHERE uid=?
@@ -450,6 +460,22 @@ class UserDao(SqliteDao):
             except (sqlite3.DatabaseError) as e:
                 logger.error(f'[UserDao.find_one] {e}')
                 raise DatabaseError('查找用户失败')
+
+    def find_one_with_member(self, uid):
+        with self._connect() as conn:
+            try:
+                ret = conn.execute('''
+                    select U.*, M.name, M.gid from user U inner join member M on U.uid = m.uid where U.uid=?
+                    '''.format(self._table, self._columns),
+                    (uid,) ).fetchone()
+                item = self.row2item(ret)
+                item['name'] = ret[11]
+                item['gid'] = ret[12]
+                return item
+            except (sqlite3.DatabaseError) as e:
+                logger.error(f'[UserDao.find_one_with_member] {e}')
+                raise DatabaseError('查找用户失败')
+
 
     def modify(self, user:dict):
         with self._connect() as conn:
@@ -485,13 +511,13 @@ class UserLoginDao(SqliteDao):
     def row2item(r):
         return {'uid': r[0], 'auth_cookie': r[1], 'auth_cookie_expire_time': r[2]} if r else None
 
-    def add(self, login):
+    def add(self, uid, auth_cookie, auth_cookie_expire_time):
         with self._connect() as conn:
             try:
                 conn.execute('''
                     INSERT INTO {0} ({1}) VALUES (?, ?, ?)
                     '''.format(self._table, self._columns),
-                    (login['uid'],login['auth_cookie'], login['auth_cookie_expire_time']) )
+                    (uid, auth_cookie, auth_cookie_expire_time) )
             except (sqlite3.DatabaseError) as e:
                 logger.error(f'[UserLoginDao.add] {e}')
                 raise DatabaseError('添加登录状态失败')
@@ -507,6 +533,23 @@ class UserLoginDao(SqliteDao):
             except (sqlite3.DatabaseError) as e:
                 logger.error(f'[UserLoginDao.find_one] {e}')
                 raise DatabaseError('查找登录状态失败')
+
+    def modify(self, login:dict):
+        with self._connect() as conn:
+            try:
+                ret = conn.execute('''
+                    UPDATE {0} SET auth_cookie_expire_time=?
+                    WHERE uid=? AND auth_cookie=?
+                    '''.format(self._table),
+                    (login['auth_cookie_expire_time'], login['uid'], login['auth_cookie']) )
+                ret = conn.execute('''
+                    UPDATE user SET last_login_time=?, last_login_ipaddr=?
+                    WHERE uid=?
+                    ''',
+                    (login['last_login_time'], login['last_login_ipaddr']) )
+            except (sqlite3.DatabaseError) as e:
+                logger.error(f'[UserLoginDao.find_one] {e}')
+                raise DatabaseError('修改登录状态失败')
 
     def delete(self, uid):
         with self._connect() as conn:

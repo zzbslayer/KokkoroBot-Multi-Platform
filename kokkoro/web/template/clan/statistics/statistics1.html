@@ -18,7 +18,7 @@
                     [[ scope.row.date.toLocaleString() ]]
                 </template>
             </el-table-column>
-            <el-table-column prop="qqid" label="QQ号" width="120" sortable></el-table-column>
+            <el-table-column prop="uid" label="QQ号" width="120" sortable></el-table-column>
             <el-table-column prop="nickname" label="昵称" width="200" sortable></el-table-column>
             <el-table-column prop="damage" label="伤害" width="200" sortable></el-table-column>
             <el-table-column prop="boss" label="boss" :filter-method="handleFilter" :filters="bosses" width="200"
@@ -58,8 +58,8 @@
                     _this.$alert(res.data.message, '获取数据失败');
                     return
                 }
-                qqidMap = stats.data.members.reduce(function (map, i) {
-                    map[i.qqid] = i.nickname;
+                uidMap = stats.data.members.reduce(function (map, i) {
+                    map[i.uid] = i.nickname;
                     return map
                 }, {})
                 max_boss_num = 0
@@ -68,8 +68,8 @@
                     max_boss_num = (i.boss_num > max_boss_num) ? i.boss_num : max_boss_num
                     let t = {}
                     t.date = _this.ts2ds(i.challenge_time)
-                    t.qqid = i.qqid
-                    t.nickname = qqidMap[i.qqid]
+                    t.uid = i.uid
+                    t.nickname = uidMap[i.uid]
                     t.boss = i.boss_num
                     t.damage = i.damage
                     t.status = DMG_TYPE[(i.health_ramain === 0)*2+(i.is_continue)]

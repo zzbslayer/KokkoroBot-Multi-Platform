@@ -56,7 +56,7 @@
                         <a class="digit6">十万</a> <a class="digit7">百万</a> <a class="digit8">千万</a> <a class="digit9">亿</a>
                     </p>
                     <el-table v-loading="isLoading" :data="globalTableData" style="width: 100%" stripe border :default-sort = "{prop: 'sumDmg', order: 'descending'}">
-                        <el-table-column prop="qqid" label="QQ号" width="125" sortable ></el-table-column>
+                        <el-table-column prop="uid" label="QQ号" width="125" sortable ></el-table-column>
                         <el-table-column prop="nickname" label="昵称" width="200" sortable ></el-table-column>
                         <el-table-column prop="count" width="120" sortable >
                             <template slot="header" slot-scope="scope">
@@ -123,12 +123,12 @@
                         <div style="width: 50%;">
                             <p>
                                 <a>选择玩家：</a>
-                                <el-select v-model="selectingQQid" placeholder="请选择">
+                                <el-select v-model="selectinguid" placeholder="请选择">
                                     <el-option
                                         v-for="member in members"
-                                        :key="member.qqid"
+                                        :key="member.uid"
                                         :label="member.nickname"
-                                        :value="member.qqid">
+                                        :value="member.uid">
                                     </el-option>
                                 </el-select>
                                 <el-checkbox style="margin-left: 20px;" v-model="containTailAndContinue"></el-checkbox>
@@ -169,7 +169,7 @@
     
 </body>
 
-<script>var csrfToken = "{{ session['csrf_token'] }}"; var qqid = "{{ session['yobot_user'] }}"</script>
+<script>var csrfToken = "{{ session['csrf_token'] }}"; var uid = "{{ session['yobot_user'] }}"</script>
 <script src="https://cdn.bootcdn.net/ajax/libs/echarts/4.7.0/echarts.min.js"></script>
 <script src="{{ url_for('yobot_static', filename='clan/statistics/statistics2.js') }}"></script>
 

@@ -101,7 +101,7 @@ var vm = new Vue({
         totalDamageChart: null,
         isLoading: true,
         selectingTab: "table",
-        selectingQQid: parseInt(qqid)
+        selectinguid: parseInt(uid)
     },
     mounted() {
         this.bossDmgChart = echarts.init(document.getElementById("bossDmgChart"));
@@ -122,8 +122,8 @@ var vm = new Vue({
         containTailAndContinue: function() {
             this.init();
         },
-        selectingQQid: function() {
-            this.initChart(this.playerDamage(this.selectingQQid).bossDamageList);
+        selectinguid: function() {
+            this.initChart(this.playerDamage(this.selectinguid).bossDamageList);
             this.initPlayerData();
         },
         selectingTab: function() {
@@ -155,8 +155,8 @@ var vm = new Vue({
                 }
                 that.allChallenges = res.data.challenges;
                 that.members = res.data.members;
-                if (that.members.filter((elem) => {return elem.qqid == that.selectingQQid}).length == 0) {
-                    that.selectingQQid = that.members[0].qqid;
+                if (that.members.filter((elem) => {return elem.uid == that.selectinguid}).length == 0) {
+                    that.selectinguid = that.members[0].uid;
                 }
                 that.refreshData();
             }).catch(function (error) {
@@ -178,15 +178,15 @@ var vm = new Vue({
             this.challenges = this.filtedChallenge();
             this.challengeMap = {};
             for (let challenge of this.challenges) {
-                let arr = this.challengeMap[challenge.qqid];
+                let arr = this.challengeMap[challenge.uid];
                 if (arr == undefined) {
                     arr = [];
-                    this.challengeMap[challenge.qqid] = arr;
+                    this.challengeMap[challenge.uid] = arr;
                 }
                 arr.push(challenge);
             }
             for (let member of this.members) {
-                member.challenges = this.challengeMap[member.qqid];
+                member.challenges = this.challengeMap[member.uid];
             }
             this.sortAndDivide();
             this.init();
@@ -205,7 +205,7 @@ var vm = new Vue({
                 this.initChart(this.totalDamage.bossDamageList);
             }
             else {
-                this.initChart(this.playerDamage(this.selectingQQid).bossDamageList);
+                this.initChart(this.playerDamage(this.selectinguid).bossDamageList);
             }
         },
         // function for init
@@ -632,7 +632,7 @@ var vm = new Vue({
 
         initPlayerData: function() {
             let max = 0, min = 2147483647, s = [0, 0, 0], c = [0, 0, 0];
-            let pchallenge = this.challengeMap[this.selectingQQid];
+            let pchallenge = this.challengeMap[this.selectinguid];
             if (pchallenge != undefined) {
                 for (let date in pchallenge) {
                     let clist = pchallenge[date];
@@ -672,7 +672,7 @@ var vm = new Vue({
                     {label: '伤害最低刀均伤害', value: 0}
                 ]
             }
-            const playerChalls = this.challenges.filter(c => c.qqid == this.selectingQQid);
+            const playerChalls = this.challenges.filter(c => c.uid == this.selectinguid);
             const param1 = this.timeForChart(playerChalls);
             const option1 = {
                 title: {
@@ -798,8 +798,8 @@ var vm = new Vue({
 
         initPlayerDamage: function () {
             for (const elem of this.members) {
-                const playerQQid = elem.qqid;
-                let challenges = this.challengeMap[playerQQid];
+                const playeruid = elem.uid;
+                let challenges = this.challengeMap[playeruid];
                 let bossDamageList = {};
                 let result = {normalDamage: [], continueDamage: [], tailDamage: [], count: 0, countContinue: 0, countTail: 0};
                 for (let day in challenges) {
@@ -831,7 +831,7 @@ var vm = new Vue({
                     }
                 }
                 result.bossDamageList = bossDamageList;
-                this.playerDamages[playerQQid] = result;
+                this.playerDamages[playeruid] = result;
             }
         },
 
@@ -839,12 +839,12 @@ var vm = new Vue({
             this.globalTableData = [];
             for (const member of this.members) {
                 const sum = this.totalSumDamage();
-                const pdmg = this.playerDamage(member.qqid);
-                const playerSum = this.playerSumDamage(member.qqid);
-                const tempAvgDmg = this.playerAverageDamage(member.qqid, this.containTailAndContinue);
+                const pdmg = this.playerDamage(member.uid);
+                const playerSum = this.playerSumDamage(member.uid);
+                const tempAvgDmg = this.playerAverageDamage(member.uid, this.containTailAndContinue);
                 const tempSumDmgRate = (100 * playerSum / sum);
                 let dict = {
-                    qqid: member.qqid,
+                    uid: member.uid,
                     nickname: member.nickname,
                     count: pdmg.count + pdmg.countContinue / 2 + pdmg.countTail / 2,
                     countContinue: pdmg.countContinue,
@@ -882,15 +882,15 @@ var vm = new Vue({
                     detail[key].sort(this.sortChallengeByTime);
                 }
                 m.challenges = detail;
-                this.challengeMap[m.qqid] = detail;
+                this.challengeMap[m.uid] = detail;
             }
         },
 
         totalAverageDamage: function(containTailAndContinue = false) {
             return this.averageDamage(this.totalDamage, containTailAndContinue);
         },
-        playerAverageDamage: function(playerQQid, containTailAndContinue = false) {
-            return this.averageDamage(this.playerDamage(playerQQid), containTailAndContinue);
+        playerAverageDamage: function(playeruid, containTailAndContinue = false) {
+            return this.averageDamage(this.playerDamage(playeruid), containTailAndContinue);
         },
 
         bossAverageDamageForChart: function(bossDamageList, containTailAndContinue = false) {
@@ -914,7 +914,7 @@ var vm = new Vue({
             const map = {};
             for (const i in this.challenges) {
                 if (this.challenges[i].is_continue) {
-                    const name = this.getPlayer(this.challenges[i].qqid).nickname;
+                    const name = this.getPlayer(this.challenges[i].uid).nickname;
                     if (name in map)
                         map[name] += 1;
                     else
@@ -985,7 +985,7 @@ var vm = new Vue({
 
             this.challenges.forEach(c => {
                 const boss = c.boss_num;
-                const name = this.getPlayer(c.qqid).nickname;
+                const name = this.getPlayer(c.uid).nickname;
                 if (!(boss in counter)) {
                     counter[boss] = {}
                 }
@@ -1066,8 +1066,8 @@ var vm = new Vue({
         totalSumDamage: function() {
             return this.sumDamage(this.totalDamage);
         },
-        playerSumDamage: function(playerQQid) {
-            return this.sumDamage(this.playerDamage(playerQQid));
+        playerSumDamage: function(playeruid) {
+            return this.sumDamage(this.playerDamage(playeruid));
         },
         sumDamage: function(damage) {
             return this.sum(damage.normalDamage) + this.sum(damage.continueDamage) + this.sum(damage.tailDamage);
@@ -1077,12 +1077,12 @@ var vm = new Vue({
             return damage.count + (containTailAndContinue ? (damage.countTail + damage.countContinue) / 2 : 0);
         },
 
-        getPlayer: function(qqid) {
-            return this.members.find(o => o.qqid === qqid) || {nickname:'未加入',qqid:qqid,sl:null};
+        getPlayer: function(uid) {
+            return this.members.find(o => o.uid === uid) || {nickname:'未加入',uid:uid,sl:null};
         },
 
-        playerDamage: function(playerQQid) {
-            return this.playerDamages[playerQQid];
+        playerDamage: function(playeruid) {
+            return this.playerDamages[playeruid];
         },
         getToday: function () {
             let d = new Date();

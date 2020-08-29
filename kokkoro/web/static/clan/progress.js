@@ -108,16 +108,16 @@ var vm = new Vue({
             this.today = -1;
         },
         refresh: function (challenges) {
-            challenges.sort((a, b) => a.qqid - b.qqid);
+            challenges.sort((a, b) => a.uid - b.uid);
             this.progressData = [...this.members];
             // for (m of this.progressData) m.today_total_damage = 0;
             var thisvue = this;
-            var m = { qqid: -1 };
+            var m = { uid: -1 };
             for (c of challenges) {
-                if (m.qqid != c.qqid) {
+                if (m.uid != c.uid) {
                     thisvue.update_member_info(m);
                     m = {
-                        qqid: c.qqid,
+                        uid: c.uid,
                         finished: 0,
                         detail: [],
                         // today_total_damage: 0,
@@ -143,7 +143,7 @@ var vm = new Vue({
                 if (m.finished % 1 != 0) {
                     let c = m.detail[m.finished * 2 - 1];
                     this.tailsData.push({
-                        qqid: m.qqid,
+                        uid: m.uid,
                         nickname: m.nickname,
                         boss: c.cycle + '-' + c.boss_num,
                         damage: c.damage,
@@ -154,11 +154,11 @@ var vm = new Vue({
             this.tailsDataVisible = true;
         },
         update_member_info: function (m) {
-            if (m.qqid == -1) {
+            if (m.uid == -1) {
                 return
             }
             for (let index = 0; index < this.progressData.length; index++) {
-                if (m.qqid == this.progressData[index].qqid) {
+                if (m.uid == this.progressData[index].uid) {
                     m.nickname = this.progressData[index].nickname;
                     m.sl = this.progressData[index].sl;
                     this.progressData[index] = m;
@@ -168,13 +168,13 @@ var vm = new Vue({
             m.nickname = '（未加入）';
             this.progressData.push(m);
         },
-        find_name: function (qqid) {
+        find_name: function (uid) {
             for (m of this.members) {
-                if (m.qqid == qqid) {
+                if (m.uid == uid) {
                     return m.nickname;
                 }
             };
-            return qqid;
+            return uid;
         },
         viewInExcel: function () {
             var icons = document.getElementsByTagName('span');
@@ -223,7 +223,7 @@ var vm = new Vue({
             }
             var memberlist = [];
             this.multipleSelection.forEach(row => {
-                memberlist.push(row.qqid);
+                memberlist.push(row.uid);
             });
             var thisvue = this;
             var payload = {
