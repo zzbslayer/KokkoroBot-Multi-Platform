@@ -1,36 +1,14 @@
 import sqlite3
 import pandas as pd
-import datetime
-from PIL import Image,ImageFont,ImageDraw
-from os import path
+from datetime import datetime
 
 from ..dao.sqlitedao import DB_PATH
 
-import kokkoro
-
-FONT_PATH = kokkoro.config.FONT_PATH["msyh"] 
-
-def add_text(img: Image,text:str,textsize:int,font=FONT_PATH,textfill='white',position:tuple=(0,0)):
-    #textsize 文字大小
-    #font 字体，默认微软雅黑
-    #textfill 文字颜色，默认白色
-    #position 文字偏移（0,0）位置，图片左上角为起点
-    img_font = ImageFont.truetype(font=font,size=textsize)
-    draw = ImageDraw.Draw(img)
-    draw.text(xy=position,text=text,font=img_font,fill=textfill)
-    return img
-
-def get_data(gid: str, month: int) -> (str,pd.DataFrame):
-
+def get_data(gid: int, year:int, month: int) -> (str,pd.DataFrame):
     conn = sqlite3.connect(DB_PATH)
-
-    now = datetime.datetime.now()
-    year = now.year
-
-    month = str(month) if month>=10 else "0"+str(month)
-
+    month = str(month) if month>=10 else '0'+str(month)
     # get name
-    command = f'SELECT * from clan'
+    command = f'SELECT * FROM clan'
     dt = pd.read_sql(command, conn)
     name = dt[dt["gid"]==gid]["name"].iloc[0]
 
@@ -40,16 +18,37 @@ def get_data(gid: str, month: int) -> (str,pd.DataFrame):
     conn.close()
     return name,dat
 
-def get_person(gid: str, uid: str, month: int) -> (str,pd.DataFrame):
+def get_person(gid: int, uid: int, year: int, month: int) -> (str,pd.DataFrame):
 
-    name,dat = get_data(gid, month)
+    name,dat = get_data(gid, year, month)
     dat = dat[dat["uid"] == uid]
 
     challenges = dat[["boss","dmg","flag"]]
 
     return name,challenges
 
+def get_time(gid: int, year: int, month: int) -> list:
+    month = str(month) if month>=10 else '0'+str(month)
+    conn = sqlite3.connect(DB_PATH)
 
+    command = f'SELECT * FROM clan'
+    dt = pd.read_sql(command, conn)
+    name = dt[dt["gid"]==gid]["name"].iloc[0]
+
+    command = f'SELECT time FROM battle_{gid}_1_{year}{month} WHERE flag!=2'
+    data = pd.read_sql(command,conn)
+
+    def hour(ts: pd.Series):
+        now = datetime.strptime(ts.iloc[0],"%Y-%m-%d %H:%M:%S.%f")
+        return now.hour
+
+    hours = data.apply(hour,result_type='reduce',axis=1).tolist()
+    y = [0]*24
+    for hr in hours:
+        y[hr] += 1
+
+    conn.close()
+    return name,y
 
 
 

@@ -2,9 +2,9 @@ from kokkoro.service import Service
 from kokkoro import priv
 from kokkoro.common_interface import KokkoroBot, EventInterface
 
-sv = Service('status', use_priv=priv.SUPERUSER, manage_priv=priv.SUPERUSER, enable_on_default=True, visible=False)
+sv = Service('kkr-status', use_priv=priv.NORMAL, manage_priv=priv.SUPERUSER, enable_on_default=True, visible=False)
 
-@sv.on_fullmatch(('kkr-status'))
+@sv.on_fullmatch(('usage', '使用情况'), only_to_me=True)
 async def broadcast(bot: KokkoroBot, ev: EventInterface):
     groups = bot.get_groups()
     num_g = len(groups)
