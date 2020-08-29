@@ -11,9 +11,6 @@ ClanBattleReport = NewType('ClanBattleReport', List[Dict[str, Any]])
 
 
 ''' route_elucidator side start -------------------------------------------- '''
-def hello():
-    return ""
-
 def now():
     return int(time.time())
 

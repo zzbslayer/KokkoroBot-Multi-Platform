@@ -24,20 +24,20 @@ def check_pwd(user, pwd) -> bool:
     if not user or not user['password'] or not user['salt']:
         raise ExceptionWithAdvice(
             'uid错误 或 您尚未设置密码',
-            '请私聊机器人"!登录"后，再次选择[修改密码]修改'
+            '请私聊机器人“!登录”后，再次选择[修改密码]修改'
         )
     if user['privacy'] >= MAX_TRY_TIMES:
         raise ExceptionWithAdvice(
             '密码错误次数过多，账号已锁定',
-            '请私聊机器人"!重置密码"后，重新登录'
+            '请私聊机器人“!重置密码”后，重新登录'
         )
     if not user['password'] == add_salt_and_hash(pwd, user['salt']):
         user['privacy'] += 1
         ue.mod_user(user)
         raise ExceptionWithAdvice(
             '密码错误',
-            '如果忘记密码，请私聊机器人"!登录"后，再次选择[修改密码]修改，' + \
-            '或私聊机器人"!重置密码"后，重新登录'
+            '如果忘记密码，请私聊机器人“!登录”后，再次选择[修改密码]修改，' + \
+            '或私聊机器人“!重置密码”后，重新登录'
         )
     return True
 
@@ -51,17 +51,17 @@ def check_key(user, key):
     if user['login_code_expire_time'] < now:
         raise ExceptionWithAdvice(
             '这个登录地址已过期',
-            '请私聊机器人"!登录"获取新登录地址'
+            '请私聊机器人“!登录”获取新登录地址'
         )
     if not user['login_code_available']:
         raise ExceptionWithAdvice(
             '这个登录地址已被使用',
-            '请私聊机器人"!登录"获取新登录地址'
+            '请私聊机器人“!登录”获取新登录地址'
         )
     return True
 
 def recall_from_cookie(auth_cookie):
-    advice = '请私聊机器人"!登录" 或 重新登录'
+    advice = '请私聊机器人“!登录” 或 重新登录'
     if not auth_cookie:
         raise ExceptionWithAdvice('登录已过期', advice)
     s = auth_cookie.split(':')
@@ -70,7 +70,7 @@ def recall_from_cookie(auth_cookie):
     uid, auth = s
 
     user = ue.get_user(uid)
-    advice = '请先加入一个公会 或 私聊机器人"!登录"'
+    advice = '请先加入一个公会 或 私聊机器人“!登录”'
     if user is None:
         raise ExceptionWithAdvice('用户不存在', advice)
     salty_cookie = add_salt_and_hash(auth, user['salt'])
