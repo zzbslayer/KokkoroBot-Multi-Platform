@@ -10,22 +10,29 @@ qq3193377836
 
 from io import BytesIO
 import os
-import requests
-from PIL import Image
+import math
 
-import matplotlib.pyplot as plt
-from .data_source import add_text, get_data, get_person
-import base64
 import pandas as pd
 import numpy as np
 import datetime
+
+import matplotlib.pyplot as plt
+
+from PIL import Image, ImageFont, ImageDraw
+from matplotlib import font_manager as fm
+
+from .data_source import get_data, get_person, get_time
+
 
 from kokkoro.common_interface import KokkoroBot, EventInterface
 from kokkoro.service import Service
 from kokkoro.util import FreqLimiter
 from kokkoro import R
+import kokkoro
 
-from .. import sv, cb_cmd
+from .. import sv
+
+FONT_PATH = os.path.expanduser(kokkoro.config.FONT_PATH["msyh"])
 
 _time_limit = 30*60
 _lmt = FreqLimiter(_time_limit)
@@ -43,45 +50,54 @@ sv = Service('clanbattle-report')
 
 @sv.on_fullmatch(('离职报告', 'retire-report'))
 async def send_resign_report(bot:KokkoroBot, event:EventInterface):
-    await send_report(bot, event, type=REPORT_RESIGN)
-
-@sv.on_fullmatch(('会战报告', 'clanbattle-report'))
-async def send_normal_report(bot:KokkoroBot, event:EventInterface):
-    await send_report(bot, event, type=REPORT_NORMAL)
-
-
-async def send_report(bot:KokkoroBot, event:EventInterface, type=REPORT_UNDECLARED):
-
-    if type not in (REPORT_RESIGN,REPORT_NORMAL):
-        await bot.kkr_send(event, "类型错误！", at_sender=True)
-        return
-
     uid = event.get_author_id()
     nickname = event.get_author().get_nick_name()
     gid = event.get_group_id()
+    report = gen_report(gid, uid, nickname, type=REPORT_RESIGN)
+    await bot.kkr_send(event, report)
 
-    if not _lmt.check(uid):
-        await bot.kkr_send(event, f'每{int(_time_limit/60)}分钟仅能生成一次报告', at_sender=True)
-        return
-    _lmt.start_cd(uid)
 
-    now = datetime.datetime.now()
-    year = now.year
-    month = now.month-1
-    if month==0:
-        year -= 1
-        month = 12
+@sv.on_fullmatch(('会战报告', 'clanbattle-report'))
+async def send_normal_report(bot:KokkoroBot, event:EventInterface):
+    uid = event.get_author_id()
+    nickname = event.get_author().get_nick_name()
+    gid = event.get_group_id()
+    report = gen_report(gid, uid, nickname, type=REPORT_NORMAL)
+    await bot.kkr_send(event, report)
+
+@sv.on_fullmatch(('出刀时间统计','!出刀时间统计','！出刀时间统计'))
+async def send_chal_stat(bot, event):
+    await send_time_dist(bot, event)
+
+
+def add_text(img: Image,text:str,textsize:int,font=FONT_PATH,textfill='white',position:tuple=(0,0)):
+    #textsize 文字大小
+    #font 字体，默认微软雅黑
+    #textfill 文字颜色，默认白色
+    #position 文字偏移（0,0）位置，图片左上角为起点
+    img_font = ImageFont.truetype(font=font,size=textsize)
+    draw = ImageDraw.Draw(img)
+    draw.text(xy=position,text=text,font=img_font,fill=textfill)
+    return img
+
+def gen_report(gid, uid, nickname, type=REPORT_UNDECLARED, kpi=False):
+
+    if type not in (REPORT_RESIGN,REPORT_NORMAL):
+        return "类型错误！"
+    if not kpi:
+        if not _lmt.check(uid):
+            return f'每{math.ceil(_time_limit/60)}分钟仅能生成一次报告'
+        _lmt.start_cd(uid)
+
+    year,month = get_ym()
     constellation = b_constellations[month-1]
 
     try:
-        clanname, challenges = get_person(gid,uid,month)
+        clanname, challenges = get_person(gid,uid,year,month)
     except Exception as e:
-        await bot.kkr_send(event, f"出现错误: {str(e)}\n请联系开发组调教。")
-        return
-
+        return f"出现错误: {str(e)}\n请联系开发组调教。"
     if challenges.shape[0] == 0:
-        await bot.kkr_send(event, "您没有参加本次公会战。请再接再厉！", at_sender=True)
-        return
+        return "您没有参加本次公会战。请再接再厉！"
 
     total_chl = 0
     miss_chl = 0
@@ -182,7 +198,7 @@ async def send_report(bot:KokkoroBot, event:EventInterface, type=REPORT_UNDECLAR
     #将饼图和柱状图粘贴到模板图,mask参数控制alpha通道，括号的数值对是偏移的坐标
     current_folder = os.path.dirname(__file__)
     img = background1.open() if type==REPORT_RESIGN else background2.open()
-    R
+
     img.paste(bar_img1, (580,950), mask=bar_img1.split()[3])
     img.paste(bar_img2, (130,950), mask=bar_img2.split()[3])
 
@@ -202,8 +218,8 @@ async def send_report(bot:KokkoroBot, event:EventInterface, type=REPORT_UNDECLAR
     {avg_day_damage}
     '''
     
-    add_text(img, row1, position=(380,630), textsize=35, textfill='black')
-    add_text(img, row2, position=(833,630), textsize=35, textfill='black')
+    add_text(img, row1, position=(400,620), textsize=35, textfill='black')
+    add_text(img, row2, position=(850,620), textsize=35, textfill='black')
     add_text(img, year, position=(355,438), textsize=40, textfill='black')
     add_text(img, month, position=(565,438), textsize=40, textfill='black')
     add_text(img, constellation, position=(710,438), textsize=40, textfill='black')
@@ -212,8 +228,45 @@ async def send_report(bot:KokkoroBot, event:EventInterface, type=REPORT_UNDECLAR
     else:
         add_text(img, clanname, position=(300+(10-len(clanname))/2*30, 520), textsize=30, textfill='black')
     add_text(img, nickname, position=(280,365), textsize=35, textfill='white')
-    #输出
-    await bot.kkr_send(event, img)
+    
     plt.close('all')
+    return img
 
+async def send_time_dist(bot: KokkoroBot, event: EventInterface):
+    gid = event.get_group_id()
+    year,month = get_ym()
 
+    try:
+        name,times = get_time(gid,year,month)
+    except Exception as e:
+        await bot.kkr_send(event, f"出现错误: {str(e)}\n请联系开发组调教。")
+        return
+
+    plt.rcParams['axes.unicode_minus']=False
+    prop = fm.FontProperties(fname=FONT_PATH)
+    prop.set_size('large')
+    fig,ax = plt.subplots(figsize=(12,6),facecolor='white')
+    ax.set_xlabel('时间',fontproperties=prop)
+    ax.set_ylabel('刀数',fontproperties=prop)
+    ax.set_title(f'{name}{year}年{month}月会战出刀时间统计',fontproperties=prop)
+    ax.set_xlim((0-0.5,24))
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    colors=(['#808080']*6)+(['#9bc5af']*6)+(['#c54731']*6)+(['#3a4a59']*6)
+    plt.xticks(range(24),fontproperties=prop)
+    plt.bar(range(24),times,color=colors)
+    
+    await bot.kkr_send(event, fig)
+    plt.close()
+
+def get_ym():
+    now = datetime.datetime.now()
+    year = now.year
+    month = now.month
+    day = now.day
+    if day < 20:
+        month -= 1
+    if month == 0:
+        year -= 1
+        month = 12
+    return year,month
