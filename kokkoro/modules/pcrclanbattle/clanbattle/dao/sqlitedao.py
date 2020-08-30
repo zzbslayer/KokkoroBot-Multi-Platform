@@ -127,6 +127,26 @@ class ClanDao(SqliteDao):
                 raise DatabaseError('查找公会失败')
 
 
+    def find_by_uid(self, uid):
+        with self._connect() as conn:
+            try:
+                ret = conn.execute('''
+                    SELECT M.uid, C.gid, C.name
+                    FROM MEMBER M INNER JOIN CLAN C
+                    ON M.alt = C.gid
+                    WHERE M.uid=?
+                    ''',
+                    (uid,) ).fetchall()
+                return [
+                    {'uid': r[0], 'gid': r[1], 'name': r[2]}
+                    if r else None
+                    for r in ret
+                ]
+            except (sqlite3.DatabaseError) as e:
+                logger.error(f'[MemberDao.find_by_uid] {e}')
+                raise DatabaseError('查找成员及公会失败')
+
+
 
 class MemberDao(SqliteDao):
     def __init__(self):

@@ -179,6 +179,9 @@ def get_group(bm:BattleMaster):
         return jsonify(code=20, message="Group dosen't exist")
     return clan
 
+def list_group_by_member(bm:BattleMaster, uid):
+    return bm.list_clan_by_uid(uid)
+
 def get_boss_data(bm:BattleMaster):
     clan = check_clan(bm)
     if not clan:

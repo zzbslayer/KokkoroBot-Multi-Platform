@@ -201,13 +201,15 @@ async def yobot_user():
     if 'yobot_user' not in session:
         return redirect(url_for('yobot_login', callback=request.path))
     user = ue.get_user_with_clan(session['yobot_user'])
+    bm = ue.get_bm(user['gid'])
+    groups = ue.list_group_by_member(bm, user['uid'])
     return await render_template(
         'user.html',
         user=user,
         clan_groups=[{
-            'group_id': user['gid'],
-            'group_name': (user['clan_name'] or user['uid'])
-        }],
+            'group_id': g['gid'],
+            'group_name': g['name'] or g['gid']
+        } for g in groups],
     )
 
 @app.route(

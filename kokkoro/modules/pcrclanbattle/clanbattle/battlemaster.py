@@ -133,6 +133,8 @@ class BattleMaster(object):
         return self.clandao.find_one(self.group, cid)
     def list_clan(self):
         return self.clandao.find_by_gid(self.group)
+    def list_clan_by_uid(self, uid):
+        return self.clandao.find_by_uid(uid)
 
 
     def add_member(self, uid, alt, name, cid):
