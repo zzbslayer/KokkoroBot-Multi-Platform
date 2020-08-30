@@ -50,7 +50,7 @@ def _check_clan(bm:BattleMaster):
         raise NotFoundError(ERROR_CLAN_NOTFOUND)
     return clan
 
-def _check_member(bm:BattleMaster, uid:str, alt:int, tip=None):
+def _check_member(bm:BattleMaster, uid:str, alt:str, tip=None):
     mem = bm.get_member(uid, alt) or bm.get_member(uid, 0) # 兼容cmdv1
     if not mem:
         raise NotFoundError(tip or ERROR_MEMBER_NOTFOUND)

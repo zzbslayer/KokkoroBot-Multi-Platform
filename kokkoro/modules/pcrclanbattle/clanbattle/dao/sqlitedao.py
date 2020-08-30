@@ -135,7 +135,7 @@ class MemberDao(SqliteDao):
             columns='uid, alt, name, gid, cid',
             fields='''
             uid TEXT NOT NULL,
-            alt INT NOT NULL,
+            alt TEXT NOT NULL,
             name TEXT NOT NULL,
             gid TEXT NOT NULL,
             cid INT NOT NULL,
@@ -283,7 +283,7 @@ class BattleDao(SqliteDao):
             fields='''
             eid INTEGER PRIMARY KEY AUTOINCREMENT,
             uid TEXT NOT NULL,
-            alt INT NOT NULL,
+            alt TEXT NOT NULL,
             time TIMESTAMP NOT NULL,
             round INT NOT NULL,
             boss  INT NOT NULL,
