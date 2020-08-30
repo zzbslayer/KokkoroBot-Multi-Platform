@@ -104,6 +104,10 @@ class DiscordEvent(EventInterface):
     @overrides(EventInterface)
     def get_group_id(self):
         return to_string(self._raw_event.guild.id)
+    
+    @overrides(EventInterface)
+    def get_group(self) -> GroupInterface:
+        return DiscordGroup(self._raw_event.guild)
 
     @overrides(EventInterface)
     def get_content(self) -> str:

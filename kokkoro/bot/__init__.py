@@ -22,10 +22,13 @@ def _init_bot() -> KokkoroBot:
 kkr_bot: KokkoroBot = None
 kkr_scheduler: AsyncIOScheduler = None
 
-def get_scheduler() -> AsyncIOScheduler:
+def get_scheduler(event_loop=None) -> AsyncIOScheduler:
     global kkr_scheduler
     if kkr_scheduler == None:
-        kkr_scheduler = AsyncIOScheduler()
+        if event_loop ==None:
+            kkr_scheduler = AsyncIOScheduler()
+        else:
+            kkr_scheduler = AsyncIOScheduler(event_loop=event_loop)
     return kkr_scheduler
 
 def get_bot() -> KokkoroBot:

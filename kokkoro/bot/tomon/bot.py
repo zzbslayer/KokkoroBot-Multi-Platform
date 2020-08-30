@@ -5,6 +5,8 @@ from tomon_sdk import bot
 from requests_toolbelt import MultipartEncoder
 from io import BytesIO
 import httpx
+import time
+
 
 from random import choice
 from string import ascii_letters
@@ -15,9 +17,12 @@ from kokkoro.R import ResImg, RemoteResImg
 from kokkoro.typing import overrides, Image, Figure
 from kokkoro.bot.tomon.tomon_adaptor import *
 from kokkoro.bot.tomon.tomon_util import at
+from kokkoro.bot.tomon import get_scheduler_loop
 
 nest_asyncio.apply()
 loop = asyncio.get_event_loop()
+
+DEFAULT_CD = 5*60 # 5 minute
 
 def rand_temp_file():
     rand_name = ''.join(choice(ascii_letters) for i in range(10)) + '.png'
@@ -38,6 +43,9 @@ class KokkoroTomonBot(KokkoroBot):
 
         self._bot = bot.Bot()
         self._bot.on(bot.OpCodeEvent.DISPATCH, on_message)
+
+        self._channels_cache = {}
+        self._channels_cache_lock = asyncio.Lock(loop=get_scheduler_loop())
 
     def get_raw_bot(self):
         return self._bot
@@ -131,12 +139,27 @@ class KokkoroTomonBot(KokkoroBot):
         kokkoro.logger.warning(f"Guild <{gid}> doesn't contains any channel named as <{tag}>")
 
     async def get_channels_by_gid(self, gid):
-        raw_channels = await self._bot.api().route(f'/guilds/{gid}/channels').get()
+        await self._channels_cache_lock.acquire()
+        try:
+            ch_time_tuple = self._channels_cache.get(gid)
+            if ch_time_tuple == None: # no cache
+                raw_channels = await self.request_channels_by_gid(gid)
+            else:
+                raw_channels, next_time = ch_time_tuple
+                if time.time() >= next_time: # cache expire
+                    raw_channels = await self.request_channels_by_gid(gid)
+        finally:
+            self._channels_cache_lock.release()
+        return raw_channels
+    
+    async def request_channels_by_gid(self, gid):
         kokkoro.logger.debug(f'Requesting for /guilds/{gid}/channels')
+        raw_channels = await self._bot.api().route(f'/guilds/{gid}/channels').get()
         if raw_channels == None:
             raise Exception('No channels')
+        next_time = time.time() + DEFAULT_CD
+        self._channels_cache[gid] = (raw_channels, next_time)
         return raw_channels
-        
     
     @overrides(KokkoroBot)
     def get_groups(self) -> List[TomonGroup]:

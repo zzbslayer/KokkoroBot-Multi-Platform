@@ -1,6 +1,6 @@
 import asyncio
 from kokkoro import config
-from kokkoro.priv import SUPERUSER, ADMIN, NORMAL
+from kokkoro.priv import SUPERUSER, ADMIN, NORMAL, OWNER
 
 from kokkoro.bot.tomon import get_bot
 from kokkoro.typing import List, overrides
@@ -15,6 +15,7 @@ class TomonUser(UserInterface):
     def __init__(self, user, member={}):
         self.raw_user = user
         self.raw_member = member
+        self.group = None
 
     @staticmethod
     def from_raw_member(member):
@@ -34,7 +35,8 @@ class TomonUser(UserInterface):
 
     @overrides(UserInterface)
     def get_name(self):
-        return to_string(self.raw_user.get('username'))
+        res = self.raw_user.get('name', self.raw_user.get('username')) # 优先获取昵称，若无则获取用户名
+        return to_string(res)
     
     @overrides(UserInterface)
     def get_raw_user(self):
@@ -51,13 +53,26 @@ class TomonUser(UserInterface):
     def get_priv(self):
         if self.get_id() in config.SUPER_USER:
             return SUPERUSER
+        elif self.is_owner():
+            return OWNER
         elif self.is_admin():
             return ADMIN
         return NORMAL
 
     @overrides(UserInterface)
     def is_admin(self):
-        return False #self.raw_user.roles
+        return False #FIXME: wait for sdk to process permissions
+    
+    def is_owner(self):
+        if self.group == None:
+            guild_id = self.raw_member.get('guild_id')
+            if guild_id == None:
+                return False
+            _bot = get_bot().get_raw_bot()
+            self.group = TomonGroup(asyncio.run(_bot.api().route(f'/guilds/{guild_id}').get()))
+        if self.group.get_owner_id() == self.get_id():
+            return True
+        return False
 
 class TomonGroup(GroupInterface):
     def __init__(self, raw_group):
@@ -78,9 +93,14 @@ class TomonGroup(GroupInterface):
     
     @overrides(GroupInterface)
     def get_members(self) -> List[TomonUser]:
+        _bot = get_bot().get_raw_bot()
         if self.members == None:
             self.members = asyncio.run(_bot.api().route(f'/guilds/{self.get_id()}/members').get())
         return TomonUser.from_raw_members(self.members)
+    
+    @overrides(GroupInterface)
+    def get_owner_id(self):
+        return to_string(self.raw_group.get("owner_id"))
 
 '''
 Raw Event (dict)
@@ -89,11 +109,16 @@ https://developer.tomon.co/docs/channel#消息message
 class TomonEvent(EventInterface):
     def __init__(self, raw_event):
         self.members_in_group = None
+        self.group = None
+
         self._raw_event=raw_event
+
+        # 这是不完整的 Member 信息。不包含 guild_id 等信息
+        # 'member': {'nick': 'zzbslayer', 'roles': ['161137464197890048']}
         member = self._raw_event.get('member') 
         member = {} if member == None else member
+        member['guild_id'] = self._raw_event.get('guild_id')
         self.author = TomonUser(self._raw_event.get('author'), member=member)
-        self.group = TomonGroup(self._raw_event.get('group'))
 
     @overrides(EventInterface)
     def get_id(self):
@@ -123,13 +148,22 @@ class TomonEvent(EventInterface):
     def get_members_in_group(self) -> List[TomonUser]:
         _bot = get_bot().get_raw_bot()
         if self.members_in_group == None:
-            self.members_in_group = asyncio.run(_bot.api().route(f'/guilds/{self.get_group_id()}/members').get())
+            members_in_group = asyncio.run(_bot.api().route(f'/guilds/{self.get_group_id()}/members').get()) # 这是完整的 Member 信息
+            self.members_in_group = members_in_group
         
         return TomonUser.from_raw_members(self.members_in_group)
 
     @overrides(EventInterface)
     def get_group_id(self):
         return to_string(self._raw_event.get('guild_id'))
+    
+    @overrides(EventInterface)
+    def get_group(self) -> GroupInterface:
+        _bot = get_bot().get_raw_bot()
+        if self.group == None:
+            self.group = TomonGroup(asyncio.run(_bot.api().route(f'/guilds/{self.get_group_id()}').get()))
+        
+        return self.group
 
     @overrides(EventInterface)
     def get_mentions(self) -> List[TomonUser]:
