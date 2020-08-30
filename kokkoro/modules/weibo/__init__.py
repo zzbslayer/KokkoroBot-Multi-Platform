@@ -1,6 +1,6 @@
 from .weibo import WeiboSpider
 import kokkoro
-from kokkoro.service import Service, BroadcastTag
+from kokkoro.service import BoradcastService, BroadcastTag, Service
 from kokkoro.common_interface import KokkoroBot, EventInterface
 from kokkoro import priv
 from kokkoro import R, util
@@ -14,7 +14,7 @@ def _load_config(services_config):
         sv.logger.debug(sv_config)
         service_name = sv_config["service_name"]
         enable_on_default = sv_config.get("enable_on_default", False)
-        broadcast_tag = sv_config.get("broadcast_tag", None)
+        broadcast_tag = sv_config.get("broadcast_tag", BroadcastTag.default)
 
         users_config = sv_config["users"]
 
@@ -31,8 +31,8 @@ def _load_config(services_config):
                     "user_id":wb_spider.get_user_id()
                     }
         
-        subService = Service(service_name, enable_on_default=enable_on_default)
-        subr_dic[service_name] = {"service": subService, "spiders": sv_spider_list, "broadcast_tag":BroadcastTag.parse(broadcast_tag)}
+        subService = BoradcastService(service_name, broadcast_tag=broadcast_tag, enable_on_default=enable_on_default)
+        subr_dic[service_name] = {"service": subService, "spiders": sv_spider_list}
   
 services_config = kokkoro.config.modules.weibo.weibos
 subr_dic = {}
@@ -64,17 +64,16 @@ def wb_to_message(wb):
 weibo_url_prefix = "https://weibo.com/u"
 @sv.on_fullmatch(('weibo-config', '查看微博服务', '微博服务', '微博配置', '查看微博配置'))
 async def weibo_config(bot, ev):
-    msg = '微博推送配置：服务名，别名，微博链接, 推送标签'
+    msg = '微博推送配置：服务名，别名，微博链接'
     index = 1
     for service_config in services_config:
         service_name = service_config['service_name']
-        bc_tag = service_config['broadcast_tag']
         users_config = service_config['users']
         for user_config in users_config:
             weibo_id =  user_config['user_id']
             alias = user_config['alias']
             weibo_url = f'{weibo_url_prefix}/{weibo_id}'
-            msg = f'{msg}\n{index}. {service_name}, {alias}, {weibo_url}, {bc_tag}'
+            msg = f'{msg}\n{index}. {service_name}, {alias}, {weibo_url}'
             index+=1
     await bot.kkr_send(ev, msg)
 
@@ -134,7 +133,6 @@ async def weibo_poller():
         weibos = []
         ssv = serviceObj["service"]
         spiders = serviceObj["spiders"]
-        bc_tag = serviceObj["broadcast_tag"]
         for spider in spiders:
             latest_weibos = await spider.get_latest_weibos()
             formatted_weibos = [wb_to_message(wb) for wb in latest_weibos]
@@ -146,10 +144,10 @@ async def weibo_poller():
 
             weibos.extend(formatted_weibos)
         for wb in weibos:
-            await ssv.broadcast(wb[0], bc_tag)
+            await ssv.broadcast(wb[0])
             imgs = wb[1]
             for img in imgs:
-                await ssv.broadcast(img, bc_tag)
+                await ssv.broadcast(img)
 
 @sv.scheduled_job('cron', second='0', minute='0', hour='5')
 async def clear_spider_buffer():

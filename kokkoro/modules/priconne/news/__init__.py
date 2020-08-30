@@ -1,11 +1,11 @@
 import asyncio
-from kokkoro.service import Service, BroadcastTag
+from kokkoro.service import Service, BroadcastTag, BoradcastService
 from .spider import *
 
-svtw = Service('pcr-news-tw', help_='台服官网新闻')
-svbl = Service('pcr-news-bili', help_='B服官网新闻')
+svtw = BoradcastService('pcr-news-tw', broadcast_tag=BroadcastTag.tw_broadcast, help_='台服官网新闻')
+svbl = BoradcastService('pcr-news-bili', broadcast_tag=BroadcastTag.cn_broadcast, help_='B服官网新闻')
 
-async def news_poller(spider:BaseSpider, sv:Service, bc_tag, LOG_TAG, send=True):
+async def news_poller(spider:BaseSpider, sv:Service, LOG_TAG, send=True):
     if not spider.item_cache:
         await spider.get_update()
         sv.logger.info(f'{LOG_TAG}新闻缓存为空，已加载至最新')
@@ -16,20 +16,20 @@ async def news_poller(spider:BaseSpider, sv:Service, bc_tag, LOG_TAG, send=True)
         return
     sv.logger.info(f'检索到{len(news)}条{LOG_TAG}新闻更新！')
     if send:
-        await sv.broadcast(spider.format_items(news), bc_tag)
+        await sv.broadcast(spider.format_items(news))
 
 async def _async_init():
-    await news_poller(BiliAllSpider, svbl, BroadcastTag.cn_broadcast, 'B服官网')
+    await news_poller(BiliAllSpider, svbl, 'B服官网')
 
 #asyncio.run(_async_init())
 
 @svtw.scheduled_job('cron', minute='*/20', jitter=20)
 async def sonet_news_poller():
-    await news_poller(SonetSpider, svtw, BroadcastTag.tw_broadcast, '台服官网')
+    await news_poller(SonetSpider, svtw, '台服官网')
 
 @svbl.scheduled_job('cron', minute='*/20', jitter=20)
 async def bili_news_poller():
-    await news_poller(BiliAllSpider, svbl, BroadcastTag.cn_broadcast, 'B服官网')
+    await news_poller(BiliAllSpider, svbl,'B服官网')
 
     
 

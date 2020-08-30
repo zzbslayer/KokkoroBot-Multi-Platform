@@ -11,6 +11,7 @@ from kokkoro import logger
 from kokkoro import priv, log, typing, trigger
 from kokkoro.common_interface import *
 from kokkoro.bot import get_scheduler, get_bot
+from kokkoro.util import join_iterable
 
 # service management
 _loaded_services: Dict[str, "Service"] = {}  # {name: service}
@@ -38,6 +39,7 @@ def _save_service_config(service):
                 "name": service.name,
                 "use_priv": service.use_priv,
                 "manage_priv": service.manage_priv,
+                "broadcast_tag": service.broadcast_tag,
                 "enable_on_default": service.enable_on_default,
                 "visible": service.visible,
                 "enable_group": list(service.enable_group),
@@ -100,7 +102,7 @@ class Service:
     储存位置：
     `~/.kokkoro/service_config/{ServiceName}.json`
     """
-    def __init__(self, name, use_priv=None, manage_priv=None, enable_on_default=None, visible=None,
+    def __init__(self, name, use_priv=None, manage_priv=None, broadcast_tag=None, enable_on_default=None, visible=None,
                  help_=None):
         """
         定义一个服务
@@ -113,6 +115,7 @@ class Service:
         self.use_priv = config.get('use_priv') or use_priv or priv.NORMAL
         self.manage_priv = config.get('manage_priv') or manage_priv or priv.ADMIN
         self.enable_on_default = config.get('enable_on_default')
+        self.broadcast_tag = config.get('broadcast_tag') or broadcast_tag or BroadcastTag.default
         if self.enable_on_default is None:
             self.enable_on_default = enable_on_default
         if self.enable_on_default is None:
@@ -155,6 +158,13 @@ class Service:
         _save_service_config(self)
         self.logger.info(
             f'Service {self.name} is disabled at group {group_id}')
+    
+    def set_broadcast_tag(self, new_tags):
+        if isinstance(new_tags, str):
+            new_tags = (new_tags,)
+        self.broadcast_tag = new_tags
+        _save_service_config(self)
+        self.logger.info(f'Service {self.name}\'s broadcast tag is modified as {new_tags}')
 
     def check_enabled(self, group_id):
         return bool( (group_id in self.enable_group) or (self.enable_on_default and group_id not in self.disable_group))
@@ -269,6 +279,9 @@ class Service:
         bot = self.bot
         glist = self.get_enable_groups()
 
+        if tag == None:
+            tag = self.broadcast_tag
+
         if isinstance(tag, str):
             tag = [tag]
 
@@ -282,3 +295,26 @@ class Service:
             except Exception as e:
                 self.logger.error(f"群{gid} 投递{tag}失败：{type(e)}")
                 self.logger.exception(e)
+
+class BoradcastService(Service):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        #service_names = (self.name,)       
+         
+        set_prefix = f'{self.name} set-bc-tag' #join_iterable(service_names, ('bc-tag',), sep=' ')
+        get_prefix = f'{self.name} get-bc-tag'
+
+        async def set_bc_tag(bot, ev):
+            new_tags = ev.get_param().remain
+            if new_tags in ['', None]:
+                await bot.kkr_send(ev, f'请输入服务 <{self.name}> 的推送频道的标签\n多个标签请以空格分隔')
+                return
+            new_tags = new_tags.split(' ')
+            self.set_broadcast_tag(new_tags)
+            await bot.kkr_send(ev, f'服务 <{self.name}> 的推送频道的标签成功更新为 {new_tags}')
+
+        async def get_bc_tag(bot, ev):
+            await bot.kkr_send(ev, f'服务 <{self.name}> 的推送频道的标签为 {self.broadcast_tag}')
+
+        self.on_prefix(set_prefix)(set_bc_tag)
+        self.on_prefix(get_prefix)(get_bc_tag)

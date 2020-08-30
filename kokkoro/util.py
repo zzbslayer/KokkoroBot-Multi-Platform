@@ -35,8 +35,8 @@ def plt2bytes(plt):
     buf = BytesIO()
     plt.savefig(buf, format='PNG', dpi=100)
 
-def join_iterable(a: Iterable, b: Iterable):
-    return tuple([''.join(item) for item in itertools.product(a, b)])
+def join_iterable(a: Iterable, b: Iterable, sep=''):
+    return tuple([sep.join(item) for item in itertools.product(a, b)])
 
 def load_config(inbuilt_file_var):
     """
