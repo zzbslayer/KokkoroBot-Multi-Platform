@@ -4,7 +4,7 @@ from kokkoro import logger
 from typing import Any, Dict, List, NewType, Optional, Tuple, Union
 import time
 from datetime import datetime, timedelta
-from quart import jsonify, make_response
+from quart import jsonify, make_response, session
 
 SERVER_NAME = { 0x00: 'jp', 0x01: 'tw', 0x02: 'cn' }
 ClanBattleReport = NewType('ClanBattleReport', List[Dict[str, Any]])
@@ -14,7 +14,7 @@ ClanBattleReport = NewType('ClanBattleReport', List[Dict[str, Any]])
 def now():
     return int(time.time())
 
-def clan_api(bm:BattleMaster, uid, payload):
+def clan_api(bm:BattleMaster, payload):
     try:
         clan = check_clan(bm)
         zone = bm.get_timezone_num(clan['server'])
@@ -37,7 +37,7 @@ def clan_api(bm:BattleMaster, uid, payload):
                 },
                 selfData={
                     'is_admin': False,
-                    'user_id': uid,
+                    'user_id': session['yobot_user'],
                     'today_sl': False
                 }
             )
@@ -70,7 +70,7 @@ def clan_api(bm:BattleMaster, uid, payload):
         logger.exception(e)
         return jsonify(code=40, message='server error')
 
-async def clan_statistics_api(bm:BattleMaster, apikey, ):
+async def clan_statistics_api(bm:BattleMaster, apikey):
     try:
         clan = check_clan(bm)
         report = get_report(bm, None, None, 0)
@@ -100,11 +100,11 @@ async def clan_statistics_api(bm:BattleMaster, apikey, ):
         logger.exception(e)
         return jsonify(code=40, message='server error')
 
-async def clan_statistics_api(bm, payload):
+def clan_setting_api(bm:BattleMaster, payload):
     try:
         if payload is None:
             return jsonify(code=30, message='Invalid payload')
-        if payload.get('csrf_token') != session['csrf_token']:
+        if payload['csrf_token'] != session['csrf_token']:
             return jsonify(code=15, message='Invalid csrf_token')
         action = payload['action']
         clan = check_clan(bm)
@@ -116,8 +116,8 @@ async def clan_statistics_api(bm, payload):
                     'game_server': SERVER_NAME[clan['server']],
                     'battle_id': 0,
                 },
-                #privacy=group.privacy,
-                #notification=group.notification,
+                privacy=3,
+                notification=1023,
             )
         elif action == 'put_setting':
             # clan['server'] = payload['game_server']

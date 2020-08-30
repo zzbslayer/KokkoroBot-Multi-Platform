@@ -121,7 +121,7 @@ async def yobot_clan_api(group_id):
         if (user['authority_group'] >= 100 or not is_member):
             return jsonify(code=11, message='Insufficient authority')
     payload = await request.get_json()
-    return ue.clan_api(bm, uid, payload)
+    return ue.clan_api(bm, payload)
 
 @app.route( urljoin(PATH, 'clan/<group_id>/statistics/api/'),
             methods=['GET'])

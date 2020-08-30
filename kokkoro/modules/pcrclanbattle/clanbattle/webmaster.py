@@ -1,8 +1,7 @@
 from datetime import datetime, timezone, timedelta
 
-from kokkoro import config
 from kokkoro.common_interface import EventInterface
-from kokkoro.priv import SUPERUSER, ADMIN, NORMAL
+from kokkoro.priv import SUPERUSER, ADMIN
 from kokkoro.util import rand_string
 from .dao.sqlitedao import ClanDao, MemberDao, UserDao, UserLoginDao
 from .exception import NotFoundError
