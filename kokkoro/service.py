@@ -305,6 +305,9 @@ class BoradcastService(Service):
         get_prefix = f'{self.name} get-bc-tag'
 
         async def set_bc_tag(bot, ev):
+            if not priv.check_priv(ev.get_author(), priv.ADMIN):
+                await bot.kkr_send(ev, f'只有管理员才可以修改推送频道标签 0x0')
+                return
             new_tags = ev.get_param().remain
             if new_tags in ['', None]:
                 await bot.kkr_send(ev, f'请输入服务 <{self.name}> 的推送频道的标签\n多个标签请以空格分隔')
