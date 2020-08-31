@@ -15,6 +15,7 @@ from kokkoro.util import join_iterable
 
 # service management
 _loaded_services: Dict[str, "Service"] = {}  # {name: service}
+_loaded_bc_services: Dict[str, "Service"] = {}  # {name: service}
 _re_illegal_char = re.compile(r'[\\/:*?"<>|\.]')
 _service_config_dir = os.path.expanduser('~/.kokkoro/service_config/')
 os.makedirs(_service_config_dir, exist_ok=True)
@@ -116,6 +117,8 @@ class Service:
         self.manage_priv = config.get('manage_priv') or manage_priv or priv.ADMIN
         self.enable_on_default = config.get('enable_on_default')
         self.broadcast_tag = config.get('broadcast_tag') or broadcast_tag or BroadcastTag.default
+        if isinstance(self.broadcast_tag, str):
+            self.broadcast_tag = [self.broadcast_tag]
         if self.enable_on_default is None:
             self.enable_on_default = enable_on_default
         if self.enable_on_default is None:
@@ -275,15 +278,12 @@ class Service:
             return self.scheduler.scheduled_job(*args, **kwargs)(wrapper)
         return deco
 
-    async def broadcast(self, msg: SupportedMessageType, tag: Union[str, List[str]]=None):
+    async def broadcast(self, msg: SupportedMessageType, tag: List[str]=None):
         bot = self.bot
         glist = self.get_enable_groups()
 
         if tag == None:
             tag = self.broadcast_tag
-
-        if isinstance(tag, str):
-            tag = [tag]
 
         for gid in glist:
             try:
@@ -321,3 +321,9 @@ class BoradcastService(Service):
 
         self.on_prefix(set_prefix)(set_bc_tag)
         self.on_prefix(get_prefix)(get_bc_tag)
+
+        _loaded_bc_services[self.name] = self
+    
+    @staticmethod
+    def get_loaded_bc_services() -> Dict[str, "Service"]:
+        return _loaded_bc_services

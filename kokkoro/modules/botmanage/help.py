@@ -24,7 +24,7 @@ HELP_BOTTOM='''
 
 PRC_HELP = '''
 ==================
-- 公主连接Re:Dive -
+- 公主连结Re:Dive -
 ==================
 [@bot 签到] 给主さま盖章章
 [/十连] 十连转蛋模拟
@@ -39,18 +39,20 @@ PRC_HELP = '''
 [bcr速查] B服萌新攻略
 [rank表] 查看rank推荐表
 [黄骑充电表] 查询黄骑1动充电规律
-※[@bot 官漫132] 官方四格阅览
 [挖矿 15001] 查询矿场中还剩多少钻
 [角色计算 2 100] 查询角色升级所需的经验药水与mana
 ※[切噜一下] 后以空格隔开接想要转换为切噜语的话
 ※[切噜～♪切啰巴切拉切蹦切蹦] 切噜语翻译
-[国/日服日程表] 查看国服活动日程表
-[国/台服新闻] 查看国服新闻
-※[启用/禁用 pcr-arena-reminder-jp] 背刺时间提醒(UTC+9)
-※[启用/禁用 pcr-arena-reminder-tw] 背刺时间提醒(UTC+8)
-※[启用/禁用 pcr-portion-reminder-jp] 背刺时间提醒(UTC+9)
-※[启用/禁用 pcr-portion-reminder-tw] 提醒买药小助手(UTC+8)
-※[启用/禁用 weibo-pcr] 国服官微推送
+[国/日服日程表] 查看活动日程表
+[国/台服新闻] 查看新闻
+[启用/禁用 pcr-comic] 官方漫画推送（日文）
+[启用/禁用 pcr-arena-reminder-utc9] 背刺时间提醒(日服)
+[启用/禁用 pcr-arena-reminder-utc8] 背刺时间提醒(国服台服)
+[启用/禁用 pcr-portion-reminder-utc9] 背刺时间提醒(日服)
+[启用/禁用 pcr-portion-reminder-utc8] 提醒买药小助手(国服台服)
+[启用/禁用 weibo-pcr] 国服官微推送
+[@bot 官漫132] 官方四格阅览
+[@bot 看微博 公主连结] 官方微博阅览（仅限最近5条）
 [！帮助] 查看会战管理功能的说明
 '''.strip()
 
@@ -60,15 +62,17 @@ ARKNIGHTS_HELP='''
 =====================
 [公开招募 位移 近战位] 公开招募模拟器
 [公招TAG] 公开招募TAG一览
-※[启用/禁用 weibo-ark] 国服官微推送
+[启用/禁用 weibo-ark] 国服官微推送
 '''.strip()
 
-WEIBO_HELP='''
+PUSH_HELP='''
 ===========
-- 微博推送 -
+- 推送服务 -
 ===========
 [微博配置] 查看微博推送服务的配置
-[@bot 看微博 公主连结] 根据别名查看指定微博账户的最新五条微博
+[@bot 看微博 公主连结 3] 根据别名阅览指定账户最近的微博（仅限最近5条）
+[pcr-comic get-bc-tag] 获取推送服务的频道标签
+[weibo-pcr set-bc-tag 国服推送] 设置推送服务的频道标签 
 '''.strip()
 
 NORMAL_HELP='''
@@ -95,9 +99,10 @@ SHORT_HELP=f'''
 [！帮助] 查看公主连结会战管理功能的说明
 [明日方舟帮助]查看明日方舟相关功能
 [通用功能]查看通用功能
-[微博帮助]查看微博功能
+[推送帮助]查看推送服务
 =====管理限定功能=====
 [lssv] 查看功能模块的开关状态
+[lsbcsv] 查看推送服务的开关状态与标签
 [enable <服务名>] 开启指定服务
 [disable <服务名>] 关闭指定服务
 ====================
@@ -115,10 +120,10 @@ _ark=['明日方舟', '舟游', 'arknights']
 async def ark_help(bot, ev: EventInterface):
     await bot.kkr_send(ev, ARKNIGHTS_HELP)
 
-# _weibo=['wb', '微博', 'weibo']
-# @sv.on_fullmatch(tuple([''.join(l) for l in itertools.product(_weibo, _help)]))
-# async def weibo_help(bot, ev: EventInterface):
-#     await bot.kkr_send(ev, WEIBO_HELP)
+_push=['推送', 'push']
+@sv.on_fullmatch(tuple([''.join(l) for l in itertools.product(_push, _help)]))
+async def push_help(bot, ev: EventInterface):
+    await bot.kkr_send(ev, PUSH_HELP)
 
 @sv.on_fullmatch(('通用功能', '通用帮助', 'general-help'))
 async def normal_help(bot, ev: EventInterface):
