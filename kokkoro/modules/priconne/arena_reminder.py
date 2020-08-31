@@ -1,4 +1,4 @@
-from kokkoro.service import Service, BroadcastTag, BoradcastService
+from kokkoro.service import BroadcastTag, BoradcastService
 
 sv9 = BoradcastService('pcr-arena-reminder-utc9', 
     broadcast_tag=[BroadcastTag.cn_broadcast, BroadcastTag.tw_broadcast], enable_on_default=False, help_='背刺时间提醒(UTC+9)')

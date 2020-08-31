@@ -10,8 +10,7 @@ qksimg = R.img('antiqks.jpg')
 
 @sv.on_keyword(qks_url)
 async def qks_keyword(bot: KokkoroBot, ev: EventInterface):
-    msg = f'骑空士爪巴\n{qksimg}'
-    await bot.kkr_send(ev, msg, at_sender=True)
+    await bot.kkr_send(ev, qksimg, at_sender=True)
     await util.silence(ev, 60)
 
 # 有潜在的安全问题
