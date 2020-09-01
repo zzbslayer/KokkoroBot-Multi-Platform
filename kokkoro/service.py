@@ -44,7 +44,8 @@ def _save_service_config(service):
                 "enable_on_default": service.enable_on_default,
                 "visible": service.visible,
                 "enable_group": list(service.enable_group),
-                "disable_group": list(service.disable_group)
+                "disable_group": list(service.disable_group),
+                "group_bc_tag": service.group_bc_tag,
             },
             f,
             ensure_ascii=False,
@@ -112,11 +113,12 @@ class Service:
         #assert not _re_illegal_char.search(name), r'Service name cannot contain character in `\/:*?"<>|.`'
 
         config = _load_service_config(name)
+        self._loaded_config = config # for sub-class init
         self.name = name
         self.use_priv = config.get('use_priv') or use_priv or priv.NORMAL
         self.manage_priv = config.get('manage_priv') or manage_priv or priv.ADMIN
         self.enable_on_default = config.get('enable_on_default')
-        self.broadcast_tag = config.get('broadcast_tag') or broadcast_tag or BroadcastTag.default
+        self.broadcast_tag = config.get('broadcast_tag') or broadcast_tag or BroadcastTag.default # default tag for  group bc tag
         if isinstance(self.broadcast_tag, str):
             self.broadcast_tag = [self.broadcast_tag]
         if self.enable_on_default is None:
@@ -161,13 +163,6 @@ class Service:
         _save_service_config(self)
         self.logger.info(
             f'Service {self.name} is disabled at group {group_id}')
-    
-    def set_broadcast_tag(self, new_tags):
-        if isinstance(new_tags, str):
-            new_tags = (new_tags,)
-        self.broadcast_tag = new_tags
-        _save_service_config(self)
-        self.logger.info(f'Service {self.name}\'s broadcast tag is modified as {new_tags}')
 
     def check_enabled(self, group_id):
         return bool( (group_id in self.enable_group) or (self.enable_on_default and group_id not in self.disable_group))
@@ -278,52 +273,65 @@ class Service:
             return self.scheduler.scheduled_job(*args, **kwargs)(wrapper)
         return deco
 
-    async def broadcast(self, msg: SupportedMessageType, tag: List[str]=None):
-        bot = self.bot
-        glist = self.get_enable_groups()
 
-        if tag == None:
-            tag = self.broadcast_tag
-
-        for gid in glist:
-            try:
-                for t in tag:
-                    if tag == None:
-                        tag = BroadcastTag.default
-                    await bot.kkr_send_by_group(gid, msg, t)
-                self.logger.info(f"群{gid} 投递{tag}成功 ")
-            except Exception as e:
-                self.logger.error(f"群{gid} 投递{tag}失败：{type(e)}")
-                self.logger.exception(e)
-
-class BoradcastService(Service):
+class BroadcastService(Service):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        config = self._loaded_config
+        self.group_bc_tag = config.get('group_bc_tag') or defaultdict(lambda: self.broadcast_tag)
         #service_names = (self.name,)       
          
         set_prefix = f'{self.name} set-bc-tag' #join_iterable(service_names, ('bc-tag',), sep=' ')
         get_prefix = f'{self.name} get-bc-tag'
 
+        
+
         async def set_bc_tag(bot, ev):
             if not priv.check_priv(ev.get_author(), priv.ADMIN):
                 await bot.kkr_send(ev, f'只有管理员才可以修改推送频道标签 0x0')
                 return
+            gid = ev.get_group_id()
             new_tags = ev.get_param().remain
             if new_tags in ['', None]:
                 await bot.kkr_send(ev, f'请输入服务 <{self.name}> 的推送频道的标签\n多个标签请以空格分隔')
                 return
             new_tags = new_tags.split(' ')
-            self.set_broadcast_tag(new_tags)
+            self.set_broadcast_tag(gid, new_tags)
             await bot.kkr_send(ev, f'服务 <{self.name}> 的推送频道的标签成功更新为 {new_tags}')
 
         async def get_bc_tag(bot, ev):
-            await bot.kkr_send(ev, f'服务 <{self.name}> 的推送频道的标签为 {self.broadcast_tag}')
+            await bot.kkr_send(ev, f'服务 <{self.name}> 的推送频道的标签为 {self.group_bc_tag[gid]}')
 
         self.on_prefix(set_prefix)(set_bc_tag)
         self.on_prefix(get_prefix)(get_bc_tag)
 
         _loaded_bc_services[self.name] = self
     
+    def set_broadcast_tag(self, gid, new_tags):
+        if isinstance(new_tags, str):
+            new_tags = (new_tags,)
+
+        self.group_bc_tag[gid] = new_tags
+
+        _save_service_config(self)
+        self.logger.info(f'Service {self.name}\'s broadcast tag is modified as {new_tags}')
+    
+    async def broadcast(self, msg: SupportedMessageType, tag: List[str]=None):
+        bot = self.bot
+        glist = self.get_enable_groups()
+
+        for gid in glist:
+            if tag == None:
+                tag = self.group_bc_tag[gid]
+            
+            try:
+                for t in tag:
+                    await bot.kkr_send_by_group(gid, msg, t)
+                    self.logger.info(f"群{gid} 投递{t}成功 ")
+            except Exception as e:
+                self.logger.error(f"群{gid} 投递{tag}失败：{type(e)}")
+                self.logger.exception(e)
+
     @staticmethod
     def get_loaded_bc_services() -> Dict[str, "Service"]:
         return _loaded_bc_services

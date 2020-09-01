@@ -1,11 +1,11 @@
-from kokkoro.service import BroadcastTag, BoradcastService
+from kokkoro.service import BroadcastTag, BroadcastService
 from kokkoro import R
 
-sv9 = BoradcastService('pcr-portion-reminder-utc9', 
+sv9 = BroadcastService('pcr-portion-reminder-utc9', 
     broadcast_tag=BroadcastTag.jp_broadcast, 
     enable_on_default=False, help_='药水购买小助手(UTC+9)')
 
-sv8 = BoradcastService('pcr-portion-reminder-utc8', 
+sv8 = BroadcastService('pcr-portion-reminder-utc8', 
     broadcast_tag=[BroadcastTag.cn_broadcast, BroadcastTag.tw_broadcast],
     enable_on_default=False, help_='药水购买小助手(UTC+8)')
 

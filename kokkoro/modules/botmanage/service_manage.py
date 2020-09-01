@@ -3,7 +3,7 @@ from functools import cmp_to_key
 from argparse import ArgumentParser
 
 from kokkoro import priv
-from kokkoro.service import Service, BoradcastService
+from kokkoro.service import Service, BroadcastService
 from kokkoro.common_interface import EventInterface, KokkoroBot
 
 PRIV_TIP = f'群员={priv.NORMAL} GameMaster={priv.SUPERUSER}'
@@ -19,7 +19,7 @@ def svs_to_msg(svs, gid, verbose_all, only_hidden, bc=False):
         if verbose_all or (sv.visible ^ only_hidden):
             x = '○' if on else '×'
             if bc:
-                msg.append(f"|{x}| {sv.name} | {sv.broadcast_tag}")
+                msg.append(f"|{x}| {sv.name} | {sv.group_bc_tag.get(gid, sv.broadcast_tag)}")
             else:
                 msg.append(f"|{x}| {sv.name}")
     return '\n'.join(msg)
@@ -63,7 +63,7 @@ async def lsbcsv(bot: KokkoroBot, ev: EventInterface):
     else:
         gid = ev.get_group_id()
 
-    msg = svs_to_msg(BoradcastService.get_loaded_bc_services().values(), gid, verbose_all, only_hidden, bc=True)
+    msg = svs_to_msg(BroadcastService.get_loaded_bc_services().values(), gid, verbose_all, only_hidden, bc=True)
     await bot.kkr_send(ev, msg)
 
 

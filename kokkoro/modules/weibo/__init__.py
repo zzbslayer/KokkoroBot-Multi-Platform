@@ -1,6 +1,6 @@
 from .weibo import WeiboSpider
 import kokkoro
-from kokkoro.service import BoradcastService, BroadcastTag, Service
+from kokkoro.service import BroadcastService, BroadcastTag, Service
 from kokkoro.common_interface import KokkoroBot, EventInterface
 from kokkoro import priv
 from kokkoro import R, util
@@ -31,7 +31,7 @@ def _load_config(services_config):
                     "user_id":wb_spider.get_user_id()
                     }
         
-        subService = BoradcastService(service_name, broadcast_tag=broadcast_tag, enable_on_default=enable_on_default)
+        subService = BroadcastService(service_name, broadcast_tag=broadcast_tag, enable_on_default=enable_on_default)
         subr_dic[service_name] = {"service": subService, "spiders": sv_spider_list}
   
 services_config = kokkoro.config.modules.weibo.weibos

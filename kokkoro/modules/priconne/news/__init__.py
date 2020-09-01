@@ -1,9 +1,9 @@
 import asyncio
-from kokkoro.service import Service, BroadcastTag, BoradcastService
+from kokkoro.service import Service, BroadcastTag, BroadcastService
 from .spider import *
 
-svtw = BoradcastService('pcr-news-tw', broadcast_tag=BroadcastTag.tw_broadcast, help_='台服官网新闻')
-svbl = BoradcastService('pcr-news-bili', broadcast_tag=BroadcastTag.cn_broadcast, help_='B服官网新闻')
+svtw = BroadcastService('pcr-news-tw', broadcast_tag=BroadcastTag.tw_broadcast, help_='台服官网新闻')
+svbl = BroadcastService('pcr-news-bili', broadcast_tag=BroadcastTag.cn_broadcast, help_='B服官网新闻')
 
 async def news_poller(spider:BaseSpider, sv:Service, LOG_TAG, send=True):
     if not spider.item_cache:

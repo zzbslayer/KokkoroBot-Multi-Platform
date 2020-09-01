@@ -9,10 +9,10 @@ except:
     import json
 
 from kokkoro import aiorequests, R
-from kokkoro.service import BoradcastService, BroadcastTag
+from kokkoro.service import BroadcastService, BroadcastTag
 from kokkoro.common_interface import KokkoroBot, EventInterface
 
-sv = BoradcastService('pcr-comic', broadcast_tag=BroadcastTag.jp_broadcast)
+sv = BroadcastService('pcr-comic', broadcast_tag=BroadcastTag.jp_broadcast)
 
 def load_index():
     with open(R.get('img/priconne/comic/index.json').path, encoding='utf8') as f:
