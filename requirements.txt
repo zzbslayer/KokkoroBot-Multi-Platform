@@ -17,5 +17,5 @@ APScheduler>=2.1.2
 pytz>=2020.1
 
 nest-asyncio>=1.4.0
-tomon-sdk==0.1.5
+tomon-sdk==0.1.6
 requests-toolbelt>=0.9.1

@@ -19,6 +19,14 @@ import kokkoro
 from kokkoro import config
 from kokkoro.typing import Iterable
 
+def escape(s: str, *, escape_comma: bool = True) -> str:
+    s = s.replace('&', '&amp;') \
+        .replace('[', '&#91;') \
+        .replace(']', '&#93;')
+    if escape_comma:
+        s = s.replace(',', '&#44;')
+    return s
+
 def to_string(obj):
     if obj == None:
         return None

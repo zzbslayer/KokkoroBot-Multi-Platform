@@ -118,10 +118,7 @@ class KokkoroTomonBot(KokkoroBot):
 
     @overrides(KokkoroBot)
     def kkr_run(self):
-        async def run():
-            await self._bot.start(kokkoro.config.bot.tomon.TOMON_TOKEN)
-        
-        loop.run_until_complete(run())
+        self._bot.start(kokkoro.config.bot.tomon.TOMON_TOKEN)
 
     @overrides(KokkoroBot)
     def kkr_at(self, uid):
