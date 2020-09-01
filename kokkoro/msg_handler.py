@@ -1,5 +1,5 @@
 import kokkoro
-from kokkoro import trigger, util, config
+from kokkoro import trigger, util, config, priv
 from kokkoro.platform_patch import preprocess_message
 
 async def handle_message(bot, ev):
@@ -23,8 +23,17 @@ async def handle_message(bot, ev):
     if sf.only_to_me and not to_me:
         return  # not to me, ignore.
 
-    if not sf.sv._check_all(ev):
-        return  # permission denied.
+    gid = ev.get_group_id()
+    if not sf.sv.check_enabled(gid):
+        await bot.kkr_send(ev, f'服务 <{sf.sv.name}> 未启用，请呼叫管理员开启服务 0x0 ', at_sender=True)
+        return
+    if priv.check_block_group(gid): # not used now
+        return
+    if not priv.check_priv(ev.get_author(), sf.sv.use_priv): # permission denied
+        await bot.kkr_send(ev, '权限不足 0x0 ', at_sender=True)
+        return
+
+
 
     try:
         await sf.func(bot, ev)
