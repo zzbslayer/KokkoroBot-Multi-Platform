@@ -300,7 +300,7 @@ class BroadcastService(Service):
             await bot.kkr_send(ev, f'服务 <{self.name}> 的推送频道的标签成功更新为 {new_tags}')
 
         async def get_bc_tag(bot, ev):
-            await bot.kkr_send(ev, f'服务 <{self.name}> 的推送频道的标签为 {self.group_bc_tag[gid]}')
+            await bot.kkr_send(ev, f'服务 <{self.name}> 的推送频道的标签为 {self.group_bc_tag.get(gid, self.broadcast_tag)}')
 
         self.on_prefix(set_prefix)(set_bc_tag)
         self.on_prefix(get_prefix)(get_bc_tag)
@@ -322,7 +322,7 @@ class BroadcastService(Service):
 
         for gid in glist:
             if tag == None:
-                tag = self.group_bc_tag[gid]
+                tag = self.group_bc_tag.get(gid, self.broadcast_tag)
             
             try:
                 for t in tag:
