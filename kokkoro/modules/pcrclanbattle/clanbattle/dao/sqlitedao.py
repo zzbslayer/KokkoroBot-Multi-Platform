@@ -160,64 +160,75 @@ class MemberDao(SqliteDao):
             ''')
 
     @staticmethod
-    def row2item(r):
-        return {'uid': r[0], 'gid': r[1], 'name': r[2], 'last_sl': r[3]} if r else None
-
-    @staticmethod
-    def row2item_full(r):
-        return {
-            'uid': r[0],
-            'gid': r[1],
-            'name': r[2],
-            'last_sl': r[3],
-            'authority_group': r[4],
-            'last_login_time': r[5],
-            'last_login_ipaddr': r[6],
-            'login_code': r[7],
-            'login_code_available': r[8],
-            'login_code_expire_time': r[9],
-            'must_change_password': r[10],
-            'password': r[11],
-            'privacy': r[12],
-            'salt': r[13]
-        } if r else None
+    def row2item(r, full=False):
+        if full:
+            return {
+                'uid': r[0],
+                'gid': r[1],
+                'name': r[2],
+                'last_sl': r[3],
+                'authority_group': r[4],
+                'last_login_time': r[5],
+                'last_login_ipaddr': r[6],
+                'login_code': r[7],
+                'login_code_available': r[8],
+                'login_code_expire_time': r[9],
+                'must_change_password': r[10],
+                'password': r[11],
+                'privacy': r[12],
+                'salt': r[13]
+            } if r else None
+        else:
+            return {
+                'uid': r[0],
+                'gid': r[1],
+                'name': r[2],
+                'last_sl': r[3]
+            } if r else None
 
 
     def get_or_add(self, uid, gid, name, authority_group, salt):
         with self._connect() as conn:
             try:
-                conn.execute('''
-                    INSERT OR IGNORE INTO {0} ({1}) VALUES (?, ?, ?, ?, ?)
-                    '''.format(self._table, 'uid, gid, name, authority_group, salt'),
-                    (uid, gid, name, authority_group, salt) )
+                ret = self.find_by(uid=uid, full=True)
+                if 0 == len(ret):
+                    conn.execute('''
+                        INSERT INTO {0} ({1}) VALUES (?, ?, ?, ?, ?)
+                        '''.format(self._table, 'uid, gid, name, authority_group, salt'),
+                        (uid, gid, name, authority_group, salt)
+                    )
+                else:
+                    r = ret[0]
+                    conn.execute('''
+                        INSERT OR IGNORE INTO {0} ({1}) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        '''.format(self._table, self._columns),
+                        (
+                            uid, gid, name, r[3], authority_group,
+                            r[5], r[6], r[7], r[8], r[9], r[10], r[11], r[12], r[13]
+                        )
+                    )
             except (sqlite3.DatabaseError) as e:
                 logger.error(f'[MemberDao.get_or_add] {e}')
                 raise DatabaseError('添加成员失败')
         return self.find_one(uid, gid)
 
 
-    def find_one(self, uid, gid):
+    def find_one(self, uid, gid, full=False):
         with self._connect() as conn:
             try:
-                ret = conn.execute('''
-                    SELECT {1} FROM {0} WHERE uid=? AND gid=?
-                    '''.format(self._table, 'uid, gid, name, last_sl'),
-                    (uid, gid) ).fetchone()
-                return self.row2item(ret)
+                if full:
+                    ret = conn.execute('''
+                        SELECT {1} FROM {0} WHERE uid=? AND gid=?
+                        '''.format(self._table, self._columns),
+                        (uid, gid) ).fetchone()
+                else:
+                    ret = conn.execute('''
+                        SELECT {1} FROM {0} WHERE uid=? AND gid=?
+                        '''.format(self._table, 'uid, gid, name, last_sl'),
+                        (uid, gid) ).fetchone()
+                return self.row2item(ret, full)
             except (sqlite3.DatabaseError) as e:
                 logger.error(f'[MemberDao.find_one] {e}')
-                raise DatabaseError('查找成员失败')
-
-    def find_one_full(self, uid, gid):
-        with self._connect() as conn:
-            try:
-                ret = conn.execute('''
-                    SELECT {1} FROM {0} WHERE uid=? AND gid=?
-                    '''.format(self._table, self._columns),
-                    (uid, gid) ).fetchone()
-                return self.row2item_full(ret)
-            except (sqlite3.DatabaseError) as e:
-                logger.error(f'[MemberDao.find_one_full] {e}')
                 raise DatabaseError('查找成员失败')
 
 
@@ -234,7 +245,7 @@ class MemberDao(SqliteDao):
                 raise DatabaseError('查找成员失败')
 
 
-    def find_by(self, uid=None, gid=None):
+    def find_by(self, uid=None, gid=None, full=False):
         cond_str = []
         cond_tup = []
         if not gid is None:
@@ -249,48 +260,63 @@ class MemberDao(SqliteDao):
 
         cond_str = " AND ".join(cond_str)
 
+        target_columns = self._columns if full else 'uid, gid, name, last_sl'
+
         with self._connect() as conn:
             try:
                 ret = conn.execute('''
                     SELECT {1} FROM {0} WHERE {2}
-                    '''.format(self._table, 'uid, gid, name, last_sl', cond_str),
+                    '''.format(self._table, target_columns, cond_str),
                     cond_tup ).fetchall()
-                return [self.row2item(r) for r in ret]
+                return [self.row2item(r, full) for r in ret]
             except (sqlite3.DatabaseError) as e:
                 logger.error(f'[MemberDao.find_by] {e}')
                 raise DatabaseError('查找成员失败')
 
 
-    def modify(self, member):
+    def modify(self, member, full=False, only_by_uid=False):
         with self._connect() as conn:
             try:
-                conn.execute('''
-                    UPDATE {0} SET name=?, last_sl=? WHERE uid=? AND gid=?
-                    '''.format(self._table),
-                    (member['name'], member['last_sl'], member['uid'], member['gid']) )
+                if full:
+                    if only_by_uid:
+                        conn.execute('''
+                            UPDATE {0} SET
+                                last_login_time=?, last_login_ipaddr=?,
+                                login_code=?, login_code_available=?, login_code_expire_time=?,
+                                must_change_password=?, password=?, privacy=?, salt=?
+                            WHERE uid=?
+                            '''.format(self._table),
+                            (
+                                 member['last_login_time'], member['last_login_ipaddr'],
+                                 member['login_code'], member['login_code_available'], member['login_code_expire_time'],
+                                 member['must_change_password'], member['password'], member['privacy'], member['salt'],
+                                 member['uid']
+                            )
+                        )
+                    else:
+                        conn.execute('''
+                            UPDATE {0} SET
+                                name=?, last_sl=?, authority_group=?,
+                                last_login_time=?, last_login_ipaddr=?,
+                                login_code=?, login_code_available=?, login_code_expire_time=?,
+                                must_change_password=?, password=?, privacy=?, salt=?
+                            WHERE uid=? AND gid=?
+                            '''.format(self._table),
+                            (
+                                 member['name'], member['last_sl'], member['authority_group'],
+                                 member['last_login_time'], member['last_login_ipaddr'],
+                                 member['login_code'], member['login_code_available'], member['login_code_expire_time'],
+                                 member['must_change_password'], member['password'], member['privacy'], member['salt'],
+                                 member['uid'], member['gid']
+                            )
+                        )
+                else:
+                    conn.execute('''
+                        UPDATE {0} SET name=?, last_sl=? WHERE uid=? AND gid=?
+                        '''.format(self._table),
+                        (member['name'], member['last_sl'], member['uid'], member['gid']) )
             except (sqlite3.DatabaseError) as e:
                 logger.error(f'[MemberDao.modify] {e}')
-                raise DatabaseError('修改成员失败')
-
-
-    def modify_full(self, member):
-        with self._connect() as conn:
-            try:
-                conn.execute('''
-                    UPDATE {0} SET
-                        name=?, last_sl=?, authority_group=?,
-                        last_login_time=?, last_login_ipaddr=?,
-                        login_code=?, login_code_available=?, login_code_expire_time=?,
-                        must_change_password=?, password=?, privacy=?, salt=?
-                    WHERE uid=? AND gid=?
-                    '''.format(self._table),
-                    (member['name'], member['last_sl'], member['authority_group'],
-                     member['last_login_time'], member['last_login_ipaddr'],
-                     member['login_code'], member['login_code_available'], member['login_code_expire_time'],
-                     member['must_change_password'], member['password'], member['privacy'], member['salt'],
-                     member['uid'], member['gid']) )
-            except (sqlite3.DatabaseError) as e:
-                logger.error(f'[MemberDao.modify_full] {e}')
                 raise DatabaseError('修改成员失败')
 
 
