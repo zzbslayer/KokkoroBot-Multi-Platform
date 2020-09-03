@@ -128,7 +128,7 @@ class BattleMaster(object):
     def has_clan(self):
         return True if self.clandao.find_one(self.group) else False
     def list_clan(self):
-        return self.clandao.find_one(self.group)
+        return [self.clandao.find_one(self.group)]
     def list_clan_by_uid(self, uid):
         return self.clandao.find_by_uid(uid)
     def mod_clan(self, name, server):
