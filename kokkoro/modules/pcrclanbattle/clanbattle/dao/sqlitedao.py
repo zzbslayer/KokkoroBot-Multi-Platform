@@ -118,7 +118,7 @@ class ClanDao(SqliteDao):
                 ret = conn.execute('''
                     SELECT M.uid, C.gid, C.name
                     FROM MEMBER M INNER JOIN CLAN C
-                    ON M.alt = C.gid
+                    ON M.gid = C.gid
                     WHERE M.uid=?
                     ''',
                     (uid,) ).fetchall()
@@ -146,7 +146,7 @@ class MemberDao(SqliteDao):
             gid TEXT NOT NULL,
             name TEXT NOT NULL,
             last_sl INT,
-            authority INT,
+            authority_group INT,
             last_login_time INT,
             last_login_ipaddr INT,
             login_code CHAR(6),
@@ -365,14 +365,13 @@ class BattleDao(SqliteDao):
     EXT     = 0x02
     TIMEOUT = 0x04
 
-    def __init__(self, gid, cid, yyyy, mm):
+    def __init__(self, gid, yyyy, mm):
         super().__init__(
-            table=self.get_table_name(gid, cid, yyyy, mm),
-            columns='eid, uid, alt, time, round, boss, dmg, flag',
+            table=self.get_table_name(gid, yyyy, mm),
+            columns='eid, uid, time, round, boss, dmg, flag',
             fields='''
             eid INTEGER PRIMARY KEY AUTOINCREMENT,
             uid TEXT NOT NULL,
-            alt INT NOT NULL,
             time TIMESTAMP NOT NULL,
             round INT NOT NULL,
             boss  INT NOT NULL,
@@ -382,25 +381,25 @@ class BattleDao(SqliteDao):
 
 
     @staticmethod
-    def get_table_name(gid, cid, yyyy, mm):
-        return 'battle_%s_%d_%04d%02d' % (gid, cid, yyyy, mm)
+    def get_table_name(gid, yyyy, mm):
+        return 'battle_%s_%04d%02d' % (gid, yyyy, mm)
 
 
     @staticmethod
     def row2item(r):
         return {
-            'eid':  r[0], 'uid':   r[1], 'alt':  r[2],
-            'time': r[3], 'round': r[4], 'boss': r[5],
-            'dmg':  r[6], 'flag':  r[7] } if r else None
+            'eid':  r[0], 'uid':   r[1],
+            'time': r[2], 'round': r[3], 'boss': r[4],
+            'dmg':  r[5], 'flag':  r[6] } if r else None
 
 
     def add(self, challenge):
         with self._connect() as conn:
             try:
                 cur = conn.execute('''
-                    INSERT INTO {0} ({1}) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?)
+                    INSERT INTO {0} ({1}) VALUES (NULL, ?, ?, ?, ?, ?, ?)
                     '''.format(self._table, self._columns),
-                    (challenge['uid'], challenge['alt'], challenge['time'], challenge['round'], challenge['boss'], challenge['dmg'], challenge['flag']) )
+                    (challenge['uid'], challenge['time'], challenge['round'], challenge['boss'], challenge['dmg'], challenge['flag']) )
                 return cur.lastrowid
             except (sqlite3.DatabaseError) as e:
                 logger.error(f'[BattleDao.add] {e}')
@@ -423,9 +422,9 @@ class BattleDao(SqliteDao):
         with self._connect() as conn:
             try:
                 conn.execute('''
-                    UPDATE {0} SET uid=?, alt=?, time=?, round=?, boss=?, dmg=?, flag=? WHERE eid=?
+                    UPDATE {0} SET uid=?, time=?, round=?, boss=?, dmg=?, flag=? WHERE eid=?
                     '''.format(self._table),
-                    (challenge['uid'], challenge['alt'], challenge['time'], challenge['round'], challenge['boss'], challenge['dmg'], challenge['flag'], challenge['eid']) )
+                    (challenge['uid'], challenge['time'], challenge['round'], challenge['boss'], challenge['dmg'], challenge['flag'], challenge['eid']) )
             except (sqlite3.DatabaseError) as e:
                 logger.error(f'[BattleDao.modify] {e}')
                 raise DatabaseError('修改记录失败')
@@ -457,16 +456,13 @@ class BattleDao(SqliteDao):
                 raise DatabaseError('查找记录失败')
 
 
-    def find_by(self, uid=None, alt=None, order_by_user=False):
+    def find_by(self, uid=None, order_by_user=False):
         cond_str = []
         cond_tup = []
-        order = 'round, boss, eid' if not order_by_user else 'uid, alt, round, boss, eid'
+        order = 'round, boss, eid' if not order_by_user else 'uid, round, boss, eid'
         if not uid is None:
             cond_str.append('uid=?')
             cond_tup.append(uid)
-        if not alt is None:
-            cond_str.append('alt=?')
-            cond_tup.append(alt)
         if 0 == len(cond_tup):
             return self.find_all()
 
@@ -476,7 +472,7 @@ class BattleDao(SqliteDao):
             try:
                 ret = conn.execute('''
                     SELECT {1} FROM {0} WHERE {2} ORDER BY {3}
-                    '''.format(self._table, self._columns, cond_str, order), 
+                    '''.format(self._table, self._columns, cond_str, order),
                     cond_tup ).fetchall()
                 return [self.row2item(r) for r in ret]
             except (sqlite3.DatabaseError) as e:
