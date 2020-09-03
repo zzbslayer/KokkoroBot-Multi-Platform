@@ -16,6 +16,10 @@ PATH = config.PUBLIC_BASEPATH
 async def yobot_static(filename):
     return await send_file(os.path.join(static_folder, filename))
 
+@app.route("/favicon.ico", ["GET"])
+async def yobot_favicon():
+    return await send_from_directory(static_folder, "small.ico")
+
 from .clan import *
 from .login import *
 from .settings import *
@@ -37,10 +41,6 @@ async def yobot_about():
         "about.html",
         # verinfo=self.setting["verinfo"]["ver_name"],
     )
-
-@app.route("/favicon.ico", ["GET"])
-async def yobot_favicon():
-    return await send_from_directory(static_folder, "small.ico")
 
 @app.route( urljoin(PATH, 'help/'),
             methods=['GET'])

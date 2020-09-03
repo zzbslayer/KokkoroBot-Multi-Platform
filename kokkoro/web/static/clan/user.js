@@ -23,7 +23,7 @@ var vm = new Vue({
         axios.post('../api/', {
             action: 'get_user_challenge',
             csrf_token: csrf_token,
-            uid: thisvue.uid,
+            target_uid: thisvue.uid,
         }).then(function (res) {
             if (res.data.code != 0) {
                 thisvue.$alert(res.data.message, '获取记录失败');
