@@ -50,8 +50,8 @@ def _check_clan(bm:BattleMaster):
         raise NotFoundError(ERROR_CLAN_NOTFOUND)
     return clan
 
-def _check_member(bm:BattleMaster, uid:str, gid:str, tip=None):
-    mem = bm.get_member(uid, gid) # 时代变了
+def _check_member(bm:BattleMaster, uid:str, tip=None):
+    mem = bm.get_member(uid) # 时代变了
     if not mem:
         raise NotFoundError(tip or ERROR_MEMBER_NOTFOUND)
     return mem
@@ -81,8 +81,8 @@ async def list_clan(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     bm = BattleMaster(ev.get_group_id())
     clans = bm.list_clan()
     if len(clans):
-        clans = map(lambda x: f"公会：{x['name']} {server_name(x['server'])}", clans)
-        msg = ['本群公会：', *clans]
+        clans = map(lambda x: f"{x['name']}({server_name(x['server'])})", clans)
+        msg = ['本群指定唯一公会：', *clans]
         await bot.kkr_send(ev, '\n'.join(msg), at_sender=True)
     else:
         raise NotFoundError(ERROR_CLAN_NOTFOUND)
@@ -106,27 +106,15 @@ async def add_member(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
             _check_admin(ev, '才能添加其他人')
             if not ev.whether_user_in_group(uid):
                 raise NotFoundError(f'Error: 无法获取该群员信息，请检查{uid}是否属于本群')
-        ## if we can't get name from mentions
-        # if not name and :
-        #     m = await bot.get_group_member_info(self_id=ctx['self_id'], group_id=bm.group, user_id=uid)
-        #     name = m['card'] or m['nickname'] or str(m['user_id'])
 
     name = name or author.get_nick_name() or author.get_name()
 
-    mem = bm.get_member(uid, bm.group)
+    mem = bm.get_member(uid)
     if mem:
-        bm.mod_member(uid, mem['gid'], name, mem['last_sl'])
+        bm.mod_member(uid, name, mem['last_sl'], mem['authority_group'])
         await bot.kkr_send(ev, f'成员{bot.kkr_at(uid)}昵称已修改为{name}')
     else:
-        authority_group = 100
-        uid = ev.get_author_id()
-        authority = ev.get_author().get_priv()
-        if authority == priv.SUPERUSER:
-            authority_group = 1
-        elif authority == priv.ADMIN:
-            authority_group = 10
-        salt = util.rand_string(16)
-        bm.add_member(uid, name, authority_group, salt)
+        bm.add_member(uid, name)
         await bot.kkr_send(ev, f"成员{bot.kkr_at(uid)}添加成功！欢迎{name}加入{clan['name']}")
 
 
@@ -150,11 +138,11 @@ async def list_member(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
 async def del_member(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     bm = BattleMaster(ev.get_group_id())
     uid = args['@'] or args.uid or ev.get_author_id()
-    mem = _check_member(bm, uid, bm.group, '公会内无此成员')
+    mem = _check_member(bm, uid, '公会内无此成员')
 
     if uid != ev.get_author_id():
         _check_admin(ev, '才能踢人')
-    bm.del_member(uid, bm.group)
+    bm.del_member(uid)
     await bot.kkr_send(ev, f"成员{mem['name']}已从公会删除", at_sender=True)
 
 
@@ -184,7 +172,7 @@ async def batch_add_member(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     for m in mlist:
         if m.get_id() != self_id:
             try:
-                bm.add_member(m.get_id(), bm.group, m.get_nick_name() or m.get_name() or m.get_id())
+                bm.add_member(m.get_id(), m.get_nick_name() or m.get_name() or m.get_id())
                 succ += 1
             except DatabaseError:
                 fail += 1
@@ -204,7 +192,7 @@ async def process_challenge(bot:KokkoroBot, ev:EventInterface, ch:ParseResult):
     bm = BattleMaster(ev.get_group_id())
     now = datetime.now() - timedelta(days=ch.get('dayoffset', 0))
     clan = _check_clan(bm)
-    mem = _check_member(bm, ch.uid, bm.group)
+    mem = _check_member(bm, ch.uid)
 
     cur_round, cur_boss, cur_hp = bm.get_challenge_progress(now)
     round_ = ch.round or cur_round
@@ -445,7 +433,7 @@ def _gen_namelist_text(bot:KokkoroBot, bm:BattleMaster, uidlist:List[str], memol
     if do_at:
         mems = map(lambda x: str(bot.kkr_at(x)), uidlist)
     else:
-        mems = map(lambda x: bm.get_member(x, bm.group) or bm.get_member(x, 0) or {'name': str(x)}, uidlist)
+        mems = map(lambda x: bm.get_member(x) or {'name': str(x)}, uidlist)
         mems = map(lambda x: x['name'], mems)
     if memolist:
         mems = list(mems)
@@ -464,7 +452,7 @@ async def subscribe(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     bm = BattleMaster(ev.get_group_id())
     uid = ev.get_author_id()
     _check_clan(bm)
-    _check_member(bm, uid, bm.group)
+    _check_member(bm, uid)
 
     sub = _load_sub(bm.group)
     boss = args['']
@@ -494,7 +482,7 @@ async def unsubscribe(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     bm = BattleMaster(ev.get_group_id())
     uid = ev.get_author_id()
     _check_clan(bm)
-    _check_member(bm, uid, bm.group)
+    _check_member(bm, uid)
 
     sub = _load_sub(bm.group)
     boss = args['']
@@ -602,7 +590,7 @@ async def add_sos(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     bm = BattleMaster(ev.get_group_id())
     uid = ev.get_author_id()
     clan = _check_clan(bm)
-    _check_member(bm, uid, bm.group)
+    _check_member(bm, uid)
 
     sub = _load_sub(bm.group)
     tree = sub.get_tree_list()
@@ -633,14 +621,14 @@ async def list_sos(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
 async def lock_boss(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     bm = BattleMaster(ev.get_group_id())
     _check_clan(bm)
-    _check_member(bm, ev.get_author_id(), bm.group)
+    _check_member(bm, ev.get_author_id())
 
     sub = _load_sub(bm.group)
     lock = sub.get_lock_info()
     if lock:
         uid, ts = lock[0]
         time = datetime.fromtimestamp(ts)
-        mem = bm.get_member(uid, bm.group) or bm.get_member(uid, 0) or {'name': str(uid)}
+        mem = bm.get_member(uid) or {'name': str(uid)}
         delta = datetime.now() - time
         delta = timedelta(seconds=round(delta.total_seconds()))     # ignore miliseconds
         msg = f"\n锁定失败：{mem['name']}已于{delta}前锁定了Boss"
@@ -665,7 +653,7 @@ async def unlock_boss(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
         uid, ts = lock[0]
         time = datetime.fromtimestamp(ts)
         if uid != ev.get_author_id():
-            mem = bm.get_member(uid, bm.group) or bm.get_member(uid, 0) or {'name': str(uid)}
+            mem = bm.get_member(uid) or {'name': str(uid)}
             delta = datetime.now() - time
             delta = timedelta(seconds=round(delta.total_seconds()))     # ignore miliseconds
             _check_admin(ev, f"才能解锁其他人\n解锁失败：{mem['name']}于{delta}前锁定了Boss")
@@ -685,7 +673,7 @@ async def auto_unlock_boss(bot:KokkoroBot, ev:EventInterface, bm:BattleMaster):
         uid, ts = lock[0]
         time = datetime.fromtimestamp(ts)
         if uid != ev.get_author_id():
-            mem = bm.get_member(uid, bm.group) or bm.get_member(uid, 0) or {'name': str(uid)}
+            mem = bm.get_member(uid) or {'name': str(uid)}
             delta = datetime.now() - time
             delta = timedelta(seconds=round(delta.total_seconds()))     # ignore miliseconds
             msg = f"⚠️{mem['name']}于{delta}前锁定了Boss，您出刀前未申请锁定！"
@@ -872,7 +860,7 @@ async def list_challenge(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     zone = bm.get_timezone_num(clan['server'])
     uid = args['@'] or args.uid
     if uid:
-        mem = _check_member(bm, uid, bm.group, '公会内无此成员')
+        mem = _check_member(bm, uid, '公会内无此成员')
         challen = bm.list_challenge_of_user_of_day(mem['uid'], now, zone)
     else:
         challen = bm.list_challenge_of_day(now, zone)
@@ -880,7 +868,7 @@ async def list_challenge(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     msg = [ f'{clan["name"]}出刀记录：\n编号|出刀者|周目|Boss|伤害|标记' ]
     challenstr = 'E{eid:0>3d}|{name}|r{round}|b{boss}|{dmg: >7,d}{flag_str}'
     for c in challen:
-        mem = bm.get_member(c['uid'], bm.group)
+        mem = bm.get_member(c['uid'])
         c['name'] = mem['name'] if mem else c['uid']
         flag = c['flag']
         c['flag_str'] = '|补时' if flag & bm.EXT else '|尾刀' if flag & bm.LAST else '|掉线' if flag & bm.TIMEOUT else '|通常'
@@ -980,6 +968,7 @@ async def clan_rank(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
         "Cache-Control": "no-cache",
         "Connection": "keep-alive",
         "Content-Type": "application/json",
+        "Custom-Source": "KokkoroBot",
         "Host": "service-kjcbcnmw-1254119946.gz.apigw.tencentcs.com",
         "Origin": "https://kengxxiao.github.io",
         "Referer": "https://kengxxiao.github.io/Kyouka/",
