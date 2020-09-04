@@ -31,9 +31,10 @@ cp -r config_example config
 #### 2.1.1 通用配置
 配置文件为 `kokkoro/config/__bot__.py`
 - `BOT_TYPE`
-    - 将 `BOT_TYPE` 修改为你需要使用的 IM 平台，可填写的值有以下三种
+    - 将 `BOT_TYPE` 修改为你需要使用的 IM 平台，可填写的值有以下几种
     - `discord`
     - `telegram`
+    - `tomon` (国内类discord平台 无墙)
     - `wechat_enterprise` (企业微信)
 - `BOT_ID`, `SUPER_USER`, `ENABLED_GROUP`
     - 这三个参数都是平台相关的。需要在对应平台的配置文件中进行修改
