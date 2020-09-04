@@ -16,10 +16,10 @@ async def yobot_clan(group_id):
     group = ue.get_group(bm)
     if group is None:
         return await render_template( '404.html', item='公会' ), 404
-    is_member = ue.get_member(bm, uid=session['yobot_user'])
-    if (not is_member and user.authority_group >= 10):
+    member = ue.get_member(bm, uid=session['yobot_user'])
+    if not member and member['authority_group'] >= 10:
         return await render_template('clan/unauthorized.html')
-    return await render_template( 'clan/panel.html', is_member=is_member, )
+    return await render_template( 'clan/panel.html', is_member=member )
 
 @app.route( urljoin(PATH, 'clan/<group_id>/subscribers/'),
             methods=['GET'])
@@ -56,13 +56,12 @@ async def yobot_clan_statistics_details(group_id, sid):
 async def yobot_clan_user(group_id, uid):
     if 'yobot_user' not in session:
         return redirect(url_for('yobot_login', callback=request.path))
-    user = ue.get_user(session['yobot_user'])
     bm = ue.get_bm(group_id)
     group = ue.get_group(bm)
     if group is None:
         return await render_template('404.html', item='公会'), 404
-    is_member = ue.get_member(bm, uid=session['yobot_user'])
-    if (not is_member and user['authority_group'] >= 10):
+    member = ue.get_member(bm, uid=session['yobot_user'])
+    if not member and member['authority_group'] >= 10:
         return await render_template('clan/unauthorized.html')
     return await render_template(
         'clan/user.html',
@@ -85,18 +84,17 @@ async def yobot_clan_user_auto(group_id):
 async def yobot_clan_setting(group_id):
     if 'yobot_user' not in session:
         return redirect(url_for('yobot_login', callback=request.path))
-    user = ue.get_user(session['yobot_user'])
     bm = ue.get_bm(group_id)
     group = ue.get_group(bm)
     if group is None:
         return await render_template('404.html', item='公会'), 404
-    is_member = ue.get_member(bm, uid=session['yobot_user'])
-    if (not is_member):
+    member = ue.get_member(bm, uid=session['yobot_user'])
+    if not member:
         return await render_template(
             'unauthorized.html',
             limit='本公会成员',
             auth='无')
-    if (user['authority_group'] >= 100):
+    if member['authority_group'] >= 100:
         return await render_template(
             'unauthorized.html',
             limit='公会战管理员',
@@ -116,16 +114,15 @@ async def yobot_clan_api(group_id):
         uid = 0
     else:
         uid = session['yobot_user']
-        user = ue.get_user(uid)
-        is_member = ue.get_member(bm, uid=uid)
-        if (user['authority_group'] >= 100 or not is_member):
+        member = ue.get_member(bm, uid=uid)
+        if not member or member['authority_group'] >= 100:
             return jsonify(code=11, message='Insufficient authority')
     payload = await request.get_json()
     if payload is None:
         return jsonify(code=30, message='Invalid payload')
     else:
         payload['uid'] = uid
-    if (uid != 0) and (payload.get('csrf_token') != session['csrf_token']):
+    if uid != 0 and payload.get('csrf_token') != session['csrf_token']:
         return jsonify(code=15, message='Invalid csrf_token')
     return ue.clan_api(bm, payload)
 
@@ -135,13 +132,12 @@ async def yobot_clan_setting_api(group_id):
     if 'yobot_user' not in session:
         return jsonify(code=10, message='Not logged in')
     uid = session['yobot_user']
-    user = ue.get_user(uid)
     bm = ue.get_bm(group_id)
     group = ue.get_group(bm)
     if group is None:
         return jsonify(code=20, message="Group dosen't exist")
-    is_member = ue.get_member(bm, uid=uid)
-    if (user['authority_group'] >= 100 or not is_member):
+    member = ue.get_member(bm, uid=uid)
+    if not member or member['authority_group'] >= 100:
         return jsonify(code=11, message='Insufficient authority')
     payload = await request.get_json()
     if payload is None:

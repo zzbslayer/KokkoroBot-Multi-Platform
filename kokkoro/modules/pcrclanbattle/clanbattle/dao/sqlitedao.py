@@ -414,7 +414,7 @@ class UserDao(SqliteDao):
             must_change_password INT DEFAULT 1,
             password CHAR(64),
             privacy INT DEFAULT 0,
-            salt VARCHAR(16) NOT NULL,
+            salt VARCHAR(16) NOT NULL
             ''')
 
     @staticmethod

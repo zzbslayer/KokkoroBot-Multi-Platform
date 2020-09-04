@@ -188,8 +188,8 @@ class BattleMaster(object):
         dao = self.get_battledao(time)
         return dao.find_all()
 
-    def list_challenge_of_user(self, uid, gid, time):
-        mem = self.memberdao.find_one(uid, gid)
+    def list_challenge_of_user(self, uid, time):
+        mem = self.memberdao.find_one(uid, self.group)
         if not mem or mem['gid'] != self.group:
             return []
         dao = self.get_battledao(time)
@@ -227,7 +227,7 @@ class BattleMaster(object):
 
 
     def list_challenge_of_user_of_day(self, uid, time, zone_num:int=8):
-        return self.filt_challenge_of_day(self.list_challenge_of_user(uid, self.group, time), time, zone_num)
+        return self.filt_challenge_of_day(self.list_challenge_of_user(uid, time), time, zone_num)
 
 
     def stat_challenge(self, time, only_one_day=True, zone_num:int=8):

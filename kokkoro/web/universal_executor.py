@@ -24,7 +24,7 @@ def clan_api(bm:BattleMaster, payload):
               if action not in ['get_member_list', 'get_challenge']:
                   return jsonify(code=10, message='Not logged in')
         if action == 'get_member_list':
-            mems = bm.list_member(1)
+            mems = bm.list_member()
             members = [{'uid': m['uid'], 'nickname': m['name']} for m in mems]
             return jsonify(code=0, members=members)
         elif action == 'get_data':
@@ -56,7 +56,7 @@ def clan_api(bm:BattleMaster, payload):
         elif action == 'get_user_challenge':
             report = get_report(bm, payload['target_uid'], 0)
             try:
-                visited_user = get_user_with_member(payload['target_uid'])
+                visited_user = get_member(bm, payload['target_uid'])
             except:
                 return jsonify(code=20, message='user not found')
             return jsonify(
@@ -84,7 +84,7 @@ async def clan_statistics_api(bm:BattleMaster, apikey):
     try:
         clan = check_clan(bm)
         report = get_report(bm, None, 0)
-        mems = bm.list_member(1)
+        mems = bm.list_member()
         members = [{'uid': m['uid'], 'nickname': m['name']} for m in mems]
         groupinfo = {
             'group_id': bm.group,
@@ -157,7 +157,7 @@ def get_bm(group_id) -> BattleMaster:
     return bm
 
 def check_clan(bm:BattleMaster):
-    clan = bm.get_clan(1)
+    clan = bm.get_clan()
     return None if not clan else clan
 
 def get_group(bm:BattleMaster):
@@ -173,7 +173,7 @@ def get_boss_data(bm:BattleMaster):
     clan = check_clan(bm)
     if not clan:
         return jsonify(code=20, message="Group dosen't exist")
-    r, b, hp = bm.get_challenge_progress(1, datetime.now())
+    r, b, hp = bm.get_challenge_progress(datetime.now())
     max_hp, score_rate = bm.get_boss_info(r, b, clan['server'])
     boss_data = {
         "challenger": None,
@@ -187,17 +187,17 @@ def get_boss_data(bm:BattleMaster):
     return boss_data
 
 def get_member(bm:BattleMaster, uid):
-    member = bm.get_member(uid, bm.group)
+    member = bm.get_member(uid)
     return None if not member else member
 
-def mod_member(bm:BattleMaster, uid, alt, new_name, new_cid):
-    return bm.mod_member(uid, alt, new_name, new_cid)
+def mod_member(bm:BattleMaster, uid, new_name, new_cid, new_auth):
+    return bm.mod_member(uid, new_name, new_cid, new_auth)
 
 def get_report(bm: BattleMaster,
                userid: str = None,
                ts: int = None,
                ) -> ClanBattleReport:
-    clan = bm.get_clan(1)
+    clan = bm.get_clan()
     if not clan:
         return None
     zone = bm.get_timezone_num(clan['server'])
@@ -205,17 +205,17 @@ def get_report(bm: BattleMaster,
     if userid is None:
         if ts == 0: # get all of the challenge
             dt = datetime.now()
-            challen = bm.list_challenge(1, dt)
+            challen = bm.list_challenge(dt)
         else:       # get challenge of one day
             dt = datetime.fromtimestamp(ts) if ts is not None else datetime.now()
-            challen = bm.list_challenge_of_day(1, dt, zone)
+            challen = bm.list_challenge_of_day(dt, zone)
     else:
         if ts == 0: # get all challenge of the user
             dt = datetime.now()
-            challen = bm.list_challenge_of_user(userid, bm.group, dt)
+            challen = bm.list_challenge_of_user(userid, dt)
         else:       # get challenge of the user of one day
             dt = datetime.fromtimestamp(ts) if ts is not None else datetime.now()
-            challen = bm.list_challenge_of_user_of_day(userid, bm.group, dt, zone)
+            challen = bm.list_challenge_of_user_of_day(userid, dt, zone)
     for c in challen:
         ctime = int(c['time'].timestamp())
         remain = 0 if bool(c['flag'] & bm.LAST) else c['dmg'] * (-1)
@@ -238,30 +238,7 @@ def get_report(bm: BattleMaster,
 ''' BattleMaster side end -------------------------------------------------- '''
 
 ''' WebMaster side start --------------------------------------------------- '''
-def get_user(uid):
-    wm = WebMaster()
-    return wm.get_user(uid)
-
-def get_user_with_member(uid):
-    wm = WebMaster()
-    return wm.get_user_with_member(uid)
-
-def get_user_with_clan(uid):
-    wm = WebMaster()
-    return wm.get_user_with_clan(uid)
-
-def mod_user(user:dict):
-    wm = WebMaster()
-    return wm.mod_user(user)
-
-def add_login(uid, auth_cookie, auth_cookie_expire_time):
-    wm = WebMaster()
-    return wm.add_login(uid, auth_cookie, auth_cookie_expire_time)
-def get_login(uid, auth_cookie):
-    wm = WebMaster()
-    return wm.get_login(uid, auth_cookie)
-def del_login(uid):
-    wm = WebMaster()
-    return wm.del_login(uid)
+def get_wm():
+    return WebMaster()
 
 ''' WebMaster side end ----------------------------------------------------- '''

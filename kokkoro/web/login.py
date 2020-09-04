@@ -2,6 +2,7 @@ import os
 from quart import Response, jsonify, make_response, redirect, request, send_file, session, url_for
 from urllib.parse import urljoin
 from kokkoro import config
+from kokkoro.priv import is_super_user
 from kokkoro.util import rand_string, add_salt_and_hash
 import kokkoro.web.universal_executor as ue
 from . import get_app
@@ -33,7 +34,7 @@ def check_pwd(user, pwd) -> bool:
         )
     if not user['password'] == add_salt_and_hash(pwd, user['salt']):
         user['privacy'] += 1
-        ue.mod_user(user)
+        ue.get_wm().mod_user(user)
         raise ExceptionWithAdvice(
             '密码错误',
             '如果忘记密码，请私聊机器人“!登录”后，再次选择[修改密码]修改，' + \
@@ -69,12 +70,12 @@ def recall_from_cookie(auth_cookie):
         raise ExceptionWithAdvice('Cookie异常', advice)
     uid, auth = s
 
-    user = ue.get_user(uid)
+    user = ue.get_wm().get_user(uid)
     advice = '请先加入一个公会 或 私聊机器人“!登录”'
     if user is None:
         raise ExceptionWithAdvice('用户不存在', advice)
     salty_cookie = add_salt_and_hash(auth, user['salt'])
-    userlogin = ue.get_login(uid, salty_cookie)
+    userlogin = ue.get_wm().get_login(uid, salty_cookie)
     if userlogin is None:
         raise ExceptionWithAdvice('Cookie异常', advice)
     now = ue.now()
@@ -82,7 +83,7 @@ def recall_from_cookie(auth_cookie):
         raise ExceptionWithAdvice('登录已过期', advice)
     user['last_login_time'] = now
     user['last_login_ipaddr'] = request.headers.get('X-Real-IP', request.remote_addr)
-    ue.mod_user(user)
+    ue.get_wm().mod_user(user)
 
     return user
 
@@ -96,7 +97,7 @@ def set_auth_info(user:dict, res: Response = None, save_user=True):
     user['last_login_ipaddr'] = request.headers.get('X-Real-IP', request.remote_addr)
     if res:
         new_key = rand_string(32)
-        ue.add_login(
+        ue.get_wm().add_login(
             uid=user['uid'],
             auth_cookie=add_salt_and_hash(new_key, user['salt']),
             auth_cookie_expire_time=now + EXPIRED_TIME
@@ -104,7 +105,7 @@ def set_auth_info(user:dict, res: Response = None, save_user=True):
         new_cookie = f"{user['uid']}:{new_key}"
         res.set_cookie(LOGIN_AUTH_COOKIE_NAME, new_cookie, max_age=EXPIRED_TIME)
     if save_user:
-        ue.mod_user(user)
+        ue.get_wm().mod_user(user)
 
 @app.route( urljoin(PATH, 'login/'),
             methods=['GET', 'POST'])
@@ -131,7 +132,7 @@ async def yobot_login():
             )
         key_failure = None
         if uid:
-            user = ue.get_user(uid)
+            user = ue.get_wm().get_user(uid)
             if key:
                 try:
                     check_key(user, key)
@@ -169,7 +170,7 @@ async def yobot_login():
             callback_page = url_for('yobot_reset_pwd')
         res = await make_response(redirect(callback_page))
         set_auth_info(user, res, save_user=False)
-        ue.mod_user(user)
+        ue.get_wm().mod_user(user)
         return res
     except ExceptionWithAdvice as e:
         return await render_template(
@@ -200,9 +201,9 @@ async def yobot_logout():
 async def yobot_user():
     if 'yobot_user' not in session:
         return redirect(url_for('yobot_login', callback=request.path))
-    user = ue.get_user_with_clan(session['yobot_user'])
-    bm = ue.get_bm(user['gid'])
-    groups = ue.list_group_by_member(bm, user['uid'])
+    user = ue.get_wm().get_user(session['yobot_user'])
+    user['authority_group'] = 1 if is_super_user(user['uid']) else 100
+    groups = ue.get_wm().get_clan_by_uid(user['uid'])
     return await render_template(
         'user.html',
         user=user,
@@ -219,16 +220,16 @@ async def yobot_user_info(uid):
     if 'yobot_user' not in session:
         return redirect(url_for('yobot_login', callback=request.path))
     if session['yobot_user'] == uid:
-        visited_user_info = ue.get_user_with_member(uid)
+        visited_user_info = ue.get_wm().get_user(uid)
     else:
-        visited_user = ue.get_user_with_member(uid)
+        visited_user = ue.get_wm().get_user(uid)
         if visited_user is None:
             return '没有此用户', 404
         visited_user_info = visited_user
     return await render_template(
         'user-info.html',
         user=visited_user_info,
-        visitor=ue.get_user_with_member(session['yobot_user']),
+        visitor=ue.get_wm().get_user(session['yobot_user']),
     )
 
 @app.route(
@@ -238,18 +239,18 @@ async def yobot_user_info(uid):
 async def yobot_user_info_api(uid):
     if 'yobot_user' not in session:
         return jsonify(code=10, message='未登录')
-    user = ue.get_user(session['yobot_user'])
-    if user['uid'] != uid and user['authority_group'] >= 100:
+    user = ue.get_wm().get_user(session['yobot_user'])
+    if user['uid'] != uid and not is_super_user(user['uid']):
         return jsonify(code=11, message='权限不足')
-    user_data = ue.get_user_with_clan(uid)
+    user_data = ue.get_wm().get_user(uid)
     if user_data is None:
         return jsonify(code=20, message='用户不存在')
     if request.method == 'GET':
         return jsonify(
             code=0,
-            nickname=user_data['name'],
-            authority_group=user_data['authority_group'],
-            clan_group_id=user_data['gid'],
+            nickname='maybe not unique, to be fixed', # FIXME
+            authority_group=1 if is_super_user(user['uid']) else 100,
+            clan_group_id='maybe not unique, to be fixed', # FIXME
             last_login_time=user_data['last_login_time'],
             last_login_ipaddr=user_data['last_login_ipaddr'],
         )
@@ -263,6 +264,7 @@ async def yobot_user_info_api(uid):
     ue.mod_member(bm, user_data['uid'], user_data['gid'], new_nickname, 1)
     return jsonify(code=0, message='success')
 
+
 @app.route(
     urljoin(PATH, 'user/reset-password/'),
     methods=['GET', 'POST'])
@@ -273,8 +275,9 @@ async def yobot_reset_pwd():
         if request.method == "GET":
             return await render_template('password.html')
 
+        wm = ue.get_wm()
         uid = session['yobot_user']
-        user = ue.get_user(uid)
+        user = wm.get_user(uid)
         if user is None:
             raise Exception("请先加公会")
         form = await request.form
@@ -282,9 +285,9 @@ async def yobot_reset_pwd():
         user['password'] = add_salt_and_hash(pwd, user['salt'])
         user['privacy'] = 0
         user['must_change_password'] = False
-        ue.mod_user(user)
+        wm.mod_user(user)
         # 踢掉过去的登录
-        ue.del_login(uid)
+        wm.del_login(uid)
         return await render_template(
             'password.html',
             success="密码设置成功",

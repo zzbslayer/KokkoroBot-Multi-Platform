@@ -1,9 +1,7 @@
 from datetime import datetime, timezone, timedelta
 
 from kokkoro.common_interface import EventInterface
-from kokkoro.priv import SUPERUSER, ADMIN
-from kokkoro.util import rand_string
-from .dao.sqlitedao import ClanDao, MemberDao, UserDao, UserLoginDao
+from .dao.sqlitedao import ClanDao, MemberDao, UserDao, LoginDao
 from .exception import NotFoundError
 
 class WebMaster():
@@ -12,32 +10,32 @@ class WebMaster():
         self.clandao = ClanDao()
         self.memberdao = MemberDao()
         self.userdao = UserDao()
-        self.logindao = UserLoginDao()
+        self.logindao = LoginDao()
 
-    def get_or_add_user(self, ev:EventInterface):
-        authority_group = 100
-        uid = ev.get_author_id()
-        authority = ev.get_author().get_priv()
-        if authority == SUPERUSER:
-            authority_group = 1
-        elif authority == ADMIN:
-            authority_group = 10
-        return self.userdao.get_or_add(uid, authority_group, rand_string())
+
+    def get_clan(self, gid):
+        return self.clandao.findone(gid)
+    def get_clan_by_uid(self, uid):
+        return self.clandao.find_by_uid(uid)
+
+
+    def get_member(self, uid, gid):
+        mem = self.memberdao.find_one(uid, gid)
+        return mem if mem else None
+    def get_member_by_uid(self, uid):
+        mems = self.memberdao.find_by(uid=uid)
+        return mems if mems else None
+    def mod_member(self, member:dict):
+        return self.memberdao.modify(member)
+
+
+    def get_or_add_user(self, uid, salt):
+        return self.userdao.get_or_add(uid, salt)
     def get_user(self, uid):
         return self.userdao.find_one(uid)
-    def get_user_with_member(self, uid):
-        user = self.get_user(uid)
-        member = self.memberdao.find_one(uid)
-        user['name'] = member['name']
-        user['gid'] = member['gid']
-        return user
-    def get_user_with_clan(self, uid):
-        user = self.get_user_with_member(uid)
-        clan = self.clandao.find_one(user['gid'], 1)
-        user['clan_name'] = clan['name']
-        return user
     def mod_user(self, user:dict):
         return self.userdao.modify(user)
+
 
     def add_login(self, uid, auth_cookie, auth_cookie_expire_time):
         return self.logindao.add(uid, auth_cookie, auth_cookie_expire_time)
