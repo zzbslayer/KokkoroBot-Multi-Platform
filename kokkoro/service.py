@@ -34,9 +34,7 @@ def _load_service_config(service_name):
 
 def _save_service_config(service):
     config_file = os.path.join(_service_config_dir, f'{service.name}.json')
-    with open(config_file, 'w', encoding='utf8') as f:
-        json.dump(
-            {
+    body = {
                 "name": service.name,
                 "use_priv": service.use_priv,
                 "manage_priv": service.manage_priv,
@@ -45,8 +43,13 @@ def _save_service_config(service):
                 "visible": service.visible,
                 "enable_group": list(service.enable_group),
                 "disable_group": list(service.disable_group),
-                "group_bc_tag": service.group_bc_tag,
-            },
+            }
+    if isinstance(service, BroadcastService):
+        body["group_bc_tag"] = service.group_bc_tag
+
+    with open(config_file, 'w', encoding='utf8') as f:
+        json.dump(
+            body,
             f,
             ensure_ascii=False,
             indent=2)
@@ -278,7 +281,7 @@ class BroadcastService(Service):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         config = self._loaded_config
-        self.group_bc_tag = config.get('group_bc_tag') or defaultdict(lambda: self.broadcast_tag)
+        self.group_bc_tag = config.get('group_bc_tag', {})
         #service_names = (self.name,)       
          
         set_prefix = f'{self.name} set-bc-tag' #join_iterable(service_names, ('bc-tag',), sep=' ')
@@ -297,9 +300,11 @@ class BroadcastService(Service):
                 return
             new_tags = new_tags.split(' ')
             self.set_broadcast_tag(gid, new_tags)
+
             await bot.kkr_send(ev, f'服务 <{self.name}> 的推送频道的标签成功更新为 {new_tags}')
 
         async def get_bc_tag(bot, ev):
+            gid = ev.get_group_id()
             await bot.kkr_send(ev, f'服务 <{self.name}> 的推送频道的标签为 {self.group_bc_tag.get(gid, self.broadcast_tag)}')
 
         self.on_prefix(set_prefix)(set_bc_tag)
@@ -314,15 +319,14 @@ class BroadcastService(Service):
         self.group_bc_tag[gid] = new_tags
 
         _save_service_config(self)
-        self.logger.info(f'Service {self.name}\'s broadcast tag is modified as {new_tags}')
+        self.logger.info(f'Service {self.name}\'s broadcast tag of group {gid} is modified as {new_tags}')
     
-    async def broadcast(self, msg: SupportedMessageType, tag: List[str]=None):
+    async def broadcast(self, msg: SupportedMessageType):
         bot = self.bot
         glist = self.get_enable_groups()
 
         for gid in glist:
-            if tag == None:
-                tag = self.group_bc_tag.get(gid, self.broadcast_tag)
+            tag = self.group_bc_tag.get(gid, self.broadcast_tag)
             
             try:
                 for t in tag:
