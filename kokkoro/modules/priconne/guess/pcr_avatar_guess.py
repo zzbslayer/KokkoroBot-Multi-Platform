@@ -54,8 +54,8 @@ async def avatar_guess(bot: KokkoroBot, ev: EventInterface):
         i = 0
         while chara_id_list[i] in BLACKLIST_ID:
             i += 1
-
-        winner_judger.set_correct_chara_id(gid, chara_id_list[0])
+        correct_id = chara_id_list[i]
+        winner_judger.set_correct_chara_id(gid, correct_id)
 
         msg = f'猜猜这个图片是哪位角色头像的一部分?\n发送"头像提示"，可以得到更多信息~\n回答时请加前缀 ag\n示例：ag 可可萝'
         await bot.kkr_send(ev, msg)
