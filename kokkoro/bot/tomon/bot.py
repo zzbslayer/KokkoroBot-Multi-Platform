@@ -128,11 +128,15 @@ class KokkoroTomonBot(KokkoroBot):
     async def kkr_send_by_group(self, gid, msg: SupportedMessageType, tag=None, filename='image.png'):
         channels = await self.get_channels_by_gid(gid)
 
+        sent_channels = []
         for channel in channels:
             if tag in channel.get('name'):
                 cid = channel.get('id')
+                if cid in sent_channels:
+                    continue
                 await self._send_by_channel(cid, msg, filename=filename)
-                return
+                sent_channels.append(cid)
+                #return
         kokkoro.logger.warning(f"Guild <{gid}> doesn't contains any channel named as <{tag}>")
 
     async def get_channels_by_gid(self, gid):
