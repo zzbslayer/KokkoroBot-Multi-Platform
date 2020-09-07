@@ -119,3 +119,6 @@ class KokkoroBot:
 
     def get_groups(self) -> List[GroupInterface]:
         raise NotImplementedError
+
+    def get_members_in_group(self, gid) -> List[UserInterface]:
+        raise NotImplementedError

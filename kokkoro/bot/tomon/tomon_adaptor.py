@@ -146,12 +146,12 @@ class TomonEvent(EventInterface):
    
     @overrides(EventInterface)
     def get_members_in_group(self) -> List[TomonUser]:
-        _bot = get_bot().get_raw_bot()
+        kkr_bot = get_bot()
         if self.members_in_group == None:
-            members_in_group = asyncio.run(_bot.api().route(f'/guilds/{self.get_group_id()}/members').get()) # 这是完整的 Member 信息
+            members_in_group = kkr_bot.get_members_in_group(self.get_group_id()) # 这是完整的 Member 信息
             self.members_in_group = members_in_group
         
-        return TomonUser.from_raw_members(self.members_in_group)
+        return self.members_in_group
 
     @overrides(EventInterface)
     def get_group_id(self):

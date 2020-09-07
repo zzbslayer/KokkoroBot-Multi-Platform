@@ -83,7 +83,6 @@ def refresh_quick_key_dic():
 
 
 def gen_quick_key(true_id:str, user_id:str) -> str:
-    user_id = hash(user_id) # str to int. user_id is str now
     qkey = int(true_id[-6:], 16)
     while qkey in quick_key_dic and quick_key_dic[qkey] != true_id:
         qkey = (qkey + 1) & 0xffffff
@@ -94,7 +93,6 @@ def gen_quick_key(true_id:str, user_id:str) -> str:
 
 
 def get_true_id(quick_key:str, user_id:str) -> str:
-    user_id = hash(user_id) # str to int. user_id is str now
     mask = user_id & 0xffffff
     if not isinstance(quick_key, str) or len(quick_key) != 5:
         return None
@@ -109,6 +107,7 @@ def __get_auth_key():
 
 
 async def do_query(id_list, user_id, region=1):
+    user_id = hash(user_id) # str to int. user_id is str now
     id_list = [ x * 100 + 1 for x in id_list ]
     header = {
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.87 Safari/537.36',
@@ -147,6 +146,7 @@ async def do_query(id_list, user_id, region=1):
 
 
 async def do_like(qkey, user_id, action):
+    user_id = hash(user_id) # str to int. user_id is str now
     true_id = get_true_id(qkey, user_id)
     if true_id is None:
         raise KeyError
