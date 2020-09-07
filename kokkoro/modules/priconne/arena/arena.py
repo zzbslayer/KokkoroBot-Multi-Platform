@@ -1,10 +1,9 @@
 import base64
 import os
 import time
-import httpx
 from collections import defaultdict
 
-from kokkoro import config, util
+from kokkoro import config, util, aiorequests
 
 from .. import chara
 from . import sv
@@ -83,7 +82,8 @@ def refresh_quick_key_dic():
     _last_query_time = now
 
 
-def gen_quick_key(true_id:str, user_id:int) -> str:
+def gen_quick_key(true_id:str, user_id:str) -> str:
+    user_id = hash(user_id) # str to int. user_id is str now
     qkey = int(true_id[-6:], 16)
     while qkey in quick_key_dic and quick_key_dic[qkey] != true_id:
         qkey = (qkey + 1) & 0xffffff
@@ -93,7 +93,8 @@ def gen_quick_key(true_id:str, user_id:int) -> str:
     return base64.b32encode(qkey.to_bytes(3, 'little')).decode()[:5]
 
 
-def get_true_id(quick_key:str, user_id:int) -> str:
+def get_true_id(quick_key:str, user_id:str) -> str:
+    user_id = hash(user_id) # str to int. user_id is str now
     mask = user_id & 0xffffff
     if not isinstance(quick_key, str) or len(quick_key) != 5:
         return None
@@ -116,9 +117,8 @@ async def do_query(id_list, user_id, region=1):
     payload = {"_sign": "a", "def": id_list, "nonce": "a", "page": 1, "sort": 1, "ts": int(time.time()), "region": region}
     logger.debug(f'Arena query {payload=}')
     try:
-        async with httpx.AsyncClient() as client:
-            resp = await client.post('https://api.pcrdfans.com/x/v1/search', headers=header, data=payload, timeout=10)
-        res = resp.json()
+        resp = await aiorequests.post('https://api.pcrdfans.com/x/v1/search', headers=header, json=payload, timeout=10)
+        res = await resp.json()
         logger.debug(f'len(res)={len(res)}')
     except Exception as e:
         logger.exception(e)
