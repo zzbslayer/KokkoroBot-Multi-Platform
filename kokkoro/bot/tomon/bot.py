@@ -12,6 +12,7 @@ from random import choice
 from string import ascii_letters
 
 import kokkoro
+from kokkoro.service import BroadcastTag
 from kokkoro.common_interface import KokkoroBot, EventInterface
 from kokkoro.R import ResImg, RemoteResImg
 from kokkoro.typing import overrides, Image, Figure
@@ -125,7 +126,7 @@ class KokkoroTomonBot(KokkoroBot):
         return at(uid)
 
     @overrides(KokkoroBot)
-    async def kkr_send_by_group(self, gid, msg: SupportedMessageType, tag=None, filename='image.png'):
+    async def kkr_send_by_group(self, gid, msg: SupportedMessageType, tag=BroadcastTag.default, filename='image.png'):
         channels = await self.get_channels_by_gid(gid)
 
         sent_channels = []

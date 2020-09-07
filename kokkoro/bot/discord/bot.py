@@ -4,6 +4,7 @@ from io import BytesIO
 import httpx
 
 import kokkoro
+from kokkoro.service import BroadcastTag
 from kokkoro.typing import overrides, Union, Figure, Image
 from kokkoro.R import ResImg, RemoteResImg
 from kokkoro.bot.discord.discord_adaptor import *
@@ -57,7 +58,7 @@ class KokkoroDiscordBot(discord.Client, KokkoroBot):
         
 
     @overrides(KokkoroBot)
-    async def kkr_send_by_group(self, gid, msg: SupportedMessageType, tag=None, filename="image.png"):
+    async def kkr_send_by_group(self, gid, msg: SupportedMessageType, tag=BroadcastTag.default, filename="image.png"):
         guild = self.get_guild(int(gid))
         channels = guild.channels
         for channel in channels:
