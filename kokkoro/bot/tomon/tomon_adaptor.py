@@ -44,7 +44,7 @@ class TomonUser(UserInterface):
     
     @overrides(UserInterface)
     def get_nick_name(self):
-        return to_string(self.raw_member.get('nick'))
+        return to_string(self.raw_member.get('nick')) or self.get_name()
 
     def get_roles(self):
         return self.raw_member.get('roles')

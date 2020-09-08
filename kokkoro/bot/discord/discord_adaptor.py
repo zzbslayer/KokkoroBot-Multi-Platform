@@ -40,7 +40,7 @@ class DiscordUser(UserInterface):
     
     @overrides(UserInterface)
     def get_nick_name(self):
-        return to_string(self.raw_user.nick)
+        return to_string(self.raw_user.nick) or self.get_name()
     
     @overrides(UserInterface)
     def get_priv(self):
