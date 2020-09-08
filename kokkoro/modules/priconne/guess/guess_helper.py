@@ -1,36 +1,34 @@
 import os
 import sqlite3
 
-from .. import chara
-
 class WinnerJudger:
     def __init__(self):
         self.on = {}
         self.winner = {}
-        self.correct_chara_id = {}
+        self.result_dict = {}
     
     def record_winner(self, gid, uid):
         self.winner[gid] = str(uid)
         
     def get_winner(self, gid):
-        return self.winner[gid] if self.winner.get(gid) is not None else ''
+        return self.winner.get(gid) 
         
     def get_on_off_status(self, gid):
-        return self.on[gid] if self.on.get(gid) is not None else False
+        return self.on.get(gid, False)
     
-    def set_correct_chara_id(self, gid, cid):
-        self.correct_chara_id[gid] = cid
+    def set_result(self, gid, res):
+        self.result_dict[gid] = res
     
-    def get_correct_chara_id(self, gid):
-        return self.correct_chara_id[gid] if self.correct_chara_id.get(gid) is not None else chara.UNKNOWN
+    def get_result(self, gid):
+        return self.result_dict.get(gid)
     
     def turn_on(self, gid):
         self.on[gid] = True
         
     def turn_off(self, gid):
         self.on[gid] = False
-        self.winner[gid] = ''
-        self.correct_chara_id[gid] = chara.UNKNOWN
+        self.winner[gid] = None
+        self.result_dict[gid] = None
 
 class WinningCounter:
     def __init__(self, db_path):

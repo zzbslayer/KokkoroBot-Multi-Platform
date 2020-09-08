@@ -55,7 +55,7 @@ async def avatar_guess(bot: KokkoroBot, ev: EventInterface):
         while chara_id_list[i] in BLACKLIST_ID:
             i += 1
         correct_id = chara_id_list[i]
-        winner_judger.set_correct_chara_id(gid, correct_id)
+        winner_judger.set_result(gid, correct_id)
 
         msg = f'猜猜这个图片是哪位角色头像的一部分?\n发送"头像提示"，可以得到更多信息~\n回答时请加前缀 ag\n示例：ag 可可萝'
         await bot.kkr_send(ev, msg)
@@ -71,7 +71,7 @@ async def avatar_guess(bot: KokkoroBot, ev: EventInterface):
 async def avatar_guess(bot: KokkoroBot, ev: EventInterface):   
     gid = ev.get_group_id()
     if winner_judger.get_on_off_status(gid):
-        correct_id = winner_judger.get_correct_chara_id(gid)
+        correct_id = winner_judger.get_result(gid)
         c = chara.fromid(correct_id)
         msg =  f'正确答案是: {c.name}\n很遗憾，没有人答对~'
         await bot.kkr_send(ev, msg)
@@ -92,7 +92,7 @@ async def hint(bot: KokkoroBot, ev: EventInterface):
         await bot.kkr_send(ev, '提示次数用完啦0x0\n输入"头像答案"查看答案')
         return
 
-    correct_id = winner_judger.get_correct_chara_id(gid)
+    correct_id = winner_judger.get_result(gid)
     c = chara.fromid(correct_id)
     img = c.icon.open()
     left = math.floor(random.random()*(129-PIC_SIDE_LENGTH))
@@ -111,8 +111,8 @@ async def on_input_chara_name(bot: KokkoroBot, ev: EventInterface):
     if winner_judger.get_on_off_status(gid):
         s = ev.get_param().remain
         cid = chara.name2id(s)
-        correct_id = winner_judger.get_correct_chara_id(gid)
-        if cid != chara.UNKNOWN and cid == correct_id and winner_judger.get_winner(gid) == '':
+        correct_id = winner_judger.get_result(gid)
+        if cid != chara.UNKNOWN and cid == correct_id and winner_judger.get_winner(gid) == None:
             winner_judger.record_winner(gid, uid)
             winning_counter = WinningCounter(DB_PATH)
             winning_counter._record_winning(gid, uid)
