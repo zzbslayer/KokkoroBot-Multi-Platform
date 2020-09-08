@@ -143,6 +143,6 @@ async def push_help(bot, ev: EventInterface):
 async def normal_help(bot, ev: EventInterface):
     await bot.kkr_send(ev, NORMAL_HELP)
 
-@sv.on_fullmatch(('帮助', '幫助', 'help'))
+@sv.on_fullmatch(('帮助', 'help'))
 async def send_help(bot, ev: EventInterface):
     await bot.kkr_send(ev, SHORT_HELP)

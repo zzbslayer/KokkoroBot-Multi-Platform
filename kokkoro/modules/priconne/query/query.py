@@ -42,7 +42,7 @@ async def rank_sheet(bot, ev:EventInterface):
         await bot.kkr_send(ev, '\n'.join(msg), at_sender=True)
         await bot.kkr_send(ev, cn_rank)
 
-@sv.on_fullmatch(('jjc', 'JJC', 'JJC作业', 'JJC作业网', 'JJC数据库', 'jjc作业', 'jjc作业网', 'jjc数据库', 'JJC作業', 'JJC作業網', 'JJC數據庫', 'jjc作業', 'jjc作業網', 'jjc數據庫'))
+@sv.on_fullmatch(('jjc', 'JJC', 'JJC作业', 'JJC作业网', 'JJC数据库', 'jjc作业', 'jjc作业网', 'jjc数据库'))
 async def say_arina_database(bot, ev):
     await bot.kkr_send(ev, '公主连接Re:Dive 竞技场编成数据库\n日文：https://nomae.net/arenadb \n中文：https://pcrdfans.com/battle')
 
@@ -80,7 +80,7 @@ BCR_SITES = f'''
 {OTHER_KEYWORDS}
 ※日台服速查请输入【pcr速查】'''
 
-@sv.on_fullmatch(('pcr速查', 'pcr图书馆', 'pcr圖書館', '图书馆', '圖書館', 'pcr-sites'))
+@sv.on_fullmatch(('pcr速查', 'pcr图书馆', '图书馆', 'pcr-sites'))
 async def pcr_sites(bot, ev: EventInterface):
     await bot.kkr_send(ev, PCR_SITES, at_sender=True)
 @sv.on_fullmatch(('bcr速查', 'bcr攻略', 'bcr-sites'))

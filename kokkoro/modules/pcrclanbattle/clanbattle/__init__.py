@@ -95,7 +95,7 @@ QUICK_START = f'''
 ※使用前请务必【逐字】阅读开头的必读事项
 '''.rstrip()
 
-@sv.on_fullmatch(cb_prefix(('帮助', '幫助', 'help')), only_to_me=False)
+@sv.on_fullmatch(cb_prefix(('帮助', 'help')), only_to_me=False)
 async def cb_help(bot: KokkoroBot, ev:EventInterface):
     await bot.kkr_send(ev, QUICK_START, at_sender=True)
     # msg = MessageSegment.share(url='https://github.com/Ice-Cirno/HoshinoBot/blob/master/hoshino/modules/pcrclanbattle/clanbattle/README.md',

@@ -1,5 +1,6 @@
 import re
 import pygtrie
+import zhconv
 from typing import List
 
 import kokkoro
@@ -53,6 +54,7 @@ class PrefixTrigger(BaseTrigger):
             kokkoro.logger.warning(f'Failed to add prefix trigger `{prefix}`: Conflicts between {sf.__name__} and {other.__name__}')
             return
         self.trie[prefix] = sf
+        self.trie[zhconv.convert(prefix, "zh-hant")] = sf
         kokkoro.logger.debug(f'Succeed to add prefix trigger `{prefix}`')
 
 
@@ -85,6 +87,7 @@ class SuffixTrigger(BaseTrigger):
             kokkoro.logger.warning(f'Failed to add suffix trigger `{suffix}`: Conflicts between {sf.__name__} and {other.__name__}')
             return
         self.trie[suffix_r] = sf
+        self.trie[zhconv.convert(suffix_r, "zh-hant")] = sf
         kokkoro.logger.debug(f'Succeed to add suffix trigger `{suffix}`')
 
 
@@ -113,6 +116,7 @@ class KeywordTrigger(BaseTrigger):
             kokkoro.logger.warning(f'Failed to add keyword trigger `{keyword}`: Conflicts between {sf.__name__} and {other.__name__}')
             return
         self.allkw[keyword] = sf
+        self.allkw[zhconv.convert(keyword, "zh-hant")] = sf
         kokkoro.logger.debug(f'Succeed to add keyword trigger `{keyword}`')
 
 
