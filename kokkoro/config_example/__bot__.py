@@ -1,5 +1,6 @@
 import importlib
 from kokkoro import log
+
 logger = log.new_logger('config')
 
 BOT_TYPE="discord"
@@ -28,9 +29,14 @@ RES_PROTOCOL = 'file'
 RES_DIR = '~/.kokkoro/res/'
 RES_URL = '0.0.0.0'
 
+def get_font_path(font_file):
+    return os.path.expanduser(os.path.join(RES_DIR, 'fonts', font_file))
+
 FONT_PATH = {
-    "msyh": f"{RES_DIR}/fonts/Microsoft YaHei.ttf", # 微软雅黑
-    "simhei": f"{RES_DIR}/fonts/simhei.ttf" # 黑体
+    "msyh": get_font_path('Microsoft YaHei.ttf')# 微软雅黑
+    "simhei": get_font_path('simhei.ttf'), # 黑体
+    "mamelon": get_font_path('Mamelon.otf'), 
+    "sakura": get_font_path('sakura.ttf'),
 }
 
 MODULES_ON = [
