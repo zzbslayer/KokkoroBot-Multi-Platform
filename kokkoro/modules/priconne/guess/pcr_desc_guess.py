@@ -57,7 +57,7 @@ async def description_guess(bot: KokkoroBot, ev: EventInterface):
             await bot.kkr_send(ev, "此轮猜角色还没结束 0x0")
             return
         winner_judger.turn_on(gid)
-        msg = f'猜猜这是哪位角色?\n发送"角色提示"，可以得到更多信息~\n回答时请加前缀 dg\n示例：dg 可可萝'
+        msg = f'猜猜这是哪位角色?\n※发送"角色提示"，可以得到更多信息~\n※回答时请加前缀 dg\n※示例：dg 可可萝'
         await bot.kkr_send(ev, msg)
         desc_lable = ['名字', '公会', '生日', '年龄', '身高', '体重', '血型', '种族', '喜好', '声优']
         desc_suffix = ['', '', '', '', 'cm', 'kg', '', '', '', '']

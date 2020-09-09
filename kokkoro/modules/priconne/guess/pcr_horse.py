@@ -137,6 +137,14 @@ class HorseStatus:
         self.charactors = charactors
         self.multi_player = multi_player
         self.selection = {} # (charactor, uid)
+        self.force_finish = False
+
+    def is_unselected(self):
+        return len(self.selection) == 0
+    
+    def set_force_finish(self, flag: bool):
+        if self.multi_player:
+            self.force_finish = flag
 
     def calculate_rank(self):
         track = self.track
@@ -184,6 +192,8 @@ class HorseStatus:
         return True
     
     def is_finished(self):
+        if self.force_finish:
+            return True
         if self.multi_player:
             if len(self.selection) == 4:
                 return True
@@ -203,8 +213,11 @@ class HorseStatus:
             for i in range(0, 4):
                 chara_name = chara_rank[i]
                 
-                uid = self.selection[chara_name]
-                msg += f'{bot.kkr_at(uid)} 第{i+1}位：{chara_name} 宝石×{STONE[i]}\n'
+                uid = self.selection.get(chara_name)
+                if uid == None:
+                    msg += f'第{i+1}位：{chara_name}\n'
+                else:
+                    msg += f'{bot.kkr_at(uid)} 第{i+1}位：{chara_name} 宝石×{STONE[i]}\n'
         else:
             # assert len(self.selection) == 1
             for i in range(0, 4):
@@ -219,12 +232,12 @@ class HorseStatus:
         msg += "========================"
         return msg
 
-@sv.on_prefix(('赛马', '兰德索尔杯', 'horse'), only_to_me=False)
+@sv.on_prefix(('赛马', '兰德索尔杯', 'horse', '赛🐴'), only_to_me=False)
 async def pcr_horse(bot, ev: EventInterface):
     remain = ev.get_param().remain
     await _horse(bot, ev, remain=='-m')
 
-@sv.on_prefix(('多人赛马', '多人兰德索尔杯', 'multi-horse'), only_to_me=False)
+@sv.on_fullmatch(('多人赛🐴', '多人赛马', '多人兰德索尔杯', 'multi-horse'), only_to_me=False)
 async def pcr_horse_force_multi(bot, ev: EventInterface):
     await _horse(bot, ev, True)
 
@@ -248,12 +261,15 @@ async def _horse(bot, ev, multi_player):
     result_number = player.get_num()
     res2 = chara.gen_team_pic(result, star_slot_verbose=False)
     res1 = chara.gen_team_pic(result_number, star_slot_verbose=False)
-    res = concat_pic([res1, res2])
+    img = concat_pic([res1, res2])
     charactors = [f'{c.name}' for c in result]
     res_name = ' '.join(charactors)
 
-    await bot.kkr_send(ev, res)
-    await bot.kkr_send(ev, f'{res_name}\n※发送“选中+角色名称”开始比赛', at_sender=False)
+    await bot.kkr_send(ev, img)
+    msg = f'{res_name}\n※发送“选中+角色名称”开始比赛'
+    if multi_player:
+        msg += '\n※默认需要四人参与才可开始比赛\n※选中后发送指令"开始赛🐴"开始1-3人的比赛'
+    await bot.kkr_send(ev, msg, at_sender=False)
     
     # Track
     track = HorseTrack()
@@ -261,6 +277,22 @@ async def _horse(bot, ev, multi_player):
     g_status_dict[gid] = HorseStatus(track, charactors, multi_player)
     g_uid_dict[gid] = uid
 
+@sv.on_fullmatch(('开始赛马', '开始赛🐴', 'start-horse'))
+async def force_start(bot: KokkoroBot, ev: EventInterface):
+    gid = ev.get_group_id()
+    horse_status: HorseStatus = g_status_dict.get(gid)
+    if horse_status == None:
+        await bot.kkr_send(ev, f'比赛尚未开始，发送指令"多人赛🐴"发起多人游戏', at_sender=True)
+    elif horse_status.is_unselected():
+        # single player unselected and multi player unselected
+        await bot.kkr_send(ev, f'请至少先选中一匹🐴', at_sender=True)
+    else:
+        await bot.kkr_send(ev, f'比赛开始')
+        res = horse_status.get_result()
+        await bot.kkr_send(ev, f'{res}')
+        clean(gid)
+
+    
 
 @sv.on_prefix('选中')
 async def _select_(bot: KokkoroBot, ev: EventInterface):
@@ -269,9 +301,9 @@ async def _select_(bot: KokkoroBot, ev: EventInterface):
     uid = ev.get_author_id()
     horse_status: HorseStatus = g_status_dict.get(gid)
     if horse_status == None:
-        await bot.kkr_send(ev, f'比赛尚未开始，发送指令"赛马"发起新的游戏', at_sender=True)
+        await bot.kkr_send(ev, f'比赛尚未开始，发送指令"赛🐴"发起新的游戏', at_sender=True)
     elif not horse_status.multi_player and uid != g_uid_dict[gid]:
-        await bot.kkr_send(ev, f'仅限比赛发起人进行选择~\n发送指令"多人赛马"发起多人游戏')
+        await bot.kkr_send(ev, f'仅限比赛发起人进行选择~\n发送指令"多人赛🐴"发起多人游戏')
     else:
         pkey = ev.get_param().remain
         id_ = chara.name2id(pkey)
@@ -283,11 +315,14 @@ async def _select_(bot: KokkoroBot, ev: EventInterface):
         if not success:
             await bot.kkr_send(ev, f'已经有人选过 {s_chara.name} 了 0x0', at_sender=True)
         elif horse_status.is_finished():
-            await bot.kkr_send(ev, f'比赛开始', at_sender=True)
+            await bot.kkr_send(ev, f'比赛开始')
             res = horse_status.get_result()
             await bot.kkr_send(ev, f'{res}')
-
-            g_uid_dict[gid] = None
-            g_status_dict[gid] = None
+            # Clean up
+            clean(gid)
         else:
             await bot.kkr_send(ev, f'已选择{s_chara.name}', at_sender=True)
+
+def clean(gid):
+    g_uid_dict[gid] = None
+    g_status_dict[gid] = None
