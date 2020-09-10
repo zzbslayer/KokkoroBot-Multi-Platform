@@ -33,7 +33,7 @@ def get_font_path(font_file):
     return os.path.expanduser(os.path.join(RES_DIR, 'fonts', font_file))
 
 FONT_PATH = {
-    "msyh": get_font_path('Microsoft YaHei.ttf')# 微软雅黑
+    "msyh": get_font_path('Microsoft YaHei.ttf'),# 微软雅黑
     "simhei": get_font_path('simhei.ttf'), # 黑体
     "mamelon": get_font_path('Mamelon.otf'), 
     "sakura": get_font_path('sakura.ttf'),
