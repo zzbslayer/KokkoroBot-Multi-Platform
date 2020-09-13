@@ -86,7 +86,7 @@ async def decherulize(bot: KokkoroBot, ev: EventInterface):
     if len(s) > 1501:
         await bot.kkr_send(ev, '切、切噜太长切不动勒切噜噜...', at_sender=True)
         return
-    msg = bot.kkr_at(ev.get_author_id()) + '的切噜噜是：\n' + escape(cheru2str(s))
+    msg = bot.kkr_at(ev.get_author_id(), ev.get_group_id()) + '的切噜噜是：\n' + escape(cheru2str(s))
     # if random.random() < 0.2:
     #     await cheru_record(bot, ev)
     await bot.kkr_send(ev, msg)

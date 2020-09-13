@@ -57,7 +57,8 @@ class KokkoroTomonBot(KokkoroBot):
     @overrides(KokkoroBot)
     async def kkr_send(self, ev: TomonEvent, msg: SupportedMessageType, at_sender=False, filename="image.png"):
         if isinstance(msg, str) and at_sender:
-            at_info = self.kkr_at(ev.get_author_id())
+            author = ev.get_author()
+            at_info = self.kkr_at(author.get_id(), author.get_nick_name())
             msg = f'{msg} {at_info}'
 
         cid = ev.get_channel_id()
@@ -121,7 +122,11 @@ class KokkoroTomonBot(KokkoroBot):
         self._bot.start(kokkoro.config.bot.tomon.TOMON_TOKEN)
 
     @overrides(KokkoroBot)
-    def kkr_at(self, uid):
+    def kkr_at(self, uid, name):
+        return at(uid)
+    
+    @overrides(KokkoroBot)
+    async def kkr_at_by_uid(self, uid, gid):
         return at(uid)
 
     @overrides(KokkoroBot)

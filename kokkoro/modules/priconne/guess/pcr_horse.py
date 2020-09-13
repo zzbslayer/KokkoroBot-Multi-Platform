@@ -133,7 +133,8 @@ class HorseTrack:
         return f'{gen_w(self.track1, 1)}\n{gen_w(self.track2, 2)}\n{gen_w(self.track3, 3)}\n{gen_w(self.track4, 4)}'
 
 class HorseStatus:
-    def __init__(self, track: HorseTrack, charactors, multi_player=False):
+    def __init__(self, gid, track: HorseTrack, charactors, multi_player=False):
+        self.gid = gid
         self.track = track
         self.charactors = charactors
         self.multi_player = multi_player
@@ -203,7 +204,7 @@ class HorseStatus:
                 return True
         return False
 
-    def get_result(self):
+    async def get_result(self):
         msg = '========================\n'
         msg += f'{self.track}\n'
         chara_rank = self.calculate_rank()
@@ -218,7 +219,8 @@ class HorseStatus:
                 if uid == None:
                     msg += f'第{i+1}位：{chara_name}\n'
                 else:
-                    msg += f'{bot.kkr_at(uid)} 第{i+1}位：{chara_name} 宝石×{STONE[i]}\n'
+                    at_user = await bot.kkr_at_by_uid(uid, self.gid)
+                    msg += f'{at_user} 第{i+1}位：{chara_name} 宝石×{STONE[i]}\n'
         else:
             # assert len(self.selection) == 1
             for i in range(0, 4):
@@ -229,7 +231,8 @@ class HorseStatus:
                     chara_name = k
                     uid = v 
                 if chara_name == chara_rank[j]:
-                    msg += f'{bot.kkr_at(uid)} 恭喜获得第{j+1}位奖励，宝石×{STONE[j]}\n'
+                    at_user = await bot.kkr_at_by_uid(uid, self.gid)
+                    msg += f'{at_user} 恭喜获得第{j+1}位奖励，宝石×{STONE[j]}\n'
         msg += "========================"
         return msg
 
@@ -275,7 +278,7 @@ async def _horse(bot, ev, multi_player):
     # Track
     track = HorseTrack()
     # Status
-    g_status_dict[gid] = HorseStatus(track, charactors, multi_player)
+    g_status_dict[gid] = HorseStatus(gid, track, charactors, multi_player)
     g_uid_dict[gid] = uid
 
 @sv.on_fullmatch(('开始赛马', '开始赛🐴', 'start-horse'))
@@ -289,7 +292,7 @@ async def force_start(bot: KokkoroBot, ev: EventInterface):
         await bot.kkr_send(ev, f'请至少先选中一匹🐴', at_sender=True)
     else:
         await bot.kkr_send(ev, f'比赛开始')
-        res = horse_status.get_result()
+        res = await horse_status.get_result()
         await bot.kkr_send(ev, f'{res}')
         clean(gid)
 
@@ -317,7 +320,7 @@ async def _select_(bot: KokkoroBot, ev: EventInterface):
             await bot.kkr_send(ev, f'已经有人选过 {s_chara.name} 了 0x0', at_sender=True)
         elif horse_status.is_finished():
             await bot.kkr_send(ev, f'比赛开始')
-            res = horse_status.get_result()
+            res = await horse_status.get_result()
             await bot.kkr_send(ev, f'{res}')
             # Clean up
             clean(gid)

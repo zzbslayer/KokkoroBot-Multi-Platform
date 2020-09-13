@@ -5,7 +5,7 @@ import httpx
 
 import kokkoro
 from kokkoro.service import BroadcastTag
-from kokkoro.typing import overrides, Union, Figure, Image
+from kokkoro.typing import overrides, Figure, Image
 from kokkoro.R import ResImg, RemoteResImg
 from kokkoro.bot.discord.discord_adaptor import *
 from kokkoro.bot.discord.discord_util import at
@@ -50,7 +50,8 @@ class KokkoroDiscordBot(discord.Client, KokkoroBot):
     @overrides(KokkoroBot)
     async def kkr_send(self, ev: DiscordEvent, msg: SupportedMessageType, at_sender=False, filename="image.png"):
         if isinstance(msg, str) and at_sender:
-            at_info = self.kkr_at(ev.get_author_id())
+            author = ev.get_author()
+            at_info = self.kkr_at(author.get_id(), author.get_nick_name())
             msg = f'{msg} {at_info}'
 
         channel = ev.get_channel()
@@ -68,7 +69,11 @@ class KokkoroDiscordBot(discord.Client, KokkoroBot):
         kokkoro.logger.warning(f"Guild <{guild.id}> doesn't contains channel named as <{tag}>")
 
     @overrides(KokkoroBot)
-    def kkr_at(self, uid):
+    def kkr_at(self, uid, name):
+        return at(uid)
+
+    @overrides(KokkoroBot)
+    async def kkr_at_by_uid(self, uid, gid):
         return at(uid)
 
     @overrides(KokkoroBot)

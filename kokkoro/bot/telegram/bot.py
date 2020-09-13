@@ -53,31 +53,31 @@ class KokkoroTelegramBot(KokkoroBot):
         else:
             raise NotImplementedError
 
-    async def _send_text(self, cid, msg, at_sender=False, parse_mode='Markdown'):
-        await self.raw_bot.send_message(cid, msg, parse_mode=parse_mode)
+    async def _send_text(self, gid, msg, at_sender=False, parse_mode='Markdown'):
+        await self.raw_bot.send_message(gid, msg, parse_mode=parse_mode)
 
 
-    async def _send_remote_img(self, cid, url, filename="image.png"):
+    async def _send_remote_img(self, gid, url, filename="image.png"):
         ev = ev.get_raw_event()
         async with httpx.AsyncClient() as client:
             r = await client.get(url)
             with BytesIO(r.content) as fp:
-                await self.raw_bot.send_photo(cid, photo=InputFile(fp, filename=filename))
+                await self.raw_bot.send_photo(gid, photo=InputFile(fp, filename=filename))
 
-    async def _send_local_img(self, cid, path, filename="image.png"):
-        await self.raw_bot.send_photo(cid, photo=InputFile(path, filename=filename))
+    async def _send_local_img(self, gid, path, filename="image.png"):
+        await self.raw_bot.send_photo(gid, photo=InputFile(path, filename=filename))
 
-    async def _send_pil_img(self, cid, img:Image.Image, filename="image.png"):
+    async def _send_pil_img(self, gid, img:Image.Image, filename="image.png"):
         with BytesIO() as fp:
             img.save(fp, format='PNG')
             fp.seek(0)
-            await self.raw_bot.send_photo(cid, photo=InputFile(fp, filename=filename))
+            await self.raw_bot.send_photo(gid, photo=InputFile(fp, filename=filename))
         
-    async def _send_matplotlib_fig(self, cid, fig:Figure, filename="image.png"):
+    async def _send_matplotlib_fig(self, gid, fig:Figure, filename="image.png"):
         with BytesIO() as fp:
             fig.savefig(fp, format='PNG')
             fp.seek(0)
-            await self.raw_bot.send_photo(cid, photo=InputFile(fp, filename=filename))
+            await self.raw_bot.send_photo(gid, photo=InputFile(fp, filename=filename))
     
     @overrides(KokkoroBot)
     async def kkr_send_by_group(self, gid, msg: SupportedMessageType, tag=BroadcastTag.default, filename="image.png"):
@@ -88,10 +88,19 @@ class KokkoroTelegramBot(KokkoroBot):
         raise NotImplementedError
     
     @overrides(KokkoroBot)
-    def kkr_at(self, uid, parse_mode='Markdown'):
-        return f'[inline mention of a user](tg://user?id={uid})'
+    def kkr_at(self, uid, name):
+        return f'[{name}](tg://user?id={uid})'
+    
+    @overrides(KokkoroBot)
+    async def kkr_at_by_uid(self, uid, gid):
+        cm = await self.raw_bot.get_chat_member(gid, uid)
+        name = cm.user.first_name + cm.user.last_name # user doesn't has username in this api
+        return self.kkr_at(uid, name)
 
     @overrides(KokkoroBot)
     def kkr_run(self):
         executor.start_polling(self.dp, skip_updates=True)
+
+    def _get_chat_member(self, gid, uid):
+        return asyncio.run(self.raw_bot.get_chat_member(gid, uid))
     

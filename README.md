@@ -11,6 +11,7 @@ web界面敬请期待。
 - Discord
     - 体验服务器：https://discord.gg/U9XFCVj
 - Telegram
+    - 体验群：https://t.me/kkrbot_group
 - 企业微信
 
 

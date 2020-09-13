@@ -8,9 +8,9 @@ from kokkoro.util import to_string
 from kokkoro.priv import SUPERUSER, ADMIN, NORMAL
 
 class TelegramUser(UserInterface):
-    def __init__(self, raw_user, cid):
+    def __init__(self, raw_user, gid):
         self.raw_user = raw_user
-        self.cid = cid
+        self.gid = gid
     
     @overrides(UserInterface)
     def get_id(self):
@@ -18,11 +18,11 @@ class TelegramUser(UserInterface):
     
     @overrides(UserInterface)
     def get_name(self):
-        return to_string(self.raw_user.username)
+        return to_string(self.raw_user.first_name + self.raw_user.last_name)
 
     @overrides(UserInterface)
     def get_nick_name(self):
-        return self.get_nick_name()
+        return self.get_name()
 
     @overrides(UserInterface)
     def get_priv(self):
@@ -35,8 +35,8 @@ class TelegramUser(UserInterface):
     @overrides(UserInterface)
     def is_admin(self):
         from . import get_bot
-        bot = get_bot().raw_bot
-        chat_member = asyncio.run(bot.get_chat_member(self.cid, self.get_id()))
+        bot = get_bot()
+        chat_member = asyncio.run(bot.raw_bot.get_chat_member(self.gid, self.get_id()))
         if chat_member.is_chat_admin():
             return True
         return False

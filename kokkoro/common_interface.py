@@ -111,7 +111,16 @@ class KokkoroBot:
 
         await handle_message(self, ev)
 
-    def kkr_at(self, uid):
+    '''
+    name parameter is designed for telegram
+    '''
+    def kkr_at(self, uid, name):
+        raise NotImplementedError
+
+    '''
+    designed for telegram
+    '''
+    async def kkr_at_by_uid(self, uid, gid): 
         raise NotImplementedError
 
     def kkr_run(self):
