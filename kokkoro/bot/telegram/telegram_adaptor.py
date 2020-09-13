@@ -1,7 +1,50 @@
+import asyncio
 from aiogram import types
+
+import kokkoro
 from kokkoro.common_interface import EventInterface, UserInterface, BaseParameter
 from kokkoro.typing import overrides, List
 from kokkoro.util import to_string
+from kokkoro.priv import SUPERUSER, ADMIN, NORMAL
+
+class TelegramUser(UserInterface):
+    def __init__(self, raw_user, cid):
+        self.raw_user = raw_user
+        self.cid = cid
+    
+    @overrides(UserInterface)
+    def get_id(self):
+        return to_string(self.raw_user.id)
+    
+    @overrides(UserInterface)
+    def get_name(self):
+        return to_string(self.raw_user.username)
+
+    @overrides(UserInterface)
+    def get_nick_name(self):
+        return self.get_nick_name()
+
+    @overrides(UserInterface)
+    def get_priv(self):
+        if self.get_id() in kokkoro.config.SUPER_USER:
+            return SUPERUSER
+        elif self.is_admin():
+            return ADMIN
+        return NORMAL
+    
+    @overrides(UserInterface)
+    def is_admin(self):
+        from . import get_bot
+        bot = get_bot().raw_bot
+        chat_member = asyncio.run(bot.get_chat_member(self.cid, self.get_id()))
+        if chat_member.is_chat_admin():
+            return True
+        return False
+    
+    @overrides(UserInterface)
+    def get_raw_user(self) -> types.User:
+        return self.raw_user
+
 
 class TelegramEvent(EventInterface):
     def __init__(self, raw_event: types.Message):
@@ -20,6 +63,10 @@ class TelegramEvent(EventInterface):
         return to_string(self.raw_event.from_user.username)
 
     @overrides(EventInterface)
+    def get_author(self):
+        return TelegramUser(self.raw_event.from_user, self.get_group_id())
+
+    @overrides(EventInterface)
     def get_group_id(self):
         return to_string(self.raw_event.chat.id)
 
@@ -36,3 +83,7 @@ class TelegramEvent(EventInterface):
     def get_raw_event(self) -> types.Message:
         # coupleness
         return self.raw_event
+    
+    @overrides(EventInterface)
+    def set_content(self, content):
+        self.raw_event.text = content

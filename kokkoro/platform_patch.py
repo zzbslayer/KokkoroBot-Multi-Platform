@@ -8,7 +8,7 @@ def process_mention_me(raw_msg:str):
             processed_msg = processed_msg[len(nick):] # remove nick
             to_me1 = True
             break
-    #to_me2 = False
+    to_me2 = False
     if config.BOT_TYPE == "discord":
         from kokkoro.bot.discord.discord_util import remove_mention_me, normalize_message
         processed_msg, to_me2 = remove_mention_me(processed_msg)

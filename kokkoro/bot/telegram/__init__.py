@@ -9,7 +9,7 @@ kkr_bot = None
 
 def get_bot():
     global kkr_bot
-    from kokkoro.telegram.bot import KokkoroTelegramBot 
+    from .bot import KokkoroTelegramBot 
     if kkr_bot == None:
         kkr_bot = KokkoroTelegramBot(config)
     
