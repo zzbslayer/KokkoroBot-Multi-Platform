@@ -1,7 +1,7 @@
 # KokkoroBot
 KokkoroBot is a forked version of **HoshinoBot** and migrates from QQ to other platforms.
 
-本项目是 HoshinoBot 的分支版本，充斥着大量个人魔改产物。若希望体验原汁原味的 HoshinoBot 请自行魔改回去。
+本项目是 @Ice-Cirno 的 HoshinoBot 的分支版本，充斥着大量个人魔改产物。若希望体验原汁原味的 HoshinoBot 请自行魔改回去。
 
 web界面敬请期待。
 
@@ -44,9 +44,6 @@ cp -r config_example config
     - `ENABLED_GROUP`：bot 仅会对 `ENABLED_GROUP` 中的群组作出回应
 - `LOG_LEVE`
     - 开发人员 DEBUG 用，一般用户设置为 "INFO" 即可
-- `ENABLE_IMAGE`
-    - 是否允许 bot 发送图片
-    - 第一次部署建议先设置为 `False`，成功后再改为 `True`
 - `NICK_NAME`
     - bot 别称，通过在消息最前面加别称达到与 @bot 相同的效果
 - `RES_PROTOCOL`
@@ -55,15 +52,24 @@ cp -r config_example config
     - `http` （通过 http 协议访问，需另外部署静态资源服务器）
 - `RES_DIR`
     - 资源文件的根目录路径
+    - 仅当 `RES_PROTOCOL` 为 `file` 时生效
     - 示例：`~/.kokkoro/res/`
 - `RES_URL`
     - 资源文件的根 URL
+    - 仅当 `RES_PROTOCOL` 为 `http` 时生效
     - 示例：`http://123.123.123.123/`
 - `MODULES_ON`
     - 开启的模块
     - 将 `kokkoro/modules/` 目录下想要开启的模块名称填写在这个列表中
+- `FONT_PATH`
+    - 一般用户无需修改
+    - 开发者进行插件开发时，用到的字体文件需要在此配置
+    - 插件从该字典变量中获取字体路径
 
-**注意**：2020-08-27 之前的老用户需要从 `kokkoro/config_example/__bot__.py` 复制 `FONT_PATH` 部分的内容过来覆盖以前的内容，并且复制 `kokkoro/config_example/__init__.py` 直接覆盖 `kokkoro/config/__init__.py`，新用户无需任何特殊操作。
+> **注意**：每次更新时，老用户请自行检查 `config_example` 中的配置文件相较您之前使用的版本是否有修改。如果有，则请更新配置文件后使用。 
+> 
+> 如果您不确定是否有修改，可在群内提问。
+
 
 #### 2.1.2 Discord 配置
 配置文件为 `kokkoro/config/bot/discord.py`。
@@ -84,9 +90,6 @@ https://discord.com/developers/docs/intro
     - 填写自己的用户 ID
 - `BOT_ID`
     - 填写之前创建的 App 的 CLIENT ID（在 General Information 页面）
-- `BROADCAST_CHANNEL`
-    - 广播频道的名称
-    - KokkoroBot 只会把推送消息发送到广播频道中。比如药水提醒、新闻推送。
 
 #### 2.1.3 Telegram 配置
 配置文件为 `kokkoro/config/bot/telegram.py`
@@ -104,20 +107,21 @@ Telegram 获取用户与群组 ID 很麻烦，需要从 API 中自己获取，�
 - `SUPER_USER`
     - 填写自己的 ID
 - `BOT_ID`
-    - 填写 BOT 的 ID
     - 目前 telegram 暂时没有一个比较好的手段获得 `BOT_ID`，不过 telegram bot 也不会收到自己发的消息，因此设置为 `None` 即可
 
 #### 2.1.4 Tomon (国内平台)
 配置文件为 `kokkoro/config/bot/tomon.py`
 
-Tomon 获取用户与群组 ID 目前需要通过 API 获取，请参考链接 https://developer.tomon.co/docs/user#%E6%9F%A5%E7%9C%8B%E4%B8%AA%E4%BA%BA%E8%B5%84%E6%96%99
+由于 Tomon 目前仍在内测中，请先点击[邀请链接](https://beta.tomon.co/invite/kCA4Qg?t=htMviz)注册并加入 Tomon。注册成功后，点击右下角机器人图标的 Bot Master 根据流程申请 Bot。
 
-> 目前只能使用自己的账号作为 bot 部署，参考以下链接获取 Token。之后将允许为 bot 创建额外账号。
+如有任何疑问可在 Tomon 或 QQ 群中交流。
+
+> 目前 Tomon 还没有开发者模式，请参考 Tomon 开发者文档获取个人 ID 与群组 ID。
 >
-> https://developer.tomon.co/docs/auth
+> https://developer.tomon.co/docs/user#%E6%9F%A5%E7%9C%8B%E4%B8%AA%E4%BA%BA%E8%B5%84%E6%96%99
 
 - `TOMON_TOKEN`
-    - 填写从 Auth api 得到的 TOKEN
+    - 填写从 Bot Master 得到的 TOKEN
 - `ENABLED_GROUP`
     - 允许使用 BOT 的 Tomon 群组 ID
 - `SUPER_USER`
@@ -175,44 +179,61 @@ TODO
 #### 2.2.2 Windows
 TODO
 
+### 2.2.3 小结
+以上步骤如果您都成功执行，那么 KokkoroBot 就已经部署成功了！
+
+但其中部分功能需要用到一些额外的图片资源或者第三方 API。因此请继续阅读 2.3 与 2.4，以保证这些功能都能够正常使用。
+
+
 ### 2.3 资源文件
-目前 KokkoroBot 中的图片等资源文件基于 HoshinoBot 群内提供的资源包，额外添加了字体文件，因此只能从 KokkoroBot 群下载。
+目前 KokkoroBot 中的图片等资源文件主要来自 HoshinoBot 群内提供的资源包。在此基础之上额外添加了字体与其他资源，从 KokkoroBot 群中可下载最完整的资源包。
 
 KokkoroBot 群：887897168。
 
 下载好的资源文件放在服务器的 `~/.kokkoro` 目录下，保证目录看上去是如下结构 `~/.kokkoro/res/img`。
 
 ### 2.4 第三方应用的 API Key
-TODO
+
+#### 2.4.1 竞技场查询
+竞技场查询功能依赖于 https://pcrdfans.com。注册并登陆后可在 https://pcrdfans.com/bot 申请 API Key。由于查询网站服务器限制，暂时可能无法申请到 API Key。
+
+申请到以后可在 `kokkoro/config/modules/priconne.py` 中将您申请到的 API Key 填写在里面
+```python
+# kokkoro/config/modules/priconne.py
+class arena:
+    AUTH_KEY = "YOUR_API_KEY"
+```
 
 ## 3. 指令集
 多个匹配指令以逗号分隔，实际操作时可匹配指令更多，该表格仅显示最标准的命令。后续会有更多功能实装，敬请期待~
+
+Bot 底层会自动将简中指令转为繁中指令一起注册到 Bot 中。因此表格中不再单独列出繁中指令。
 
 ### 3.1 基本指令
 
 | 所属服务       | 简中 zh-cn       | 繁中 zh-tw   | English       | 功能            | 备注 |
 |---------------|------------------|--------------|---------------|----------------|------|
-| help          | 帮助             | 幫助         | help          | 帮助信息概览    |      |
+| help          | 帮助             |         | help          | 帮助信息概览    |      |
 |               | 公主连结帮助      |             | pcr-help       | 公主连结帮助信息 |      |
 |               | 通用帮助         |             | general-help  | 通用帮助信息    |      |
-| service_management | 服务列表 | | lssv | 查看服务列表 | 默认列出可见服务。添加 -a 参数可查看不可见服务。示例: lssv -a |
+| service_management | 服务列表 | | lssv | 查看服务列表 | 默认列出可见服务。</br>添加 -a 参数可查看不可见服务。示例: lssv -a |
 | 管理员限定功能 | 启用, 打开 | | enable | 开启指定服务 | 使用方法：enable <服务名> |
 | | 禁用, 关闭 | | disable | 关闭指定服务 | 使用方法：disable <服务名> |
-| clanbattle | !帮助            | !幫助       | !help         | 公主连结会战帮助 |     |
+| clanbattle | !帮助            |       | !help         | 公主连结会战帮助 |     |
 | 会战命令均以感叹号为前缀，全半角皆可 | !建会 |             |!add-clan| 建立公会        | 接受两个参数分别为公会名与服务器地区。示例 !建会 N公会名 Scn |
 |               | !查看公会         |             | !list-clan     | 查看公会信息 |      |
-|               | !入会            |              | !add-member    | 加入公会     | 可以通过at让其他人入会。示例：!入会 @群友    |
+|               | !入会            |              | !add-member    | 加入公会     | 可以通过at让其他人入会。</br>示例：!入会 @群友    |
 |               | !一键入会        |              | !batch-add-member|             | 目前该功能会将群内 bot 一起拉入公会，后续会将 bot 过滤 |
 |               | !查看成员        |              | !list-member    | 查看公会成员信息 |  |
-|               | !退会           |               | !del-member    | 退出公会     | 可以通过at让其他人退会。如果群友退群，可以at后面直接跟 id。示例：!退会 @12345 |
+|               | !退会           |               | !del-member    | 退出公会     | 可以通过at让其他人退会。</br>如果群友退群，可以at后面直接跟 id。示例：!退会 @12345 |
 |               | !清空成员        |               | !clear-member   | 清空公会成员信息 | |
-|               | !出刀, !报刀     |               | !add-challenge  | 汇报出刀伤害     | 可以通过at代替报刀。示例：!出刀 123456 @群友|
-|               | !尾刀, !收尾     |               | !add-challenge-last  | 汇报尾刀   | 可以通过at代替报刀。示例：!收尾 @群友|
-|               | !补时刀, !补时   |               | !add-challenge-ext   | 汇报补时刀 | 可以通过at代替报刀。示例：!补时 123456 @群友|
+|               | !出刀, !报刀     |               | !add-challenge  | 汇报出刀伤害     | 可以通过at代替报刀。</br>示例：!出刀 123456 @群友|
+|               | !尾刀, !收尾     |               | !add-challenge-last  | 汇报尾刀   | 可以通过at代替报刀。</br>示例：!收尾 @群友|
+|               | !补时刀, !补时   |               | !add-challenge-ext   | 汇报补时刀 | 可以通过at代替报刀。</br>示例：!补时 123456 @群友|
 |               | !掉刀            |               | !add-challenge-timeout | 汇报掉刀 | 本质上跟 !出刀 0 相同 |
-|               | !删刀            |               | !del-challenge         | 删除报刀 | 根据记录编号删刀。示例: !删刀 E10 |
-|               | !合刀计算, !补偿刀计算 |                | !boss-slayer          | 计算合刀击杀BOSS时可获得的补偿刀时长 | 使用当前公会所在服务器、与当前进度进行计算。示例：!合刀计算 800000 900000 |
-|               | !预约            |               | !subscribe           | 预约boss  | 可留言。示例：!预约 5 M这是留言 |
+|               | !删刀            |               | !del-challenge         | 删除报刀 | 根据记录编号删刀。</br>示例: !删刀 E10 |
+|               | !合刀计算, !补偿刀计算 |                | !boss-slayer          | 计算合刀击杀BOSS时可获得的补偿刀时长 | 使用当前公会所在服务器、与当前进度进行计算。</br>示例：!合刀计算 800000 900000 |
+|               | !预约            |               | !subscribe           | 预约boss  | 可留言。</br>示例：!预约 5 M这是留言 |
 |               | !取消预约        |                | !unsubscribe        | 取消预约boss | 示例：!取消预约 5
 |               | !查看预约        |                | !list-subscribe     | 查询预约情况 | |
 |               | !清空预约        |                | !clear-subscribe    | 清空预约情况 | |
@@ -225,26 +246,29 @@ TODO
 |               | !统计, !伤害统计  |                | !stat-damage        | 统计目前伤害情况 | |
 |               | !分数统计        |                 | !stat-score         | 统计目前分数情况 | |
 |               | !查刀            |                | !list-remain         | 查看今日剩余出刀情况 | |
-|               | !出刀记录        |                 | !list-challenge     | 查看今日历史出刀情况 | 可以通过at查看指定群友出刀情况。示例：!出刀记录 @群友 |
+|               | !出刀记录        |                 | !list-challenge     | 查看今日历史出刀情况 | 可以通过at查看指定群友出刀情况。</br>示例：!出刀记录 @群友 |
 |               | !催刀            |                | !urge-remain         | at所有有刀未出得群友 | |
 | clanbattle-report | 会战报告 |                     | clanbattle-report | 生成会战报告 | |
 |                   | 离职报告 |                     | retire-report     | 生成离职报告 | |
 | pcr-login-bonus | @bot 签到,盖章,妈 |                | @bot login-bonus     | 给主さま盖章章      | |
 | pcr-query      | 挖矿, jjc钻石, 竞技场钻石 |         | arena-miner          | 查询竞技场剩余钻石  | 示例：挖矿 15001 |
 |               | 角色计算          |                | mana-burner          | 查询角色升级所需经验药水与 mana | 示例：角色计算 50 100 |
-|               | 谁是             | 誰是            | whois                | 根据别称查询角色   | 示例：谁是妈 |
+|               | 谁是             |             | whois                | 根据别称查询角色   | 示例：谁是妈 |
 |               | 日/台/国/b服rank表 |               |                       | rank表查询，仅供参考 | |
-|               | jjc作业, jjc数据库 | jjc作業, jjc數據庫 | jjc               | 竞技场作业网        | |
-|               | pcr速查, pcr图书馆 | pcr圖書館, 圖書館 | pcr-sites          | 日台服相关网站   | |
+|               | jjc作业, jjc数据库 |  | jjc               | 竞技场作业网        | |
+|               | pcr速查, pcr图书馆 |  | pcr-sites          | 日台服相关网站   | |
 |               | bcr速查, bcr攻略   |                  | bcr-sites          | 国服相关网站     | |
 |               | 黄骑充电表         |                  | yukari-sheet       | 黄骑充电表       | |
 | pcr-horse     | 赛马, 赛跑, 兰德索尔杯 |               | horse              | 兰德索尔赛🐎大赛 | |
-| gacha         | 单抽, 来发单抽   | 單抽, 來發單抽  | gacha1             | 妈 来发单抽          | 必须 at bot 或者使用昵称召唤 bot |
-|               | 十连, 来发十连   | 十連, 來發十連  | gacha10            | 可可萝 来发十连          | 必须 at bot 或者使用昵称召唤 bot |
-|               | 井, 来一井       | 井,   來一井   | gacha300, tenjo     | kkr 来一井           | 必须 at bot 或者使用昵称召唤 bot |
-|               | 查看卡池, 卡池资讯  | 查看卡池, 卡池資訊 | gacha-info        | 查看卡池          | |
-|               | 选择卡池, 切换卡池  | 選擇卡池, 切換卡池 | switch-pool       | 切换卡池          | |
-| pcr-arena     | 怎么拆, jjc查询     | 怎麼拆, jjc查詢   | arena-query       | 竞技场作业在线查询 | 需申请 pcrdfans 的 API Key。可指定服务器查询。示例：日怎么拆 布丁 空花 真步 猫剑 望。|
+|               | 多人赛马         |                    | multi-horse        | 多人兰德索尔赛🐎大赛 | | 默认需要四个人分别选择四个不同角色后，才能自动开始。<br/> 若需要 1-3 人进行游戏，使用命令'开始赛马'强制开始比赛。 |
+|               | 选中            | |  | 选中马匹 | 示例：选中真琴 |
+|               | 开始赛马  | | start-horse | 多人赛马时，可强制开始1-3的游戏 | |                      
+| gacha         | 单抽, 来发单抽   |   | gacha1             | 妈 来发单抽          | 必须 at bot 或者使用昵称召唤 bot |
+|               | 十连, 来发十连   |   | gacha10            | 可可萝 来发十连          | 必须 at bot 或者使用昵称召唤 bot |
+|               | 井, 来一井       |   | gacha300, tenjo     | kkr 来一井           | 必须 at bot 或者使用昵称召唤 bot |
+|               | 查看卡池, 卡池资讯  |  | gacha-info        | 查看卡池          | |
+|               | 选择卡池, 切换卡池  |  | switch-pool       | 切换卡池          | |
+| pcr-arena     | 怎么拆, jjc查询     |    | arena-query       | 竞技场作业在线查询 | 需申请 pcrdfans 的 API Key。可指定服务器查询。示例：日怎么拆 布丁 空花 真步 猫剑 望。|
 |               | 点赞               |                   | arena-like        | 竞技场作业点赞    | |
 |               | 点踩               |                   | arena-dislike     | 竞技场作业点踩    | |
 | meme-generator | 生成表情 | | meme-gen | 表情包生成 | 使用方法：生成表情 <表情名> <文字>。示例：生成表情 kyaru 我好了 |
@@ -256,6 +280,7 @@ TODO
 
 |  指令 |  功能 |  备注 |
 |-------|------|------|
+| lsbcsv | 查看推送服务列表 | |
 | $service_name get-bc-tag | 获取服务的推送频道标签 | 示例：weibo-pcr get-bc-tag |
 | $service_name set-bc-tag | 设置服务的推送频道标签 | 可同时设置多个标签，每个标签以空格作为分隔符。示例：weibo-pcr set-bc-tag 国服推送 debug |
 
@@ -293,12 +318,12 @@ KokkoroBot 在基础设施与应用层中加一层统一接口 `common_interface
         - 示例: `kokkoro.bot.discord.KokkroDiscordBot`
     - 实现 `Event` 的适配
         - 将平台相关 `Event` 适配为 `common_interface.EventInterface`
-            - 比如 `CQEvent`, `discord.Message`
-        - 示例：`kokkoro.bot.discord.discord_adaptor.DiscordEvent`
+            - 平台相关 `Event`：`CQEvent`, `discord.Message`
+        - 示例：`kokkoro.bot.discord.discord_adaptor.DiscordEvent` 将 `discord.Message` 适配为 `EventInterface`
     - 实现 `User` 的适配
         - 将平台相关 `User` 适配为 `common_interface.UserInterface`
-            - 比如 `CQEvent` 中的 at 信息，`discord.User`
-        - 示例：`kokkoro.bot.discord.discord_adaptor.DiscordUser`
+            - 平台相关 `User`：`discord.User`
+        - 示例：`kokkoro.bot.discord.discord_adaptor.DiscordUser` 将 `discord.User` 适配为 `UserInterface`
 
 ### 4.2 新 IM 平台适配
 以 telegram 为例，从零对 telegram 平台进行开发主要包含以下几步。
@@ -311,23 +336,6 @@ KokkoroBot 在基础设施与应用层中加一层统一接口 `common_interface
 - [ ] Web
     - Doing by @SonodaHanami
 - [x] Isolate platform specific logic from application services
-- [x] Scheduler
-- [ ] Modules migration
-    - [ ] Arknights
-    - [x] Pcr Clanbattle
-    - [ ] Dice
-    - [ ] Flac
-    - [ ] Group Master
-    - [ ] Priconne
-        - [x] Arena
-        - [x] Calender
-        - [ ] Comic Spider
-        - [x] Horse
-        - [x] News
-        - [x] Query
-        - [x] Reminder
-    - [ ] Setu
-    - [ ] Weibo Spider
 - [x] Multi-platform
     - [x] Discord
         - [ ] Audio
@@ -336,14 +344,14 @@ KokkoroBot 在基础设施与应用层中加一层统一接口 `common_interface
         - [x] Permission control with admin
     - [x] Telegram
         - [ ] Audio
-        - [ ] Image
+        - [x] Image
         - [x] Text
-        - [ ] Permission control with admin
+        - [x] Permission control with admin
     - [x] Tomon
         - [ ] Audio
-        - [ ] Image
+        - [x] Image
         - [x] Text
-        - [ ] Permission control with admin
+        - [x] Permission control with admin
     - [x] Wechat Enterprise
         - [ ] Audio
         - [ ] Image

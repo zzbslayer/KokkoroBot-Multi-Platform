@@ -93,15 +93,13 @@ async def _arena_query(bot, ev: EventInterface, region: int):
         return
     res = res[:min(6, len(res))]    # 限制显示数量，截断结果
 
-    # 发送回复
-    if kokkoro.config.ENABLE_IMAGE:
-        sv.logger.info('Arena generating picture...')
-        atk_team = [ chara.gen_team_pic(entry['atk']) for entry in res ]
-        atk_team = concat_pic(atk_team)
-        sv.logger.info('Arena picture ready!')
-        await bot.kkr_send(ev, atk_team)
-    else:
-        atk_team = '\n'.join(map(lambda entry: ' '.join(map(lambda x: f"{x.name}{x.star if x.star else ''}{'专' if x.equip else ''}" , entry['atk'])) , res))
+    sv.logger.info('Arena generating picture...')
+    atk_team = [ chara.gen_team_pic(entry['atk']) for entry in res ]
+    atk_team = concat_pic(atk_team)
+    sv.logger.info('Arena picture ready!')
+    await bot.kkr_send(ev, atk_team)
+
+    #     atk_team = '\n'.join(map(lambda entry: ' '.join(map(lambda x: f"{x.name}{x.star if x.star else ''}{'专' if x.equip else ''}" , entry['atk'])) , res)) # text version
 
     details = [ " ".join([
         f"赞{e['up']}+{e['my_up']}" if e['my_up'] else f"赞{e['up']}",

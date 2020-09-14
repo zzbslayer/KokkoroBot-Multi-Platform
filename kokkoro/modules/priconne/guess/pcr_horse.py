@@ -295,7 +295,7 @@ async def force_start(bot: KokkoroBot, ev: EventInterface):
 
     
 
-@sv.on_prefix('选中')
+@sv.on_prefix(('选中'))
 async def _select_(bot: KokkoroBot, ev: EventInterface):
     global g_uid_dict, g_status_dict
     gid = ev.get_group_id()

@@ -21,7 +21,6 @@ ENABLED_GROUP = platform_config.ENABLED_GROUP
 DEFAULT_BROADCAST_TAG = "broadcast"
 
 LOG_LEVEL="DEBUG"
-ENABLE_IMAGE=True
 
 NICK_NAME = ['可可萝', '妈', 'kkr', 'kokkoro']
 
