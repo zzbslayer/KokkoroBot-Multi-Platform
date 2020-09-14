@@ -25,8 +25,12 @@ class SqliteDao(object):
     def _connect(self):
         # detect_types 中的两个参数用于处理datetime
         return sqlite3.connect(self._dbpath, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
-
-
+'''
+telegram patch when building table name
+sqlite doesn't allow "-" in table name
+'''
+def gid_converter(gid:str):
+    return gid.replace('-', '_')
 
 class ClanDao(SqliteDao):
 
@@ -294,6 +298,7 @@ class BattleDao(SqliteDao):
 
     @staticmethod
     def get_table_name(gid, cid, yyyy, mm):
+        gid = gid_converter(gid)
         return 'battle_%s_%d_%04d%02d' % (gid, cid, yyyy, mm)
 
 
