@@ -11,7 +11,7 @@ from PIL import Image, ImageSequence, ImageDraw, ImageFont
 import kokkoro
 from kokkoro import R
 from kokkoro.config import FONT_PATH
-from kokkoro.config.modules.priconne import luck_desc, luck_type
+from kokkoro.config.modules.priconne import luck
 from kokkoro.service import Service
 from kokkoro.common_interface import EventInterface, KokkoroBot
 from kokkoro.util import DailyNumberLimiter
@@ -29,6 +29,9 @@ lmt = DailyNumberLimiter(1)
 #设置每日抽签的次数，默认为1
 
 BASE_LUCK_IMG_DIR = 'priconne/luck'
+
+luck_desc = luck.luck_desc
+luck_type = luck.luck_type
 
 async def read_json_config(file):
     if not os.path.exists(file):
