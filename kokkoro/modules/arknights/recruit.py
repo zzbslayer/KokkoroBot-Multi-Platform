@@ -124,7 +124,7 @@ async def _async_init():
             sv.logger.error("Fail to load recruit info of arknights")
 
 loop = asyncio.new_event_loop()
-loop.run_in_executor(_async_init())
+loop.run_until_complete(_async_init())
 
 HELP_MESSAGE = '请输入标签。默认仅显示必得4★的TAG组合\n示例：公开招募 位移 近战位\n显示所有可能干员请使用参数"-a"或"全部"\n示例：公开招募 -a 位移 近战位\n网页版：https://www.bigfun.cn/tools/aktools-old/akhr.html'
 @sv.on_prefix(('ark-recruit','公开招募', "公招"))
