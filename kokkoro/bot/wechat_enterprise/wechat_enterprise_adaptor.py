@@ -3,6 +3,7 @@ from wechatpy.messages import BaseMessage
 from kokkoro.util import to_string
 from kokkoro.common_interface import EventInterface
 from kokkoro import config
+from kokkoro.typing import overrides
 
 class WechatEpEvent(EventInterface):
     def __init__(self, raw_event: BaseMessage):

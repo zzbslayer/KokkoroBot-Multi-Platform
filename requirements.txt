@@ -16,6 +16,6 @@ quart>=0.13.0
 APScheduler>=2.1.2
 pytz>=2020.1
 zhconv>=1.4.0
-
+wechatpy==2.0.0a1
 nest-asyncio>=1.4.0
 tomon-sdk==0.1.6
