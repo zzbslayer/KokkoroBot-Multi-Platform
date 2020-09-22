@@ -3,12 +3,15 @@ from kokkoro import util, R
 from kokkoro.common_interface import EventInterface
 from . import sv
 
-p1 = R.img('priconne/quick/r16-5-tw-0.png')
-p2 = R.img('priconne/quick/r16-5-tw-1.png')
-p4 = R.img('priconne/quick/r17-5-jp-1.png')
-p5 = R.img('priconne/quick/r17-5-jp-2.png')
-p6 = R.img('priconne/quick/r17-5-jp-3.png')
-cn_rank = R.img('priconne/quick/r10-3.jpg')
+tw_1 = R.img('priconne/quick/r17-4-1-tw.png')
+tw_2 = R.img('priconne/quick/r17-4-2-tw.png')
+jp_1 = R.img('priconne/quick/r18-3-1-jp.png')
+jp_2 = R.img('priconne/quick/r18-3-2-jp.png')
+jp_3 = R.img('priconne/quick/r18-3-3-jp.png')
+cn_1 = R.img('priconne/quick/r10-4-1-cn.jpg')
+cn_2 = R.img('priconne/quick/r10-4-2-cn.jpg')
+cn_3 = R.img('priconne/quick/r10-4-3-cn.jpg')
+
 
 @sv.on_rex(r'^(\*?([日台国陆b])服?([前中后]*)卫?)?rank(表|推荐|指南)?$')
 async def rank_sheet(bot, ev:EventInterface):
@@ -23,24 +26,26 @@ async def rank_sheet(bot, ev:EventInterface):
         '\n※表格仅供参考，升r有风险，强化需谨慎\n※一切以会长要求为准——',
     ]
     if is_jp:
-        msg.append('※不定期搬运自图中Q群\n※广告为原作者推广，与本bot无关\nR17-5 rank表：')
+        msg.append('※不定期搬运自图中Q群\n※广告为原作者推广，与本bot无关\nrank表：')
         await bot.kkr_send(ev, '\n'.join(msg), at_sender=True)
         pos = match.group(3)
         if not pos or '前' in pos:
-            await bot.kkr_send(ev, p4, at_sender=True)
+            await bot.kkr_send(ev, jp_1)
         if not pos or '中' in pos:
-            await bot.kkr_send(ev, p5, at_sender=True)
+            await bot.kkr_send(ev, jp_2)
         if not pos or '后' in pos:
-            await bot.kkr_send(ev, p6, at_sender=True)
+            await bot.kkr_send(ev, jp_3)
         
     elif is_tw:
-        msg.append(f'※不定期搬运自漪夢奈特\n※油管频道有介绍视频及原文档\nR16-5 rank表：\n')
+        msg.append(f'※不定期搬运自漪夢奈特\n※油管频道有介绍视频及原文档\nrank表：\n')
         await bot.kkr_send(ev, '\n'.join(msg), at_sender=True)
-        await bot.kkr_send(ev, p1)
-        await bot.kkr_send(ev, p2)
+        await bot.kkr_send(ev, tw_1)
+        await bot.kkr_send(ev, tw_2)
     elif is_cn:
         await bot.kkr_send(ev, '\n'.join(msg), at_sender=True)
-        await bot.kkr_send(ev, cn_rank)
+        await bot.kkr_send(ev, cn_1)
+        await bot.kkr_send(ev, cn_2)
+        await bot.kkr_send(ev, cn_3)
 
 @sv.on_fullmatch(('jjc', 'JJC', 'JJC作业', 'JJC作业网', 'JJC数据库', 'jjc作业', 'jjc作业网', 'jjc数据库'))
 async def say_arina_database(bot, ev):
