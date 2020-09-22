@@ -1,11 +1,9 @@
 import re
 import math
 from . import sv
-import kokkoro
-from kokkoro.common_interface import EventInterface
+from .._pcr_data import total_mana, total_exp
 
-total_mana = kokkoro.config.modules.priconne.total_mana
-total_exp = kokkoro.config.modules.priconne.total_exp
+from kokkoro.common_interface import EventInterface
 
 @sv.on_prefix(('角色计算', 'mana-burner'))
 async def manaburner(bot, ev: EventInterface):

@@ -47,8 +47,7 @@ async def gacha_info(bot:KokkoroBot, ev: EventInterface):
     gid = ev.get_group_id()
     gacha = Gacha(_group_pool[gid])
     up_chara = gacha.up
-    if sv.bot.config.ENABLE_IMAGE:
-        up_chara_imgs = map(lambda x: (chara.fromname(x, star=3).icon), up_chara)
+    up_chara_imgs = map(lambda x: (chara.fromname(x, star=3).icon), up_chara)
     for img in up_chara_imgs:
         await bot.kkr_send(ev, img)
     await bot.kkr_send(ev, f"本期卡池主打的角色：\n{up_chara}\nUP角色合计={(gacha.up_prob/10):.1f}% 3★出率={(gacha.s3_prob)/10:.1f}%")
@@ -91,9 +90,10 @@ async def gacha_1(bot:KokkoroBot, ev: EventInterface):
     #silence_time = hiishi * 60
 
     res = f'{chara.name} {"★"*chara.star}'
-    if sv.bot.config.ENABLE_IMAGE:
-        img = chara.icon
-        await bot.kkr_send(ev, img)
+
+    img = chara.icon
+    await bot.kkr_send(ev, img)
+
     if chara.star == 3:
         await silence(ev, 60)
     await bot.kkr_send(ev, f'素敵な仲間が増えますよ！\n{res}', at_sender=True)
@@ -108,20 +108,19 @@ async def gacha_10(bot:KokkoroBot, ev: EventInterface):
     result, hiishi = gacha.gacha_ten()
     silence_time = hiishi * 6 if hiishi < SUPER_LUCKY_LINE else hiishi * 60
 
-    if sv.bot.config.ENABLE_IMAGE:
-        res1 = chara.gen_team_pic(result[:5], star_slot_verbose=False)
-        res2 = chara.gen_team_pic(result[5:], star_slot_verbose=False)
-        img = concat_pic([res1, res2])
-        await bot.kkr_send(ev, img, filename="gacha10.png")
-        result = [f'{c.name}{"★"*c.star}' for c in result]
-        res1 = ' '.join(result[0:5])
-        res2 = ' '.join(result[5:])
-        res = f'{res1}\n{res2}'
-    else:
-        result = [f'{c.name}{"★"*c.star}' for c in result]
-        res1 = ' '.join(result[0:5])
-        res2 = ' '.join(result[5:])
-        res = f'{res1}\n{res2}'
+    res1 = chara.gen_team_pic(result[:5], star_slot_verbose=False)
+    res2 = chara.gen_team_pic(result[5:], star_slot_verbose=False)
+    img = concat_pic([res1, res2])
+    await bot.kkr_send(ev, img, filename="gacha10.png")
+    result = [f'{c.name}{"★"*c.star}' for c in result]
+    res1 = ' '.join(result[0:5])
+    res2 = ' '.join(result[5:])
+    res = f'{res1}\n{res2}'
+
+    # result = [f'{c.name}{"★"*c.star}' for c in result]
+    # res1 = ' '.join(result[0:5])
+    # res2 = ' '.join(result[5:])
+    # res = f'{res1}\n{res2}' # text version
 
     if hiishi >= SUPER_LUCKY_LINE:
         await bot.kkr_send(ev, '恭喜海豹！おめでとうございます！')

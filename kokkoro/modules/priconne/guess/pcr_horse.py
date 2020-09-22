@@ -1,4 +1,5 @@
-# 该插件来自于 hoshino 群友，并由@zzbslayer 重构。如知道原作者具体信息，可联系我在此补充。
+# 作者来自 hoshino群 @Lost℃ 2435994901
+# 重构 @zzbslayer
 import os
 import random
 import json
@@ -294,7 +295,7 @@ async def force_start(bot: KokkoroBot, ev: EventInterface):
 
     
 
-@sv.on_prefix('选中')
+@sv.on_prefix(('选中'))
 async def _select_(bot: KokkoroBot, ev: EventInterface):
     global g_uid_dict, g_status_dict
     gid = ev.get_group_id()

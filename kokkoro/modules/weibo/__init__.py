@@ -50,7 +50,7 @@ def wb_to_message(wb):
     msg = f'{msg}\n{wb["text"]}'
 
     imgs = []
-    if kokkoro.config.ENABLE_IMAGE and len(wb["pics"]) > 0:
+    if len(wb["pics"]) > 0:
         images_url = wb["pics"]
         msg = f'{msg}\n'
         imgs = [R.remote_img(url) for url in images_url]

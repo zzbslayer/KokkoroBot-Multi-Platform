@@ -32,7 +32,7 @@ import kokkoro
 
 from .. import sv
 
-FONT_PATH = os.path.expanduser(kokkoro.config.FONT_PATH["msyh"])
+FONT_PATH = kokkoro.config.FONT_PATH["msyh"]
 
 _time_limit = 30*60
 _lmt = FreqLimiter(_time_limit)
