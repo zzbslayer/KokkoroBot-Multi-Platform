@@ -27,3 +27,12 @@ def normalize_at(raw_at):
     规范化 at 信息，"<@123>" => " @123 "
     """
     return f' @{raw_at[2:-1]} '
+
+def has_permission_for(src, dst):
+    return src & dst != 0
+
+def calculate_permission(roles, everyone=0):
+    permission = everyone
+    for role in roles:
+        permission = permission | role["permissions"]
+    return permission

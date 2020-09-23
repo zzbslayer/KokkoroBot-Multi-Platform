@@ -13,6 +13,7 @@ from datetime import datetime, timedelta
 from matplotlib import pyplot as plt
 from PIL import Image
 from io import BytesIO
+
 import itertools
 
 import kokkoro

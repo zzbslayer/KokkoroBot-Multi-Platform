@@ -1,11 +1,15 @@
 import asyncio
 from kokkoro import config
 from kokkoro.priv import SUPERUSER, ADMIN, NORMAL, OWNER
-
-from kokkoro.bot.tomon import get_bot
 from kokkoro.typing import List, overrides
 from kokkoro.common_interface import EventInterface, UserInterface, GroupInterface, SupportedMessageType
 from kokkoro.util import to_string
+
+from . import get_bot
+from .tomon_util import has_permission_for, calculate_permission
+
+class TomonPriv:
+    ADMINISTRATOR = 1 << 3
 
 '''
 Raw User (dict)
@@ -15,7 +19,9 @@ class TomonUser(UserInterface):
     def __init__(self, user, member={}):
         self.raw_user = user
         self.raw_member = member
+        # lazy loaded var
         self.group = None
+        self.roles = None
 
     @staticmethod
     def from_raw_member(member):
@@ -46,9 +52,6 @@ class TomonUser(UserInterface):
     def get_nick_name(self):
         return to_string(self.raw_member.get('nick')) or self.get_name()
 
-    def get_roles(self):
-        return self.raw_member.get('roles')
-    
     @overrides(UserInterface)
     def get_priv(self):
         if self.get_id() in config.SUPER_USER:
@@ -59,17 +62,32 @@ class TomonUser(UserInterface):
             return ADMIN
         return NORMAL
 
+    def get_roles(self):
+        if self.roles == None:
+            my_roles_id = self.raw_member.get('roles') # only role id in this list
+            bot = get_bot()
+            all_roles = bot.get_roles_by_group(self.raw_member.get('guild_id'))
+
+            my_roles = []
+            for role in all_roles:
+                for rid in my_roles_id:
+                    if role["id"] == rid:
+                        my_roles.append(role)
+            self.roles = my_roles
+        return self.roles
+    
     @overrides(UserInterface)
     def is_admin(self):
-        return False #FIXME: wait for sdk to process permissions
+        permission = calculate_permission(self.get_roles())
+        return has_permission_for(permission, TomonPriv.ADMINISTRATOR)
     
     def is_owner(self):
         if self.group == None:
             guild_id = self.raw_member.get('guild_id')
             if guild_id == None:
                 return False
-            _bot = get_bot().get_raw_bot()
-            self.group = TomonGroup(asyncio.run(_bot.api().route(f'/guilds/{guild_id}').get()))
+            bot = get_bot()
+            self.group = bot.get_group_by_id(guild_id)
         if self.group.get_owner_id() == self.get_id():
             return True
         return False
