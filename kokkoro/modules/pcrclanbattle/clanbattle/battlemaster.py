@@ -9,11 +9,30 @@ def get_config():
 
 
 class BattleMaster(object):
+    '''
+    Different bits represent different damage kind: 
+    '''
+    NORM    = BattleDao.NORM    # 1<<0
+    LAST    = BattleDao.LAST    # 1<<1
+    EXT     = BattleDao.EXT     # 1<<2
+    TIMEOUT = BattleDao.TIMEOUT # 1<<3
 
-    NORM    = BattleDao.NORM
-    LAST    = BattleDao.LAST
-    EXT     = BattleDao.EXT
-    TIMEOUT = BattleDao.TIMEOUT
+    @staticmethod
+    def has_damage_kind_for(src, dst):
+        return src & dst != 0
+
+    @staticmethod
+    def damage_kind_to_string(src):
+        res = []
+        if src & BattleMaster.EXT:
+            res.append('补时')
+        if src & BattleMaster.LAST:
+            res.append('尾刀')
+        if src & BattleMaster.TIMEOUT:
+            res.append('掉线')
+        if len(res) == 0:
+            res.append('通常')
+        return res
 
     SERVER_JP = ClanDao.SERVER_JP
     SERVER_TW = ClanDao.SERVER_TW

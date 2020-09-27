@@ -201,39 +201,47 @@ async def process_challenge(bot:KokkoroBot, ev:EventInterface, ch:ParseResult):
     cur_round, cur_boss, cur_hp = bm.get_challenge_progress(1, now)
     round_ = ch.round or cur_round
     boss = ch.boss or cur_boss
-    damage = ch.damage if ch.flag != BattleMaster.LAST else (ch.damage or cur_hp)
+    
+    damage = None
+    if not (ch.round or ch.boss):
+        # 当前周目并且是尾刀，则自动将伤害设置为当前血量
+        if BattleMaster.has_damage_kind_for(ch.flag, BattleMaster.LAST):
+            damage = cur_hp
+    if not damage:
+        if not ch.damage:
+            raise NotFoundError('请给出伤害值')
+        damage = ch.damage
+
+    
     flag = ch.flag
 
-    if (ch.flag == BattleMaster.LAST) and (ch.round or ch.boss) and (not damage):
-        raise NotFoundError('补报尾刀请给出伤害值')     # 补报尾刀必须给出伤害值
+    # if (ch.flag == BattleMaster.LAST) and (ch.round or ch.boss) and (not damage):
+    #     raise NotFoundError('补报尾刀请给出伤害值')     # 补报尾刀必须给出伤害值
 
     msg = ['']
 
     # 上一刀如果是尾刀，这一刀就是补偿刀
     challenges = bm.list_challenge_of_user_of_day(mem['uid'], mem['alt'], now)
     if len(challenges) > 0 and challenges[-1]['flag'] == BattleMaster.LAST:
-        flag = BattleMaster.EXT
+        flag = flag | BattleMaster.EXT
         msg.append('⚠️已自动标记为补时刀')
 
     if round_ != cur_round or boss != cur_boss:
         msg.append('⚠️上报与当前进度不一致')
     else:   # 伤害校对
-        eps = 30000
-        if damage > cur_hp + eps:
-            damage = cur_hp
-            msg.append(f'⚠️过度虐杀 伤害数值已自动修正为{damage}')
-            if flag == BattleMaster.NORM:
-                flag = BattleMaster.LAST
+        if damage >= cur_hp:
+            if damage > cur_hp:
+                damage = cur_hp
+                msg.append(f'⚠️过度虐杀 伤害数值已自动修正为{damage}')
+            # 不是尾刀，则标记为尾刀
+            if not BattleMaster.has_damage_kind_for(flag, BattleMaster.LAST):
+                flag = flag | BattleMaster.LAST
                 msg.append('⚠️已自动标记为尾刀')
-        elif flag == BattleMaster.LAST:
-            if damage < cur_hp - eps:
-                msg.append('⚠️尾刀伤害不足 请未报刀成员及时上报')
-            elif damage < cur_hp:
-                if damage % 1000 == 0:
-                    damage = cur_hp
-                    msg.append(f'⚠️尾刀伤害已自动修正为{damage}')
-                else:
-                    msg.append('⚠️Boss仍有少量残留血量')
+
+        elif BattleMaster.has_damage_kind_for(flag, BattleMaster.LAST):
+            if damage < cur_hp:
+                damage = cur_hp
+                msg.append(f'⚠️尾刀伤害已自动修正为{damage}')
 
     eid = bm.add_challenge(mem['uid'], mem['alt'], round_, boss, damage, flag, now)
     aft_round, aft_boss, aft_hp = bm.get_challenge_progress(1, now)
@@ -250,11 +258,11 @@ async def process_challenge(bot:KokkoroBot, ev:EventInterface, ch:ParseResult):
     await auto_unsubscribe(bot, ev, bm.group, mem['uid'], boss)
 
 def isDD(damage):
-    return damage < 450000
+    return damage < 600000
 
 import random
 async def jiuzhe(bot, ev):
-    msglist = ['这是法刀吗？', f'恁搁着挠痒痒呢？', f'就这？', R.img('就这.jpg')]
+    msglist = ['就这？', R.img('就这.jpg')]
     index = random.randint(0, len(msglist)-1)
     await bot.kkr_send(ev, msglist[index])
 
@@ -879,7 +887,7 @@ async def list_challenge(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
         mem = bm.get_member(c['uid'], c['alt'])
         c['name'] = mem['name'] if mem else c['uid']
         flag = c['flag']
-        c['flag_str'] = '|补时' if flag & bm.EXT else '|尾刀' if flag & bm.LAST else '|掉线' if flag & bm.TIMEOUT else '|通常'
+        c['flag_str'] = '|' + ','.join(BattleMaster.damage_kind_to_string(flag))
         msg.append(challenstr.format_map(c))
     await bot.kkr_send(ev, '\n'.join(msg))
 
