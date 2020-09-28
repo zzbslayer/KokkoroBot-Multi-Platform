@@ -31,6 +31,7 @@ from kokkoro import R
 import kokkoro
 
 from .. import sv
+from ..battlemaster import BattleMaster
 
 FONT_PATH = kokkoro.config.FONT_PATH["msyh"]
 
@@ -109,10 +110,13 @@ def gen_report(gid, uid, nickname, type=REPORT_UNDECLARED, kpi=False):
     for idx,chl in challenges.iterrows():
         total_damage += chl['dmg']
         times_to_boss[chl['boss']-1] += 1
-        if chl['flag'] == 0:
+        # FIXME: 目前版本离职报告直接忽略尾刀与补偿刀的伤害，计算boss均伤时，仅计算普通刀
+        if chl['flag'] == BattleMaster.NORM:
             damage_to_boss[chl['boss']-1] += chl['dmg']
             truetimes_to_boss[chl['boss']-1] += 1
-        if chl['flag'] != 1:
+        # 尾刀与补偿刀仅计算一刀的刀数
+        # 因此忽略尾刀即可
+        if not BattleMaster.has_damage_kind_for(chl['flag'], BattleMaster.LAST):
             total_chl += 1
         if chl['dmg'] == 0:
         	miss_chl += 1

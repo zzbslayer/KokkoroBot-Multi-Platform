@@ -12,10 +12,10 @@ class BattleMaster(object):
     '''
     Different bits represent different damage kind: 
     '''
-    NORM    = BattleDao.NORM    # 1<<0
-    LAST    = BattleDao.LAST    # 1<<1
-    EXT     = BattleDao.EXT     # 1<<2
-    TIMEOUT = BattleDao.TIMEOUT # 1<<3
+    NORM    = BattleDao.NORM    # 0
+    LAST    = BattleDao.LAST    # 1<<0
+    EXT     = BattleDao.EXT     # 1<<1
+    TIMEOUT = BattleDao.TIMEOUT # 1<<2
 
     @staticmethod
     def has_damage_kind_for(src, dst):
@@ -30,7 +30,7 @@ class BattleMaster(object):
             res.append('尾刀')
         if src & BattleMaster.TIMEOUT:
             res.append('掉线')
-        if len(res) == 0:
+        if src == BattleMaster.NORM:
             res.append('通常')
         return res
 
