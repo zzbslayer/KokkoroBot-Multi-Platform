@@ -1,5 +1,6 @@
 # 公主连接Re:Dive会战管理插件
 # clan == クラン == 戰隊（直译为氏族）（CLANNAD的CLAN（笑））
+from functools import wraps
 
 from .argparse import ArgParser
 from .exception import *
@@ -23,6 +24,7 @@ def cb_cmd(prefixes, parser:ArgParser) -> Callable:
         raise ValueError('`name` of cb_cmd must be `str` or `Iterable[str]`')
     
     def deco(func):
+        @wraps(func)
         async def wrapper(bot: KokkoroBot, ev: EventInterface):
             try:
                 args = parser.parse(ev.get_param().args, ev)

@@ -6,12 +6,13 @@ from functools import wraps
 from collections import defaultdict
 
 import kokkoro
-from kokkoro.typing import *
 from kokkoro import logger
 from kokkoro import priv, log, typing, trigger
+from kokkoro.typing import *
 from kokkoro.common_interface import *
 from kokkoro.bot import get_scheduler, get_bot
 from kokkoro.util import join_iterable
+from kokkoro.platform_patch import check_platform
 
 # service management
 _loaded_services: Dict[str, "Service"] = {}  # {name: service}
@@ -190,6 +191,7 @@ class Service:
     def on_prefix(self, prefix, only_to_me=False) -> Callable:
         if isinstance(prefix, str):
             prefix = (prefix, )
+        @check_platform
         def deco(func) -> Callable:
             sf = ServiceFunc(self, func, only_to_me)
             for p in prefix:
@@ -200,6 +202,7 @@ class Service:
     def on_fullmatch(self, word, only_to_me=False) -> Callable:
         if isinstance(word, str):
             word = (word, )
+        @check_platform
         def deco(func) -> Callable:
             @wraps(func)
             async def wrapper(bot: KokkoroBot, ev: EventInterface):
@@ -226,6 +229,7 @@ class Service:
     def on_suffix(self, suffix, only_to_me=False) -> Callable:
         if isinstance(suffix, str):
             suffix = (suffix, )
+        @check_platform
         def deco(func) -> Callable:
             sf = ServiceFunc(self, func, only_to_me)
             for s in suffix:
@@ -236,6 +240,7 @@ class Service:
     def on_keyword(self, keywords, only_to_me=False) -> Callable:
         if isinstance(keywords, str):
             keywords = (keywords, )
+        @check_platform
         def deco(func) -> Callable:
             sf = ServiceFunc(self, func, only_to_me)
             for kw in keywords:
@@ -246,6 +251,7 @@ class Service:
     def on_rex(self, rex: Union[str, re.Pattern], only_to_me=False) -> Callable:
         if isinstance(rex, str):
             rex = re.compile(rex)
+        @check_platform
         def deco(func) -> Callable:
             sf = ServiceFunc(self, func, only_to_me)
             trigger.rex.add(rex, sf)
@@ -261,6 +267,7 @@ class Service:
         else:
             kwargs.setdefault('misfire_grace_time', 60)
 
+        @check_platform
         def deco(func: Callable) -> Callable:
             kokkoro.logger.debug(f'{func.__name__} registered to scheduler')
             @wraps(func)
