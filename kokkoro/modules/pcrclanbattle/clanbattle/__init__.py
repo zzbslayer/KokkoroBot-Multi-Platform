@@ -5,6 +5,7 @@ from functools import wraps
 from .argparse import ArgParser
 from .exception import *
 
+from kokkoro import config
 from kokkoro.typing import *
 from kokkoro.common_interface import KokkoroBot, EventInterface
 from kokkoro.service import Service
@@ -22,7 +23,7 @@ def cb_cmd(prefixes, parser:ArgParser) -> Callable:
     prefixes = cb_prefix(prefixes)
     if not isinstance(prefixes, Iterable):
         raise ValueError('`name` of cb_cmd must be `str` or `Iterable[str]`')
-    
+
     def deco(func):
         @wraps(func)
         async def wrapper(bot: KokkoroBot, ev: EventInterface):
@@ -44,6 +45,8 @@ def cb_cmd(prefixes, parser:ArgParser) -> Callable:
 
 
 from .cmdv2 import *
+if config.ENABLE_WEB:
+    from .cmd_web import *
 
 
 QUICK_START = f'''

@@ -15,7 +15,7 @@ services:
   web:
     image: zzbslayer/kokkoro_bot:latest
     ports:
-      - "5100:5001"
+      - "5560:5001"
     volumes:
       - ./:/bot/
       - ~/.kokkoro:/root/.kokkoro
