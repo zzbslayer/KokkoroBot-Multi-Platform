@@ -44,7 +44,7 @@ def cb_cmd(prefixes, parser:ArgParser) -> Callable:
     return deco
 
 
-from .cmdv2 import *
+from .cmd_battle import *
 if config.ENABLE_WEB:
     from .cmd_web import *
 
