@@ -67,14 +67,14 @@ async def login(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
             login_code,
         )
     )
-    await bot.kkr_send_dm(uid, url)
+    await bot.kkr_send_dm(ev, url)
 
 @cb_cmd(('重置密码', 'reset-password'), ArgParser('!重置密码'))
 async def reset_password(bot:KokkoroBot, ev:EventInterface, args:ParseResult):
     if False and "this message is from group": # FIXME
         return '请私聊使用'
     reply = f'您的临时密码是：{reset_pwd(ev)}'
-    await bot.kkr_send_dm(ev.get_author_id(), reply)
+    await bot.kkr_send_dm(ev, reply)
 
 def reset_pwd(ev:EventInterface):
     wm = WebMaster()

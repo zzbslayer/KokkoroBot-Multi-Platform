@@ -98,6 +98,9 @@ class KokkoroBot:
     async def kkr_send(self, ev: EventInterface, msg: SupportedMessageType, at_sender=False, filename="image.png"):
         raise NotImplementedError
 
+    async def kkr_send_dm(self, ev: EventInterface, msg: SupportedMessageType):
+        raise NotImplementedError
+
     async def kkr_send_by_group(self, gid, msg: SupportedMessageType, tag):
         raise NotImplementedError
 
