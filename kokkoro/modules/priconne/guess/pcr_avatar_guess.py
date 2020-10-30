@@ -16,7 +16,9 @@ PIC_SIDE_LENGTH = 25
 ONE_TURN_TIME = 20
 DB_PATH = os.path.expanduser(f'~/.kokkoro/pcr_avatar_guess_winning_counter.db')
 BLACKLIST_ID = [
-    1072, 1908, 4031, 9000, 1000,
+    1000, # unknow chara
+    1072, 1900, 1908, 1909, 1910, 1911, 1914, 1915, 1916, 1917, 1918, 1919, 1920, 
+    4031, 9000, # npc
     9601, 9602, 9603, 9604, # horse
     ]
 
