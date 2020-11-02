@@ -7,18 +7,22 @@ import zhconv
 import json
 import re
 import importlib
+import random
 
 from collections import defaultdict
 from datetime import datetime, timedelta
 from matplotlib import pyplot as plt
 from PIL import Image
 from io import BytesIO
+from hashlib import sha256
 
 import itertools
 
 import kokkoro
 from kokkoro import config
 from kokkoro.typing import Iterable
+
+charset = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
 
 def escape(s: str, *, escape_comma: bool = True) -> str:
     s = s.replace('&', '&amp;') \
@@ -118,7 +122,7 @@ class FreqLimiter:
 
 class DailyNumberLimiter:
     tz = pytz.timezone('Asia/Shanghai')
-    
+
     def __init__(self, max_num):
         self.today = -1
         self.count = defaultdict(int)
@@ -167,3 +171,8 @@ def load_modules(module_dir, module_prefix):
 
         load_module(f'{module_prefix}.{m.group(1)}')
 
+def rand_string(n=16):
+    return ''.join(random.choice(charset) for _ in range(n))
+
+def add_salt_and_hash(raw: str, salt: str):
+    return sha256((raw + salt).encode()).hexdigest()

@@ -4,6 +4,7 @@ import os
 import matplotlib.font_manager as font_manager
 
 from .__bot__ import *
+from .__web__ import *
 
 for module in MODULES_ON:
     try:

@@ -55,7 +55,10 @@ class KokkoroDiscordBot(discord.Client, KokkoroBot):
 
         channel = ev.get_channel()
         await self._send_by_channel(channel, msg, filename)
-        
+
+    @overrides(KokkoroBot)
+    async def kkr_send_dm(self, ev: DiscordEvent, msg: SupportedMessageType)
+        await ev.get_author().get_raw_user().send(msg)
 
     @overrides(KokkoroBot)
     async def kkr_send_by_group(self, gid, msg: SupportedMessageType, tag=BroadcastTag.default, filename="image.png"):
