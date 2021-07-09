@@ -5,7 +5,7 @@ from kokkoro.modules.priconne import chara
 import kokkoro
 import os, random
 
-from .. import _chara_data
+from .. import _pcr_data
 from .guess_helper import WinnerJudger, WinningCounter
 
 
@@ -15,17 +15,6 @@ HINT_LIMIT = 5
 DB_PATH = os.path.expanduser('~/.kokkoro/pcr_desc_guess_winning_counter.db')
 
 winner_judger = WinnerJudger()
-
-
-  
-def get_cqcode(chara_id):
-    dir_path = os.path.join(os.path.expanduser(hoshino.config.RES_DIR), 'img', 'priconne', 'unit')
-    if not os.path.exists(dir_path):
-        os.makedirs(dir_path)
-    c = chara.fromid(chara_id)
-    cqcode = '' if not c.icon.exist else c.icon.cqcode
-    return c.name, cqcode
-
 
 @sv.on_fullmatch(('猜描述排行榜', '猜描述群排行'))
 async def description_guess_group_ranking(bot: KokkoroBot, ev: EventInterface):
@@ -63,10 +52,10 @@ async def description_guess(bot: KokkoroBot, ev: EventInterface):
         desc_suffix = ['', '', '', '', 'cm', 'kg', '', '', '', '']
         index_list = list(range(1,10))
         random.shuffle(index_list)
-        chara_id_list = list(_chara_data.CHARA_DATA.keys())
+        chara_id_list = list(_pcr_data.CHARA_DATA.keys())
         random.shuffle(chara_id_list)
         chara_id = chara_id_list[0]
-        chara_desc_list = _chara_data.CHARA_DATA[chara_id]
+        chara_desc_list = _pcr_data.CHARA_DATA[chara_id]
         winner_judger.set_result(gid, chara_id)
         # init
         group_hints[gid] = {

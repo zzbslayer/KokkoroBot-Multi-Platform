@@ -22,7 +22,8 @@ class WeiboSpider(object):
         self.received_weibo_ids = []
         self.last_5_weibos = []
         self.__recent = False
-        asyncio.run(self._async_init())
+        self._loop = asyncio.new_event_loop()
+        self._loop.run_until_complete(self._async_init())
     
     async def _async_init(self):
         self.__init = True

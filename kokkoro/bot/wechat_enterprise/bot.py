@@ -10,7 +10,7 @@ from wechatpy.messages import BaseMessage
 import kokkoro
 from kokkoro.typing import overrides
 from kokkoro.common_interface import KokkoroBot, EventInterface, SupportedMessageType
-from kokkoro.wechat_enterprise.wechat_enterprise_adaptor import WechatEpEvent
+from kokkoro.bot.wechat_enterprise.wechat_enterprise_adaptor import WechatEpEvent
 
 def wechat_handler(bot):
     async def wrapper():

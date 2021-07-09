@@ -171,3 +171,11 @@ class KokkoroTomonBot(KokkoroBot):
     def get_members_in_group(self, gid) -> List[TomonUser]:
         raw_members = asyncio.run(self._bot.api().route(f'/guilds/{gid}/members').get())
         return TomonUser.from_raw_members(raw_members)
+
+    def get_group_by_id(self, gid) -> TomonGroup:
+        raw_group = asyncio.run(self._bot.api().route(f'/guilds/{gid}').get())
+        return TomonGroup(raw_group)
+    
+    def get_roles_by_group(self, gid):
+        raw_roles = asyncio.run(self._bot.api().route(f'/guilds/{gid}/roles').get())
+        return raw_roles
