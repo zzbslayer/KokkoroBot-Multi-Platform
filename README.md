@@ -177,7 +177,23 @@ TODO
     ```
 
 #### 2.2.2 Windows
-TODO
+- 安装 python 3.8 环境；或者使用 conda / virtualenv 等 python 虚拟环境
+  
+  https://www.python.org/downloads/
+
+  https://docs.conda.io/en/latest/
+
+  https://virtualenv.pypa.io/
+
+- 打开 Powershell 或者其他命令行工具，执行以下命令
+
+```sh
+cd /path/to/this/project # 请自行将该路径替换为你的项目路径
+pip install -r requirements.txt # 安装项目依赖
+python3.8 run.py # 运行项目
+```
+
+> 个人推荐使用 linux docker 进行部署，否则遇到奇奇怪怪的环境问题请自行处理
 
 ### 2.2.3 小结
 以上步骤如果您都成功执行，那么 KokkoroBot 就已经部署成功了！
