@@ -2,7 +2,7 @@ from aiogram import Bot, Dispatcher, executor, types
 
 import kokkoro
 from kokkoro.common_interface import KokkoroBot, SupportedMessageType, EventInterface
-from kokkoro.telegram.telegram_adaptor import TelegramEvent
+from kokkoro.bot.telegram.telegram_adaptor import TelegramEvent
 from kokkoro.typing import overrides
 
 class KokkoroTelegramBot(KokkoroBot):
