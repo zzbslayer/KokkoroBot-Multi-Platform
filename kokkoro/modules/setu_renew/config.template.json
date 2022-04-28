@@ -1,0 +1,35 @@
+{
+    "base": {
+        "daily_max": 10,
+        "freq_limit": 10,
+        "whitelistmode": false,
+        "blacklistmode": false,
+        "ban_if_group_num_over": 3000,
+        "max_pic_once_send": 1,
+        "enable_forward_msg": true
+    },
+    "default": {
+        "withdraw": 0,
+        "lolicon": true,
+        "lolicon_r18": false,
+        "acggov": false
+    },
+    "lolicon": {
+        "mode": 2,
+        "r18": true,
+        "use_thumb": false,
+        "pixiv_direct": false,
+        "proxy_site": "",
+        "local_proxy": ""
+    },
+    "acggov": {
+        "mode": 2,
+        "apikey": "",
+        "ranking_mode": "daily",
+        "use_thumb": false,
+        "per_page": 25,
+        "pixiv_direct": false,
+        "pixiv_proxy": "",
+        "acggov_proxy": ""
+    }
+}
