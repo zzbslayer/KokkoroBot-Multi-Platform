@@ -41,21 +41,7 @@ def format_setu_msg(image):
 	try:
 		if image["title"]:
 			return R.remote_img(image['url'])
-			try:
-				im = Image.open(io.BytesIO(image["data"]))
-			except:
-				im = Image.open(image["data"])
-			width, height = im.size
-			draw = ImageDraw.Draw(im)
-			draw.point((random.randint(1, width), random.randint(1, height)), fill=(random.randint(0, 255),
-			                                                                        random.randint(0, 255),
-			                                                                        random.randint(0, 255)))
-			image["data"] = io.BytesIO()
-			im.save(image["data"], format='JPEG')
-			image["data"] = image["data"].getvalue()
-			base64_str = f"base64://{base64.b64encode(image['data']).decode()}"
-			msg = f'「{image["title"]}」/「{image["author"]}」\nPID:{image["id"]}[CQ:image,file={base64_str}]'
-			return msg
+			# return f'「{image["title"]}」/「{image["author"]}」\nPID:{image["id"]}\n{image["url"]}'
 		else:
 			return None
 	except TypeError:

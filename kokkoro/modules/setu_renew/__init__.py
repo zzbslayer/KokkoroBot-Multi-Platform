@@ -13,6 +13,22 @@ HELP_MSG = '''
 本日涩图排行榜 [page] : 获取[第page页]p站排行榜(需开启acggov模块)
 看涩图 [n] 或 [start end] : 获取p站排行榜[第n名/从start名到end名]色图(需开启acggov模块)
 '''
+
+NUM_CHINESE = {
+	'零': 0,
+	'一': 1,
+	'二': 2,
+	'两': 2,
+	'三': 3,
+	'四': 4,
+	'五': 5,
+	'六': 6,
+	'七': 7,
+	'八': 8,
+	'九': 9,
+	'十': 10,
+}
+
 sv = kokkoro.service.Service('涩图', help_=HELP_MSG)
 
 config_default = {
@@ -52,10 +68,10 @@ config_default = {
 }
 group_list_default = {
 	"white_list": [
-	
+
 	],
 	"black_list": [
-	
+
 	]
 }
 groupconfig_default = {}
@@ -162,7 +178,7 @@ async def send_setu(bot, ev):
 	gid = ev.get_group_id()
 	is_su = kokkoro.bot.priv.check_priv(ev, kokkoro.bot.priv.SUPER_USER)
 	args = ev.get_param().remain.split()
-	
+
 	msg = ''
 	if not is_su:
 		msg = '需要超级用户权限\n发送"帮助 pcr娱乐"获取操作指令'
@@ -218,7 +234,7 @@ async def send_setu(bot, ev):
 			msg += f'\n{k}源 : {v}张'
 	elif args[0] == "黑名单" and len(args) == 3:  # setu 黑名单 新增/删除 gid(一次只能提供一个)
 		if args[1] in ["新增", "添加"]:
-			mode = 0 
+			mode = 0
 		elif args[1] in ["删除", "移除"]:
 			mode = 1
 		else:
@@ -257,13 +273,14 @@ async def send_setu(bot, ev):
 	await bot.kkr_send(ev, msg)
 
 
-@sv.on_rex(r'^[色涩瑟][图圖]$|^[来來发發给給]((?P<num>\d+)|(?:.*))[张張个個幅点點份丶](?P<keyword>.*?)[色涩瑟][图圖]$')
+@sv.on_rex(r'^[色涩瑟][图圖]$|^[来來发發给給]((?P<num>.*?))[张張个個幅点點份丶](?P<keyword>.*?)[色涩瑟][图圖]$')
 async def send_search_setu(bot, ev):
 	uid = ev.get_author_id()
 	gid = ev.get_group_id()
 	num = ev.get_param().match.group('num')
 	if num:
 		try:
+			num = NUM_CHINESE.get(num, num)
 			num = int(num)
 			max_num = int(get_config('base', 'max_pic_once_send'))
 			if num > max_num:
