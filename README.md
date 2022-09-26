@@ -3,7 +3,10 @@ KokkoroBot is a forked version of **HoshinoBot** and migrates from QQ to other p
 
 本项目是 @Ice-Cirno 的 HoshinoBot 的分支版本，充斥着大量个人魔改产物。若希望体验原汁原味的 HoshinoBot 请自行魔改回去。
 
-web界面敬请期待。
+~~KokkoroBot 群：887897168~~
+由于看到一个段子后尝试将资料信息改为李近平，本人QQ已经被永久冻结，该群群主已死。
+本人不玩公主连接很久了，因此bot也不再维护，如果有人想接手维护的话可以邮件 zzbslayer@sjtu.edu.cn。
+
 
 目前已适配以下平台
 - Tomon(国内平台)
